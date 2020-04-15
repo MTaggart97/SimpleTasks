@@ -1,0 +1,8 @@
+# Ignore binaries
+bin/*
+
+# Ignore IDE folders
+.vscode/*
+.settings/*
+.project
+.classpath
