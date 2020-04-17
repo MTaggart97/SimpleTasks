@@ -1,8 +1,8 @@
-package simpletask;
+package simpletask.app;
 
-import entities.Task;
-import entities.Options;
-import entities.Workspace;
+import simpletask.entities.Task;
+import simpletask.entities.Options;
+import simpletask.entities.Workspace;
 
 import java.util.ArrayList;
 import java.util.Scanner;

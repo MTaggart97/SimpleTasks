@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"simpletask.entities","l":"Action"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"simpletask.app","l":"App"},{"p":"simpletask.entities","l":"Options"},{"p":"simpletask.entities","l":"Task"},{"p":"simpletask.entities","l":"Workspace"}]
