@@ -3,42 +3,57 @@ package entities;
 import java.util.ArrayList;
 
 /**
- * An interface used by all task classes.
+ * Class that describes a singular unit of work. It cannot be broken up into
+ * smaller sub tasks
+ *
  * @author Matthew Taggart
+ * @see Workspace
  */
-public interface Action {
-    /**
-     * Used to check if action is complete or not.
-     * @author MatthewTaggart
-     * @return True if action is complete, fasle otherwise
-     */
-    boolean isActionComplete();
-    /**
-     * Used to update the completion status.
-     * @param status    Status to change action to
-     */
-    void updateComplete(boolean status);
-    /**
-     * Used to create a new action.
-     * @param name  Name of new action
-     * @return The newly created action
-     */
-    Action createAction(String name);
-    /**
-     * Used to update the status of the action.
-     * @param status    Status to update to
-     * @return Updated status
-     */
-    Action updateStatus(String status);
-    /**
-     * Used to get name of action.
-     * @return Name of action
-     */
-    String getName();
+public class Action implements Workspace {
 
-    ArrayList<Action> getTasks();
+    @Override
+    public boolean isWorkspaceComplete() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-    void setParent(Task parent);
+    @Override
+    public boolean flipCompletionStatus() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-    Action getParent();
+    @Override
+    public Workspace createWorkspace(String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * This should simply return itself.
+     * @return An array list containing it
+     */
+    @Override
+    public ArrayList<Workspace> getTasks() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setParent(Workspace parent) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Workspace getParent() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

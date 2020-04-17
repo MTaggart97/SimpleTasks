@@ -1,84 +1,117 @@
 package simpletask;
 
 import entities.Task;
-import entities.Actions;
-import entities.Action;
+import entities.Options;
+import entities.Workspace;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class App {
-    private final static boolean DEBUG = true;
+/**
+ * Class from which application is started.
+ *
+ * @author Matthew Taggart
+ */
+public final class App {
+    // Application constants
+    /**
+     * Switch for debug statements.
+     */
+    private static final boolean DEBUG = true;
 
-    private final static Scanner sc = new Scanner(System.in);
+    /**
+     * Private constroter so the application class cannot be extended.
+     */
+    private App() {
 
-    public static void main(String[] args) {
-        //TODO: This part will be handled better in the future
+    };
+
+    /**
+     * Main execution function of application.
+     *
+     * @param args  Array of strings from command line
+     */
+    public static void main(final String[] args) {
+        Scanner sc = new Scanner(System.in);
+        //TODO This part will be handled better in the future
         // Create your initial workspace
         System.out.print("Enter the name of your task: ");
-        Action workspace = new Task(sc.nextLine());
+        Workspace workspace = new Task(sc.nextLine());
 
-        Actions action;
+        Options option;
         String st;
         do {
             displayOptions();
             System.out.println("What would you like to do?");
             st = sc.nextLine().toUpperCase();
             try {
-                action = Actions.valueOf(st);
+                option = Options.valueOf(st);
             } catch (IllegalArgumentException e) {
                 System.out.println(st + " is an invalid option. Try again");
-                action = Actions.DONOTHING;
+                option = Options.DONOTHING;
             }
 
-            //TODO: Refactor body of cases into statements
-            switch(action) {
-                case ADD:{
+            //TODO Refactor the blocks into functions
+            switch (option) {
+                case ADD: {
                     System.out.print("Enter your subtask: ");
-                    workspace.createAction(sc.nextLine());
+                    workspace.createWorkspace(sc.nextLine());
                     break;
                 }
-                case MOVE:{
+                case MOVE: {
                     System.out.println("0 " + workspace.getParent().getName());
-                    ArrayList<Action> act = workspace.getTasks();
-                    for(int i = 0; i < act.size(); i++) {
-                        System.out.println((i+1) + " " + act.get(i).getName());
+                    ArrayList<Workspace> act = workspace.getTasks();
+                    for (int i = 0; i < act.size(); i++) {
+                        System.out.println((i + 1) + " " + act.get(i).getName());
                     }
                     System.out.print("Choose a task to move into: ");
                     int i = Integer.parseInt(sc.nextLine());
-                    if(i == 0) {
+                    if (i == 0) {
                         workspace = workspace.getParent();
                     } else {
                         try {
-                            workspace = act.get(i-1);
-                        } catch(IndexOutOfBoundsException e) {
+                            workspace = act.get(i - 1);
+                        } catch (IndexOutOfBoundsException e) {
                             System.out.println(i + " is not a valid option");
                         }
                     }
                     break;
                 }
-                case PRINT:{
+                case PRINT: {
                     System.out.println(workspace);
                     break;
                 }
-                case QUIT:System.out.println("Goodbye");break;
+                case QUIT:System.out.println("Goodbye"); sc.close(); break;
                 case DONOTHING:break;
+                default:break;
             }
-        } while(action != Actions.QUIT);
+        } while (option != Options.QUIT);
     }
 
+    /**
+     * Utility funciton to display current list of options avaliable to the user
+     * on what they can do with their tasks. This function simply prints these options
+     * to stdout. These options can be found in the Options enumeration.
+     *
+     * @see Options
+     */
     private static void displayOptions() {
         System.out.println();
-        for(Actions a: Actions.values()) {
-            if(a != Actions.DONOTHING) {
+        for (Options a: Options.values()) {
+            if (a != Options.DONOTHING) {
                 System.out.println(a);
             }
         }
         System.out.println();
     }
 
-    private static void debugLog(String msg) {
-        if(DEBUG) {
+    /**
+     * Utility to display a message to stdout when the DEBUG flag is true.
+     *
+     * @param msg   Message to display to console
+     */
+    private static void debugLog(final String msg) {
+        if (DEBUG) {
             System.out.println("[Debug] - " + msg);
         }
     }
