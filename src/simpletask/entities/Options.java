@@ -5,8 +5,9 @@ package simpletask.entities;
  * currently:
  * Quit      - Leave menu
  * Add       - Add a workspace to current workspace
- * Move      - Move into a workspace
+ * Move      - Move into a Workspace
  * Print     - Display Workspace
+ * Save      - Save Workspace
  * DoNothing - Does nothing
  *
  * @author Matthew Taggart
@@ -29,6 +30,10 @@ public enum Options {
      * Option to display the current workspace.
      */
     PRINT,
+    /**
+     * Option to save current workspace.
+     */
+    SAVE,
     /**
      * Do nothing.
      */

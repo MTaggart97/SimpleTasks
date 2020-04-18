@@ -56,4 +56,10 @@ public class Action implements Workspace {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public Workspace moveWorkspace() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

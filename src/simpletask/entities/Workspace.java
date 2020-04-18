@@ -1,5 +1,6 @@
 package simpletask.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  * @see Task
  * @see Action
  */
-public interface Workspace {
+public interface Workspace extends Serializable {
     /**
      * Used to check if current workspace is complete.
      *
@@ -59,12 +60,10 @@ public interface Workspace {
      * @return  Parent of current workspace
      */
     Workspace getParent();
-
-    //TODO Implement a save feature so that you can save individual
-    //TODO  items without overwriting the whole workspace#
-    // boolean save();
-    // Recursively save itself and all sub-tasks
-
-    //TODO Implement a move workspace api used to move on workspace
-    //TODO to another, i.e. update its parents
+    /**
+     * Moves the current workspace into another Tasks list.
+     *
+     * @return  The workspaces new parent
+     */
+    Workspace moveWorkspace();
 }

@@ -115,7 +115,6 @@ public class Task implements Workspace {
      */
     @Override
     public boolean isWorkspaceComplete() {
-        // TODO Auto-generated method stub
         return complete;
     }
 
@@ -128,7 +127,6 @@ public class Task implements Workspace {
      */
     @Override
     public boolean flipCompletionStatus() {
-        // TODO Auto-generated method stub
         this.complete = !this.complete;
         return this.complete;
     }
@@ -224,5 +222,18 @@ public class Task implements Workspace {
             disp.append("\n" + sep + "* " + ((Task) a).display(sep + "  "));
         }
         return disp.toString();
+    }
+
+    /**
+     * Moves the current Task into another Tasks list of tasks. This is done by updating the current
+     * Tasks parent, adding it to the list of tasks of it's new parent and removing it from the list
+     * of tasks of its old parent.
+     *
+     * @return  The tasks new parent
+     */
+    @Override
+    public Workspace moveWorkspace() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

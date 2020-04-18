@@ -1,8 +1,11 @@
-# Ignore binaries
+# Binaries
 bin/*
 
-# Ignore IDE folders
+# IDE folders
 .vscode/*
 .settings/*
 .project
 .classpath
+
+# Test outputs
+SavedWorkspace/*
