@@ -172,7 +172,7 @@ public class Task implements Workspace {
     @Override
     public Workspace createWorkspace(final String workspaceName) {
         // Create a new task and add to the current tasks list
-        Task newTask = new Task(workspaceName);
+        Workspace newTask = new Task(workspaceName);
         tasks.add(newTask);
         newTask.setParent(this);
         return newTask;

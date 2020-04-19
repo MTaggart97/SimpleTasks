@@ -39,12 +39,12 @@ public final class App {
     public static void main(final String[] args) {
         Scanner sc = new Scanner(System.in);
         // Create your initial workspace
-        // System.out.print("Enter the name of your task: ");
-        // Workspace workspace = new Task(sc.nextLine());
+        System.out.print("Enter the name of your task: ");
+        Workspace workspace = new Task(sc.nextLine());
 
         // Load workspace
-        System.out.println("Loading workspace from SavedWorkspace/workspace.ser");
-        Workspace workspace = loadWorkspace("SavedWorkspace/workspace.ser");
+        // System.out.println("Loading workspace from SavedWorkspace/workspace.ser");
+        // Workspace workspace = loadWorkspace("SavedWorkspace/workspace.ser");
 
         Options option;
         String st;
