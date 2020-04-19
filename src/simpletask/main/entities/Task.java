@@ -1,4 +1,4 @@
-package simpletask.entities;
+package simpletask.main.entities;
 
 import java.util.ArrayList;
 

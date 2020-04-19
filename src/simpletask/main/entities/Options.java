@@ -1,4 +1,4 @@
-package simpletask.entities;
+package simpletask.main.entities;
 
 /**
  * A list of options available to preform on tasks. Can

@@ -1,8 +1,8 @@
-package simpletask.app;
+package simpletask.main.app;
 
-import simpletask.entities.Task;
-import simpletask.entities.Options;
-import simpletask.entities.Workspace;
+import simpletask.main.entities.Task;
+import simpletask.main.entities.Options;
+import simpletask.main.entities.Workspace;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
