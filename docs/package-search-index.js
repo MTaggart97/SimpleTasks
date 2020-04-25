@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"simpletask.app"},{"l":"simpletask.entities"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"simpletask.main.app"},{"l":"simpletask.main.entities"}]
