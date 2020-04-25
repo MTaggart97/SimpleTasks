@@ -29,13 +29,6 @@ public interface Workspace extends Serializable {
      */
     boolean flipCompletionStatus();
     /**
-     * Used to create a new workspace.
-     *
-     * @param name  Name of new workspace
-     * @return The newly created workspace
-     */
-    Workspace createWorkspace(String name);
-    /**
      * Used to get name of workspace.
      *
      * @return Name of workspace
@@ -48,13 +41,6 @@ public interface Workspace extends Serializable {
      */
     ArrayList<Workspace> getTasks();
     /**
-     * Used to set the parent of the current workspace. As of now,
-     * the parent of a workspace, is the workspace it was created in.
-     *
-     * @param parent    The parent of this workspace.
-     */
-    void setParent(Workspace parent);
-    /**
      * Returns the parent of the current workspace.
      *
      * @return  Parent of current workspace
@@ -63,7 +49,8 @@ public interface Workspace extends Serializable {
     /**
      * Moves the current workspace into another Tasks list.
      *
-     * @return  The workspaces new parent
+     * @param   target  The target/parent task
+     * @return          True if successful, fasle otherwise
      */
-    Workspace moveWorkspace();
+    boolean moveWorkspace(Task target);
 }

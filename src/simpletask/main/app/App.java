@@ -91,7 +91,7 @@ public final class App {
      */
     private static void addWorkspace(final Task workspace, final Scanner sc) {
         System.out.print("Enter your subtask: ");
-        workspace.createWorkspace(sc.nextLine());
+        workspace.createWorkspace(new Task(sc.nextLine()));
     }
 
     /**

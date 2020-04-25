@@ -1,1 +1,1 @@
-typeSearchIndex = [{"p":"simpletask.entities","l":"Action"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"simpletask.app","l":"App"},{"p":"simpletask.entities","l":"Options"},{"p":"simpletask.entities","l":"Task"},{"p":"simpletask.entities","l":"Workspace"}]
+typeSearchIndex = [{"p":"simpletask.main.entities","l":"Action"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"simpletask.main.app","l":"App"},{"p":"simpletask.main.entities","l":"Options"},{"p":"simpletask.main.entities","l":"Task"},{"p":"simpletask.main.entities","l":"Workspace"}]

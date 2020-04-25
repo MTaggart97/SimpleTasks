@@ -1,5 +1,6 @@
 package simpletask.main.entities;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -13,6 +14,17 @@ import java.util.ArrayList;
  * @see Workspace
  */
 public class Task implements Workspace {
+    // Class variables
+    /**
+     * Unique long value that is used to ensure that this is the correct object
+     * during serialisation.
+     */
+    private static final long serialVersionUID = -8072249000932772481L;
+    /**
+     * String that is appended to the task when it is being printed
+     * to the console. Not functional, just for neatness.
+     */
+    private static final String DISPLAYHEADER = "\n-------------------------------------\n";
     // Instance Variables
     /**
      * Name of task.
@@ -22,8 +34,10 @@ public class Task implements Workspace {
      * Description of task.
      */
     private String description;
-    //TODO Look up best way to implement date
-    // private Date dueDate;
+    /**
+     * Due date of task.
+     */
+    private LocalDate dueDate;
     /**
      * Flag to mark if task is complete.
      */
@@ -43,13 +57,7 @@ public class Task implements Workspace {
      */
     private Workspace parent = null;
 
-    // Class constants
-    /**
-     * String that is appended to the task when it is being printed
-     * to the console. Not functional, just for neatness.
-     */
-    private static final String DISPLAYHEADER = "\n-------------------------------------\n";
-
+    // Constructors
     /**
      * Private constructor, don't know if needed yet.
      */
@@ -68,6 +76,7 @@ public class Task implements Workspace {
         parent = this;
     }
 
+    // Methods
     /**
      * Returns name of the task.
      *
@@ -93,9 +102,18 @@ public class Task implements Workspace {
      *
      *  @param parent    The parent workspace
      */
-    @Override
-    public void setParent(final Workspace parent) {
+    //@Override
+    private void setParent(final Workspace parent) {
         this.parent = parent;
+    }
+
+    /**
+     * Sets the description attribute.
+     *
+     * @param description the description to set
+     */
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     /**
@@ -106,6 +124,14 @@ public class Task implements Workspace {
     @Override
     public Workspace getParent() {
         return this.parent;
+    }
+    /**
+     * Returns description of task.
+     *
+     * @return  The description of this task
+     */
+    public String getDescription() {
+        return this.description;
     }
 
     /**
@@ -167,15 +193,14 @@ public class Task implements Workspace {
      * the that task assigns itself as the parent of the newly created
      * task
      *
-     * @return The newly created task
+     * @param   workspaceName   New workspace to move into current workspace
+     * @return                  The newly created task
      */
-    @Override
-    public Workspace createWorkspace(final String workspaceName) {
-        // Create a new task and add to the current tasks list
-        Workspace newTask = new Task(workspaceName);
-        tasks.add(newTask);
-        newTask.setParent(this);
-        return newTask;
+    //@Override
+    public Workspace createWorkspace(final Workspace workspaceName) {
+        // Add workspace to list of workspaces and set its parent
+        workspaceName.moveWorkspace(this);
+        return workspaceName;
     }
 
     /**
@@ -229,11 +254,38 @@ public class Task implements Workspace {
      * Tasks parent, adding it to the list of tasks of it's new parent and removing it from the list
      * of tasks of its old parent.
      *
-     * @return  The tasks new parent
+     * @param   target  The current tasks new parent
+     * @return          True if move was successful
      */
     @Override
-    public Workspace moveWorkspace() {
-        // TODO Auto-generated method stub
-        return null;
+    public boolean moveWorkspace(final Task target) {
+        // Only tasks can have childern so we know the result of this will always be a task
+        Task oldParent = (Task) this.getParent();
+        // Task will be it's own parent if no parent exists
+        if (oldParent != this) {
+            oldParent.tasks.remove(this);
+        }
+        this.setParent(target);
+        target.addToTask(this);
+        return true;
+    }
+    /**
+     * Removes workspace from list of tasks.
+     *
+     * @param workspace Workspace to remove from list of tasks
+     * @return          True if workspace successfully removed
+     */
+    public boolean deleteWorkspace(final Workspace workspace) {
+        this.tasks.remove(workspace);
+        return true;
+    }
+    /**
+     * Adds workspace to list of tasks.
+     *
+     * @param workspace Workspace to add to list of workspaces
+     * @return          True if workspace is added successfully
+     */
+    protected boolean addToTask(final Workspace workspace) {
+        return this.tasks.add(workspace);
     }
 }
