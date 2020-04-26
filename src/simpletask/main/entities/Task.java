@@ -1,6 +1,6 @@
 package simpletask.main.entities;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
@@ -25,6 +25,14 @@ public class Task implements Workspace {
      * to the console. Not functional, just for neatness.
      */
     private static final String DISPLAYHEADER = "\n-------------------------------------\n";
+    /**
+     * Maximum value of importance for a task. Currently set to 10.
+     */
+    private static final byte MAXIMPORTANCE = 10;
+    /**
+     * Minimum value of importance for a task. Currently set to 0, this avoids negative importance.
+     */
+    private static final byte MINIMPORTANCE = 0;
     // Instance Variables
     /**
      * Name of task.
@@ -37,15 +45,15 @@ public class Task implements Workspace {
     /**
      * Due date of task.
      */
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
     /**
      * Flag to mark if task is complete.
      */
     private boolean complete;
     /**
-     * Importance of task. From 1-10. Using byte to minimise storage
+     * Priority of task. From 1-10. Using byte to minimise storage
      */
-    private byte importance;
+    private byte priority;
     /**
      * A list of tasks maintianed by current task. For a task to be
      * marked as complete, all its tasks must be marked as complete
@@ -86,6 +94,14 @@ public class Task implements Workspace {
     public String getName() {
         return this.name;
     }
+    /**
+     * Returns the user definied importance of task.
+     *
+     * @return  Priority of task
+     */
+    public int getPriority() {
+        return (int) this.priority;
+    }
 
     /**
      * Returns a list of all workspaces contained in the current task.
@@ -95,6 +111,14 @@ public class Task implements Workspace {
     @Override
     public ArrayList<Workspace> getTasks() {
         return tasks;
+    }
+    /**
+     * Returns due date of task.
+     *
+     * @return  Returns the date and time that the task is due
+     */
+    public LocalDateTime getDueDate() {
+        return this.dueDate;
     }
 
     /**
@@ -115,6 +139,18 @@ public class Task implements Workspace {
     public void setDescription(final String description) {
         this.description = description;
     }
+    /**
+     * Sets the due date of the task.
+     *
+     * @param year      Year that task is due
+     * @param month     Month that task is due
+     * @param day       Day in month that task is due
+     * @param hour      Hour task is due
+     * @param minute    Minute task is due
+     */
+    public void setDueDate(final int year, final int month, final int day, final int hour, final int minute) {
+        this.dueDate = LocalDateTime.of(year, month, day, hour, minute);
+    }
 
     /**
      * Returns parent of current task.
@@ -124,6 +160,22 @@ public class Task implements Workspace {
     @Override
     public Workspace getParent() {
         return this.parent;
+    }
+    /**
+     * Sets the priority for the task. Cannot have negative importance or greater than 10.
+     *
+     * @param imp   Number to set priority to
+     * @return      True if priority set correctly
+     * @throws      InvalidPriorityException if invalid priority is entered
+     */
+    public boolean setPriority(final int imp) throws InvalidPriorityException {
+        // Cannot have negative importacne or importance greater than 10
+        if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
+            throw new InvalidPriorityException("Cannot have a negative importance or importance greater than 10");
+        } else {
+            this.priority = (byte) imp;
+        }
+        return true;
     }
     /**
      * Returns description of task.
