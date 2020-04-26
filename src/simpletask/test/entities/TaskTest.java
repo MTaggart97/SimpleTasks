@@ -2,7 +2,7 @@ package simpletask.test.entities;
 
 import simpletask.main.entities.Task;
 import simpletask.main.entities.Action;
-import simpletask.main.entities.InvalidImportanceException;
+import simpletask.main.entities.InvalidPriorityException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -127,12 +127,12 @@ public class TaskTest {
         // Arrange
         // Act
         try {
-            t1.setImportance(2);
-        } catch (InvalidImportanceException e) {
+            t1.setPriority(2);
+        } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(2, t1.getImportance(), "Ensure importance for root workspace is set correctly");
+        assertEquals(2, t1.getPriority(), "Ensure importance for root workspace is set correctly");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -143,12 +143,12 @@ public class TaskTest {
         final int negValue = -2;
         // Act
         try {
-            t1.setImportance(negValue);
-        } catch (InvalidImportanceException e) {
+            t1.setPriority(negValue);
+        } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(0, t1.getImportance(), "Ensure that importance cannot be set to a negative number");
+        assertEquals(0, t1.getPriority(), "Ensure that importance cannot be set to a negative number");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -159,12 +159,30 @@ public class TaskTest {
         final int largeValue = 50;
         // Act
         try {
-            t1.setImportance(largeValue);
-        } catch (InvalidImportanceException e) {
+            t1.setPriority(largeValue);
+        } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(0, t1.getImportance(), "Ensure that importance cannot set to be a number larger than 10");
+        assertEquals(0, t1.getPriority(), "Ensure that importance cannot set to be a number larger than 10");
+    }
+    /**
+     * Tests if Tasks importance does not get set if invalid number is entered.
+     */
+    @Test
+    public void testWorkspaceImportanceRemainSame() {
+        // Arrange
+        final int priority = 5;
+        t1.setPriority(priority);
+        final int largeValue = 50;
+        // Act
+        try {
+            t1.setPriority(largeValue);
+        } catch (InvalidPriorityException e) {
+            e.printStackTrace();
+        }
+        // Assert
+        assertEquals(priority, t1.getPriority(), "Ensure that importance cannot set to be a number larger than 10");
     }
     /**
      * Tests to see if the due date gets set correctly.

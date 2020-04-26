@@ -51,9 +51,9 @@ public class Task implements Workspace {
      */
     private boolean complete;
     /**
-     * Importance of task. From 1-10. Using byte to minimise storage
+     * Priority of task. From 1-10. Using byte to minimise storage
      */
-    private byte importance;
+    private byte priority;
     /**
      * A list of tasks maintianed by current task. For a task to be
      * marked as complete, all its tasks must be marked as complete
@@ -97,10 +97,10 @@ public class Task implements Workspace {
     /**
      * Returns the user definied importance of task.
      *
-     * @return  Importance of task
+     * @return  Priority of task
      */
-    public int getImportance() {
-        return (int) this.importance;
+    public int getPriority() {
+        return (int) this.priority;
     }
 
     /**
@@ -162,18 +162,18 @@ public class Task implements Workspace {
         return this.parent;
     }
     /**
-     * Sets the importance for the task. Cannot have negative importance or greater than 10.
+     * Sets the priority for the task. Cannot have negative importance or greater than 10.
      *
-     * @param imp   Number to set importance to
-     * @return      True if importance set correctly
-     * @throws      InvalidImportanceException if invalid importance is entered
+     * @param imp   Number to set priority to
+     * @return      True if priority set correctly
+     * @throws      InvalidPriorityException if invalid priority is entered
      */
-    public boolean setImportance(final int imp) throws InvalidImportanceException {
+    public boolean setPriority(final int imp) throws InvalidPriorityException {
         // Cannot have negative importacne or importance greater than 10
         if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
-            throw new InvalidImportanceException("Cannot have a negative importance or importance greater than 10");
+            throw new InvalidPriorityException("Cannot have a negative importance or importance greater than 10");
         } else {
-            this.importance = (byte) imp;
+            this.priority = (byte) imp;
         }
         return true;
     }
