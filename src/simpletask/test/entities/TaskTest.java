@@ -2,8 +2,11 @@ package simpletask.test.entities;
 
 import simpletask.main.entities.Task;
 import simpletask.main.entities.Action;
+import simpletask.main.entities.InvalidImportanceException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -115,5 +118,69 @@ public class TaskTest {
         t1.deleteWorkspace(tempAction);
         // Assert
         assertEquals(0, t1.getTasks().size(), "Workspace should contain no tasks after removing all tasks");
+    }
+    /**
+     * Tests if Tasks importance gets set correctly.
+     */
+    @Test
+    public void testWorkspaceImportance() {
+        // Arrange
+        // Act
+        try {
+            t1.setImportance(2);
+        } catch (InvalidImportanceException e) {
+            e.printStackTrace();
+        }
+        // Assert
+        assertEquals(2, t1.getImportance(), "Ensure importance for root workspace is set correctly");
+    }
+    /**
+     * Tests if Tasks importance does not get set if invalid number is entered.
+     */
+    @Test
+    public void testWorkspaceImportanceNegative() {
+        // Arrange
+        final int negValue = -2;
+        // Act
+        try {
+            t1.setImportance(negValue);
+        } catch (InvalidImportanceException e) {
+            e.printStackTrace();
+        }
+        // Assert
+        assertEquals(0, t1.getImportance(), "Ensure that importance cannot be set to a negative number");
+    }
+    /**
+     * Tests if Tasks importance does not get set if invalid number is entered.
+     */
+    @Test
+    public void testWorkspaceImportanceTooLarge() {
+        // Arrange
+        final int largeValue = 50;
+        // Act
+        try {
+            t1.setImportance(largeValue);
+        } catch (InvalidImportanceException e) {
+            e.printStackTrace();
+        }
+        // Assert
+        assertEquals(0, t1.getImportance(), "Ensure that importance cannot set to be a number larger than 10");
+    }
+    /**
+     * Tests to see if the due date gets set correctly.
+     */
+    @Test
+    public void testDueDateSet() {
+        // Arrange
+        final int year = 2020;
+        final int month = 4;
+        final int day = 6;
+        final int hour = 16;
+        final int minute = 30;
+        final LocalDateTime due = LocalDateTime.of(year, month, day, hour, minute);
+        // Act
+        t1.setDueDate(year, month, day, hour, minute);
+        // Assert
+        assertEquals(due, t1.getDueDate(), "Check that due date is set correctly");
     }
 }
