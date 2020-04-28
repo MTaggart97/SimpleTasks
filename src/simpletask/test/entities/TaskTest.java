@@ -201,4 +201,28 @@ public class TaskTest {
         // Assert
         assertEquals(due, t1.getDueDate(), "Check that due date is set correctly");
     }
+    /**
+     * Tests if Tasks and Actions get moved correctly.
+     */
+    @Test
+    public void testWorkspaceMove() {
+        // Arrange
+        final int totalSubWS = 2;
+        Task ws1 = new Task("First");
+        Task subTask = new Task ("Sub Task");
+        Action subAction = new Action ("Sub Action");
+        ws1.createWorkspace(subTask);
+        ws1.createWorkspace(subAction);
+        Task ws2 = new Task("Second");
+        t1.createWorkspace(ws1);
+        t1.createWorkspace(ws2);
+        // Act
+        subTask.moveWorkspace(ws2);
+        subAction.moveWorkspace(ws2);
+        // Assert
+        assertEquals(totalSubWS, t1.getTasks().get(1).getTasks().size(), "Ensure workspaces are in second task");
+        assertEquals(0, t1.getTasks().get(0).getTasks().size(), "Ensure workspaces are not in original task");
+        assertEquals(ws2, subTask.getParent(), "Ensure sub task has correct parent");
+        assertEquals(ws2, subAction.getParent(), "Ensure sub action has correct parent");
+    }
 }
