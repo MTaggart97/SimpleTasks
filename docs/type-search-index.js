@@ -1,1 +1,0 @@
-typeSearchIndex = [{"p":"simpletask.main.entities","l":"Action"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"simpletask.main.app","l":"App"},{"p":"simpletask.main.entities","l":"InvalidPriorityException"},{"p":"simpletask.main.entities","l":"Options"},{"p":"simpletask.main.entities","l":"Task"},{"p":"simpletask.main.entities","l":"Workspace"}]

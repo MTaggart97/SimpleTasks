@@ -19,18 +19,20 @@ public class Action implements Workspace {
      */
     private Workspace parent;
     /**
+     * Boolean flag to signal if Action is complete.
+     */
+    private boolean isComplete;
+    /**
+     * Description of Action.
+     */
+    private String description;
+    /**
      * Unique long value that is used to ensure that this is the correct object
      * during serialisation.
      */
     private static final long serialVersionUID = 4278080741841613065L;
 
     // Constructors
-    /**
-     * Private constructor, don't know if needed yet.
-     */
-    private Action() {
-
-    };
     /**
      * Creates an action given a name.
      *
@@ -39,29 +41,34 @@ public class Action implements Workspace {
     public Action(final String nm) {
         this.name = nm;
     }
-
+    /**
+     * Returns true if Action is complete.
+     *
+     * @return  True if Action complete, false otherwise
+     */
     @Override
     public boolean isWorkspaceComplete() {
-        // TODO Auto-generated method stub
-        return false;
+        return isComplete;
     }
-
+    /**
+     * Flips completion status and returns new status.
+     *
+     * @return  True if task is complete, false otherwise
+     */
     @Override
     public boolean flipCompletionStatus() {
-        // TODO Auto-generated method stub
-        return false;
+        isComplete = !isComplete;
+        return isComplete;
     }
-
-    @Override
     /**
      * Returns name of action.
      *
      * @return Name of Action
      */
+    @Override
     public String getName() {
         return this.name;
     }
-
     /**
      * This should simply return itself.
      * @return An array list containing it
@@ -73,14 +80,12 @@ public class Action implements Workspace {
         return result;
     }
     /**
-     * Sets the parent of current task.
+     * Returns description of task.
      *
-     * @param   parent  New parent of task.
+     * @return  Description of task
      */
-    //@Override
-    private void setParent(final Workspace parent) {
-        this.parent = parent;
-
+    public String getDescription() {
+        return description;
     }
     /**
      * Returns parent of current action.
@@ -90,6 +95,23 @@ public class Action implements Workspace {
     @Override
     public Workspace getParent() {
         return this.parent;
+    }
+    /**
+     * Sets the parent of current task.
+     *
+     * @param   parent  New parent of task.
+     */
+    private void setParent(final Workspace parent) {
+        this.parent = parent;
+
+    }
+    /**
+     * Sets the description of the current Action.
+     *
+     * @param   description     Description of Action
+     */
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     /**
@@ -108,5 +130,19 @@ public class Action implements Workspace {
         this.setParent(target);
         target.addToTask(this);
         return true;
+    }
+
+    /**
+     * Overrides the toString method called when printing the object to stdout. Currently prints
+     * the name, description and completion status of action.
+     *
+     * @return  String to display
+     */
+    @Override
+    public String toString() {
+        StringBuilder msg = new StringBuilder(this.name);
+        msg.append("\n -- Completion Status: " + this.isComplete);
+        msg.append("\n -- " + this.description);
+        return msg.toString();
     }
 }

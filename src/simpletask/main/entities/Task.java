@@ -67,13 +67,6 @@ public class Task implements Workspace {
 
     // Constructors
     /**
-     * Private constructor, don't know if needed yet.
-     */
-    private Task() {
-
-    }
-
-    /**
      * The basic constructor for a task. At most, a task needs a name.
      * By default, a task is it's own parent.
      *
