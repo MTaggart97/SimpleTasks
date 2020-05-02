@@ -53,4 +53,11 @@ public interface Workspace extends Serializable {
      * @return          True if successful, fasle otherwise
      */
     boolean moveWorkspace(Task target);
+    /**
+     * Searches the Workspaces list of Workspaces for object provided.
+     *
+     * @param workspace Workspace to find.
+     * @return          True if workspace is found, false otherwise.
+     */
+    boolean searchWorkspaces(Workspace workspace);
 }

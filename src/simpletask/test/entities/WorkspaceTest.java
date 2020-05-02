@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Class to test the behaviour of a Test instance.
  */
-public class TaskTest {
+public class WorkspaceTest {
     /**
      * Base task instance to test.
      */
@@ -225,4 +225,6 @@ public class TaskTest {
         assertEquals(ws2, subTask.getParent(), "Ensure sub task has correct parent");
         assertEquals(ws2, subAction.getParent(), "Ensure sub action has correct parent");
     }
+
+    //TODO: Create a few tests for the new .equals methods.
 }

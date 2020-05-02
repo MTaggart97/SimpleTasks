@@ -3,10 +3,6 @@ package simpletask.main.app;
 import simpletask.main.entities.Workspace;
 import simpletask.main.entities.Task;
 
-import java.util.Scanner;
-
-import simpletask.main.entities.Action;
-
 /**
  * This class will be responsible for managing the workspace. Through it, you can add
  * to workspace, modify tasks and save workspace.
@@ -15,19 +11,68 @@ public class WorkspaceManager {
     /**
      * Users main workspace that the WorkspaceManager manages.
      */
-    private Workspace workspace = null;
+    private final Workspace rootWorkspace;
     /**
-     * Scanner object used for input. Default to read from stdin.
+     * Current workspace that user is in.
      */
-    private Scanner sc = new Scanner(System.in);
+    private Workspace currentWorkspace = null;
     /**
-     * Default constructor. Currently does nothing.
+     * Constructor that takes the name of the workspace to create. It then creates a
+     * task with the same name. This task becomes the rootWorkspace and current workspace.
+     *
+     * @param name  Name of workspace to create
      */
-    public WorkspaceManager() {
-
+    public WorkspaceManager(final String name) {
+        rootWorkspace = new Task(name);
+        currentWorkspace = rootWorkspace;
     };
 
-    public void createWorkspace(final String name) {
-        workspace = new Task(name);
+    /**
+     * Given a path to a file containing a valid workspace, it will load it in.
+     *
+     * @param path  Path to workspace
+     * @return      True if workspace loads successfully, false otherwise
+     */
+    public boolean loadWorkspace(final String path) {
+
+        return true;
+    }
+
+    /**
+     * Adds a workspace into the currentWorkspaces task list if it is a Task.
+     *
+     * @param newWorkspace  New Workspace to add
+     * @return              True if workspace added successfully, false otherwise
+     */
+    public boolean addWorkspace(final Workspace newWorkspace) {
+        if (currentWorkspace instanceof Task) {
+            ((Task) currentWorkspace).createWorkspace(newWorkspace);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Given a workspace, it will set the currentWorkspace to it if it is in the currentWorkspace's
+     * list of workspaces. Returns new currentWorkspace.
+     *
+     * @param workspace Workspace to move into
+     * @return          The workspace the user moved into
+     */
+    public Workspace moveIntoWorkspace(final Workspace workspace) {
+        boolean found = currentWorkspace.searchWorkspaces(workspace);
+        if (found) {
+            currentWorkspace = workspace;
+            return currentWorkspace;
+        } else {
+            return currentWorkspace;
+        }
+    }
+    /**
+     * Moves currentWorkspace back to root workspace.
+     */
+    public void moveHome() {
+        currentWorkspace = rootWorkspace;
     }
 }

@@ -67,14 +67,24 @@ public class Task implements Workspace {
 
     // Constructors
     /**
-     * The basic constructor for a task. At most, a task needs a name.
-     * By default, a task is it's own parent.
+     * The basic constructor for a task. At most, a task needs a name, dueDate and parent.
+     * It needs all three as it's equals method uses these three to determine equlity. By 
+     * default, a task is called "Null Task" a task is it's own parent and it's due at the
+     * time of creation.
+     */
+    private Task() {
+        name = "Null Task";
+        parent = this;
+        dueDate = LocalDateTime.now();
+    }
+    /**
+     * Creates a task with the inputted name.
      *
      * @param name  The name of the task
      */
     public Task(final String name) {
+        this();
         this.name = name;
-        parent = this;
     }
 
     // Methods
@@ -314,6 +324,41 @@ public class Task implements Workspace {
         target.addToTask(this);
         return true;
     }
+    /**
+     * Searches the list of tasks for the workspace entered.
+     *
+     * @param   workspace   Workspace to find
+     * @return              True if found, false otherwise.
+     */
+    @Override
+    public boolean searchWorkspaces(final Workspace workspace) {
+        for (Workspace w: this.getTasks()) {
+            if (w.equals(workspace)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Overrides the default object equals method. Two tasks are equal if they share the same
+     * name, dueDate and parent. Note, the parents must be the same instance.
+     *
+     * @param   obj Object to check for equality
+     * @return      True if object is equal to this Task, false otherwise
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof Task) {
+            return name.equals(((Task) obj).name)
+                && dueDate.equals(((Task) obj).dueDate)
+                // Parents must be same instance to ensure two objects are truely the same and not
+                // in two seperate workspaces.
+                && parent == ((Task) obj).parent;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Removes workspace from list of tasks.
      *
