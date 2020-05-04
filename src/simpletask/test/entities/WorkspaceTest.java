@@ -22,7 +22,6 @@ public class WorkspaceTest {
      * Base task instance to test.
      */
     private Task t1;
-
     /**
      * Executes before each test method. Simply resets the t1 Task instance
      * to be empty.
@@ -249,7 +248,6 @@ public class WorkspaceTest {
         assertEquals(ws2, subTask.getParent(), "Ensure sub task has correct parent");
         assertEquals(ws2, subAction.getParent(), "Ensure sub action has correct parent");
     }
-
     /**
      * Tests that two tasks with the same name, due date and parent are considered
      * equal.
@@ -267,7 +265,6 @@ public class WorkspaceTest {
         // Assert
         assertEquals(t2, t3, "Ensure two Tasks are equal");
     }
-
     /**
      * Ensures that tasks which do not share a name.
      */
@@ -284,7 +281,6 @@ public class WorkspaceTest {
         // Assert
         assertNotEquals("Ensure that two tasks with different names are not equal", t2, t3);
     }
-
     /**
      * Ensures that tasks which do not share a parent.
      */
@@ -299,7 +295,6 @@ public class WorkspaceTest {
         // Assert
         assertNotEquals("Ensure that two tasks with different parents are not equal", t2, t3);
     }
-
     /**
      * Ensures that tasks which do not share a due date.
      */
@@ -316,7 +311,6 @@ public class WorkspaceTest {
         // Assert
         assertNotEquals("Ensure that two tasks with different dueDates are not equal", t2, t3);
     }
-
     /**
      * Ensures that actions which do not share a name.
      */
@@ -333,7 +327,6 @@ public class WorkspaceTest {
         // Assert
         assertNotEquals("Ensure that two actions with different names are not equal", t2, t3);
     }
-
     /**
      * Ensures that actions which do not share a parent.
      */
@@ -348,7 +341,6 @@ public class WorkspaceTest {
         // Assert
         assertNotEquals("Ensure that two actions with different parents are not equal", t2, t3);
     }
-
     /**
      * Ensures that actions which do not share a due date.
      */
@@ -365,7 +357,6 @@ public class WorkspaceTest {
         // Assert
         assertNotEquals("Ensure that two actions with different dueDates are not equal", t2, t3);
     }
-
     /**
      * Ensure Action and Task with same name, due date and parent are not equal.
      */
@@ -383,7 +374,6 @@ public class WorkspaceTest {
         assertNotEquals("Ensure that similar Task and Action are not equal", t2, a2);
         assertNotEquals("Ensure that similar Action and Task are not equal", a2, t2);
     }
-
     /**
      * Tests to see if workspace search for Task objects works.
      */
@@ -410,7 +400,6 @@ public class WorkspaceTest {
         assertEquals(false, randomTask, "Look for Task that is not in list of workspaces");
         assertEquals(false, randomAction, "Look for Action that is not in list of workspaces");
     }
-
     /**
      * Tests to see if workspace search for Action objects works. This should always return false
      * as an Action does not contain a list of Workspaces.

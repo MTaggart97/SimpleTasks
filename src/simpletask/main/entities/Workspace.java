@@ -1,6 +1,7 @@
 package simpletask.main.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
@@ -67,4 +68,28 @@ public interface Workspace extends Serializable {
      * @return  True if workspace is delete successfully, false otherwise.
      */
     boolean delete();
+    /**
+     * Sets name of workspace.
+     *
+     * @param name  New name of workspace
+     */
+    void setName(String name);
+    /**
+     * Sets the description of workspace.
+     *
+     * @param msg   Description of workspace
+     */
+    void setDescription(String msg);
+    /**
+     * Sets the due date of the workspace.
+     *
+     * @param dt    Date Time of dueDate
+     */
+    void setDueDate(LocalDateTime dt);
+    /**
+     * Sets prioriyt of workspace.
+     *
+     * @param priority  New priority
+     */
+    void setPriority(int priority);
 }

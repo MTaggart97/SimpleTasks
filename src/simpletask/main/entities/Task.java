@@ -68,7 +68,7 @@ public class Task implements Workspace {
     // Constructors
     /**
      * The basic constructor for a task. At most, a task needs a name, dueDate and parent.
-     * It needs all three as it's equals method uses these three to determine equlity. By 
+     * It needs all three as it's equals method uses these three to determine equlity. By
      * default, a task is called "Null Task" a task is it's own parent and it's due at the
      * time of creation.
      */
@@ -88,6 +88,7 @@ public class Task implements Workspace {
     }
 
     // Methods
+    // Getters
     /**
      * Returns name of the task.
      *
@@ -105,7 +106,14 @@ public class Task implements Workspace {
     public int getPriority() {
         return (int) this.priority;
     }
-
+    /**
+     * Returns description of task.
+     *
+     * @return  The description of this task
+     */
+    public String getDescription() {
+        return this.description;
+    }
     /**
      * Returns a list of all workspaces contained in the current task.
      *
@@ -123,22 +131,39 @@ public class Task implements Workspace {
     public LocalDateTime getDueDate() {
         return this.dueDate;
     }
+    /**
+     * Returns parent of current task.
+     *
+     *  @return The current tasks parent
+     */
+    @Override
+    public Workspace getParent() {
+        return this.parent;
+    }
 
+    // Setters
+    /**
+     * Renames Task.
+     *
+     * @param name  Name of task
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
     /**
      * Sets the parent of the current task to the inputted workspace.
      *
      *  @param parent    The parent workspace
      */
-    //@Override
     private void setParent(final Workspace parent) {
         this.parent = parent;
     }
-
     /**
      * Sets the description attribute.
      *
      * @param description the description to set
      */
+    @Override
     public void setDescription(final String description) {
         this.description = description;
     }
@@ -154,41 +179,32 @@ public class Task implements Workspace {
     public void setDueDate(final int year, final int month, final int day, final int hour, final int minute) {
         this.dueDate = LocalDateTime.of(year, month, day, hour, minute);
     }
-
     /**
-     * Returns parent of current task.
+     * Sets dueDate.
      *
-     *  @return The current tasks parent
+     * @param   dt  DateTime to set dueDate to
      */
     @Override
-    public Workspace getParent() {
-        return this.parent;
+    public void setDueDate(final LocalDateTime dt) {
+        this.dueDate = dt;
     }
     /**
      * Sets the priority for the task. Cannot have negative importance or greater than 10.
      *
      * @param imp   Number to set priority to
-     * @return      True if priority set correctly
      * @throws      InvalidPriorityException if invalid priority is entered
      */
-    public boolean setPriority(final int imp) throws InvalidPriorityException {
+    @Override
+    public void setPriority(final int imp) throws InvalidPriorityException {
         // Cannot have negative importacne or importance greater than 10
         if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
-            throw new InvalidPriorityException("Cannot have a negative importance or importance greater than 10");
+            throw new InvalidPriorityException("Cannot have a negative importance or importance greater than " + MAXIMPORTANCE);
         } else {
             this.priority = (byte) imp;
         }
-        return true;
-    }
-    /**
-     * Returns description of task.
-     *
-     * @return  The description of this task
-     */
-    public String getDescription() {
-        return this.description;
     }
 
+    // Implementation Methods
     /**
      * Returns completion status of current task.
      *
@@ -198,7 +214,6 @@ public class Task implements Workspace {
     public boolean isWorkspaceComplete() {
         return complete;
     }
-
     /**
      * Flips the completion status of the current workspace. Can be used
      * by the user if they wish to manually change the completion status
@@ -211,7 +226,6 @@ public class Task implements Workspace {
         this.complete = !this.complete;
         return this.complete;
     }
-
     /**
      * Checks if all workspaces in the tasks list are complete.
      *
@@ -227,7 +241,6 @@ public class Task implements Workspace {
         }
         return results;
     }
-
     /**
      * Method that is called by one of the Tasks' workspaces in the task list.
      * It checks if all other workspaces are complete and if so, marks the
@@ -240,7 +253,6 @@ public class Task implements Workspace {
         this.complete = this.checkTasks();
         return this.complete;
     }
-
     /**
      * This creates a new workspace in the current task. A new
      * workspace must first be created, then added to the list
@@ -257,7 +269,6 @@ public class Task implements Workspace {
         workspaceName.moveWorkspace(this);
         return workspaceName;
     }
-
     /**
      * Used to display the task in a readable format to the console.
      * The format is currently,
@@ -282,7 +293,6 @@ public class Task implements Workspace {
         display.append(DISPLAYHEADER);
         return display.toString();
     }
-
     /**
      * Utility funciton used in toString(). Returns a string of the current
      * task and all its workspaces in tasks in the format,
@@ -303,7 +313,6 @@ public class Task implements Workspace {
         }
         return disp.toString();
     }
-
     /**
      * Moves the current Task into another Tasks list of tasks. This is done by updating the current
      * Tasks parent, adding it to the list of tasks of it's new parent and removing it from the list
@@ -358,7 +367,6 @@ public class Task implements Workspace {
             return false;
         }
     }
-
     /**
      * Removes workspace from list of tasks if the workspace is there.
      *

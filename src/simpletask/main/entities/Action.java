@@ -28,6 +28,10 @@ public class Action implements Workspace {
      */
     private boolean isComplete;
     /**
+     * Priority of Action.
+     */
+    private byte priority;
+    /**
      * Description of Action.
      */
     private String description;
@@ -36,6 +40,14 @@ public class Action implements Workspace {
      * during serialisation.
      */
     private static final long serialVersionUID = 4278080741841613065L;
+    /**
+     * Maximum value of importance for a task. Currently set to 10.
+     */
+    private static final byte MAXIMPORTANCE = 10;
+    /**
+     * Minimum value of importance for a task. Currently set to 0, this avoids negative importance.
+     */
+    private static final byte MINIMPORTANCE = 0;
 
     // Constructors
      /**
@@ -58,25 +70,8 @@ public class Action implements Workspace {
         this();
         this.name = nm;
     }
-    /**
-     * Returns true if Action is complete.
-     *
-     * @return  True if Action complete, false otherwise
-     */
-    @Override
-    public boolean isWorkspaceComplete() {
-        return isComplete;
-    }
-    /**
-     * Flips completion status and returns new status.
-     *
-     * @return  True if task is complete, false otherwise
-     */
-    @Override
-    public boolean flipCompletionStatus() {
-        isComplete = !isComplete;
-        return isComplete;
-    }
+
+    // Getters
     /**
      * Returns name of action.
      *
@@ -105,6 +100,14 @@ public class Action implements Workspace {
         return this.dueDate;
     }
     /**
+     * Returns priority of Action.
+     *
+     * @return  Priority of Action
+     */
+    public byte getPriority() {
+        return this.priority;
+    }
+    /**
      * Returns description of task.
      *
      * @return  Description of task
@@ -121,6 +124,8 @@ public class Action implements Workspace {
     public Workspace getParent() {
         return this.parent;
     }
+
+    // Setters
     /**
      * Sets the parent of current task.
      *
@@ -129,6 +134,38 @@ public class Action implements Workspace {
     private void setParent(final Workspace parent) {
         this.parent = parent;
 
+    }
+    /**
+     * Sets dueDate of Action.
+     *
+     * @param   dt  Date Time to set dueDate to
+     */
+    @Override
+    public void setDueDate(final LocalDateTime dt) {
+        this.dueDate = dt;
+    }
+    /**
+     * Sets priority of Action.
+     *
+     * @param   imp Importance/Priority of Action
+     */
+    @Override
+    public void setPriority(final int imp) {
+        // Cannot have negative importacne or importance greater than 10
+        if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
+            throw new InvalidPriorityException("Cannot have a negative importance or importance greater than " + MAXIMPORTANCE);
+        } else {
+            this.priority = (byte) imp;
+        }
+    }
+    /**
+     * Renames Action.
+     *
+     * @param   name    Name to rename Action to.
+     */
+    @Override
+    public void setName(final String name) {
+        this.name = name;
     }
     /**
      * Sets the due date of the Action.
@@ -147,10 +184,12 @@ public class Action implements Workspace {
      *
      * @param   description     Description of Action
      */
+    @Override
     public void setDescription(final String description) {
         this.description = description;
     }
 
+    // Implentation Methods
     /**
      * Moves current action into a new workspace.
      *
@@ -168,7 +207,6 @@ public class Action implements Workspace {
         target.addToTask(this);
         return true;
     }
-
     /**
      * Overrides the toString method called when printing the object to stdout. Currently prints
      * the name, description and completion status of action.
@@ -182,7 +220,6 @@ public class Action implements Workspace {
         msg.append("\n -- " + this.description);
         return msg.toString();
     }
-
     /**
      * Since an Action does not have any sub workspaces, you cannot search it's list of workspaces.
      * As a result, this method will always return false.
@@ -194,7 +231,6 @@ public class Action implements Workspace {
     public boolean searchWorkspaces(final Workspace workspace) {
         return false;
     }
-
     /**
      * Override of Object equals method. Two Actions are equal if they share the same name, dueDate and
      * parent. Note, the parents must be the same instance.
@@ -213,7 +249,6 @@ public class Action implements Workspace {
             return false;
         }
     }
-
     /**
      * Deletes current Action by removing itself from its parents list then setting its parent to null.
      *
@@ -224,5 +259,24 @@ public class Action implements Workspace {
         parent.getTasks().remove(this);
         this.setParent(null);
         return true;
+    }
+    /**
+     * Returns true if Action is complete.
+     *
+     * @return  True if Action complete, false otherwise
+     */
+    @Override
+    public boolean isWorkspaceComplete() {
+        return isComplete;
+    }
+    /**
+     * Flips completion status and returns new status.
+     *
+     * @return  True if task is complete, false otherwise
+     */
+    @Override
+    public boolean flipCompletionStatus() {
+        isComplete = !isComplete;
+        return isComplete;
     }
 }

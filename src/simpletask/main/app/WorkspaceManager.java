@@ -1,6 +1,7 @@
 package simpletask.main.app;
 
 import simpletask.main.entities.Workspace;
+import simpletask.main.entities.InvalidPriorityException;
 import simpletask.main.entities.Task;
 
 /**
@@ -28,7 +29,6 @@ public class WorkspaceManager {
         rootWorkspace = new Task(name);
         currentWorkspace = rootWorkspace;
     };
-
     /**
      * Given a path to a file containing a valid workspace, it will load it in.
      *
@@ -39,7 +39,6 @@ public class WorkspaceManager {
 
         return true;
     }
-
     /**
      * Adds a workspace into the currentWorkspaces task list if it is a Task.
      *
@@ -54,7 +53,6 @@ public class WorkspaceManager {
             return false;
         }
     }
-
     /**
      * Given a workspace, it will set the currentWorkspace to it if it is in the currentWorkspace's
      * list of workspaces. Returns new currentWorkspace.
@@ -71,14 +69,12 @@ public class WorkspaceManager {
             return currentWorkspace;
         }
     }
-
     /**
      * Moves currentWorkspace back to root workspace.
      */
     public void moveHome() {
         currentWorkspace = rootWorkspace;
     }
-
     /**
      * Deletes the currentWorkspace and all its sub Workspaces if any.
      *
@@ -87,7 +83,6 @@ public class WorkspaceManager {
     public boolean deleteCurrentWorkspace() {
         return currentWorkspace.delete();
     }
-
     /**
      * Deletes the workspace in the currentWorkspaces list of workspaces. If the currentWorkspace
      * is not a Task, nothing happens and false is returned.
@@ -101,5 +96,30 @@ public class WorkspaceManager {
         } else {
             return false;
         }
+    }
+    /**
+     * Sets name of currentWorkspace.
+     *
+     * @param name  Name of workspace.
+     */
+    public void setName(final String name) {
+        currentWorkspace.setName(name);
+    }
+    /**
+     * Set description of currentWorkspace.
+     *
+     * @param   msg Description of workspace
+     */
+    public void setDescription(final String msg) {
+        currentWorkspace.setDescription(msg);
+    }
+    /**
+     * Set priority of currentWorkspace.
+     *
+     * @param priority  New priority of workspace
+     * @throws          InvalidPriorityException if it fails
+     */
+    public void setPrioirty(final int priority) throws InvalidPriorityException {
+        currentWorkspace.setPriority(priority);
     }
 }
