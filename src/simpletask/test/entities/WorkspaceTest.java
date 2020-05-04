@@ -6,6 +6,7 @@ import simpletask.main.entities.InvalidPriorityException;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
 
@@ -115,10 +116,32 @@ public class WorkspaceTest {
         // Act
         t1.createWorkspace(temp);
         t1.createWorkspace(tempAction);
-        t1.deleteWorkspace(temp);
-        t1.deleteWorkspace(tempAction);
+        t1.removeWorkspace(temp);
+        t1.removeWorkspace(tempAction);
         // Assert
         assertEquals(0, t1.getTasks().size(), "Workspace should contain no tasks after removing all tasks");
+    }
+    /**
+     * Tests that delete works for Task object.
+     */
+    @Test
+    public void testTaskDelete() {
+        // Arrange
+        Task t2 = new Task("Task 1");
+        Task t3 = new Task("Sub Task");
+        Action a1 = new Action("Action");
+        Action a2 = new Action("Sub Action");
+        t1.createWorkspace(t2);
+        t1.createWorkspace(a1);
+        t2.createWorkspace(t3);
+        t2.createWorkspace(a2);
+        // Act
+        t1.delete();
+        // Assert
+        assertNull(t2.getParent());
+        assertNull(t3.getParent());
+        assertNull(a1.getParent());
+        assertNull(a2.getParent());
     }
     /**
      * Tests if Tasks importance gets set correctly.

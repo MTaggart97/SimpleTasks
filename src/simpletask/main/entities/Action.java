@@ -162,7 +162,7 @@ public class Action implements Workspace {
         Workspace oldParent = this.getParent();
         // Ensure oldParent is a Task before attempting to remove from its list.
         if (oldParent instanceof Task && oldParent != null) {
-            ((Task) oldParent).deleteWorkspace(this);
+            ((Task) oldParent).removeWorkspace(this);
         }
         this.setParent(target);
         target.addToTask(this);
@@ -212,5 +212,17 @@ public class Action implements Workspace {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Deletes current Action by removing itself from its parents list then setting its parent to null.
+     *
+     * @return  True if Action deletes successfully, false otherwise
+     */
+    @Override
+    public boolean delete() {
+        parent.getTasks().remove(this);
+        this.setParent(null);
+        return true;
     }
 }

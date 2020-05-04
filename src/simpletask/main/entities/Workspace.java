@@ -60,4 +60,11 @@ public interface Workspace extends Serializable {
      * @return          True if workspace is found, false otherwise.
      */
     boolean searchWorkspaces(Workspace workspace);
+    /**
+     * Responisble for deleting the current Workspace. Each workspace is
+     * responisble for removing any resources that it is using.
+     *
+     * @return  True if workspace is delete successfully, false otherwise.
+     */
+    boolean delete();
 }

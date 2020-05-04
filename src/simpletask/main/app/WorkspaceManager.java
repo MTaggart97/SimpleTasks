@@ -9,11 +9,13 @@ import simpletask.main.entities.Task;
  */
 public class WorkspaceManager {
     /**
-     * Users main workspace that the WorkspaceManager manages.
+     * Users main workspace that the WorkspaceManager manages. Once set, it can never be reset. This
+     * is to preven the user from losing their root workspace.
      */
     private final Workspace rootWorkspace;
     /**
-     * Current workspace that user is in.
+     * Current workspace that user is in. This workspace changes regurlarly as the user moves between
+     * workspaces.
      */
     private Workspace currentWorkspace = null;
     /**
@@ -69,10 +71,35 @@ public class WorkspaceManager {
             return currentWorkspace;
         }
     }
+
     /**
      * Moves currentWorkspace back to root workspace.
      */
     public void moveHome() {
         currentWorkspace = rootWorkspace;
+    }
+
+    /**
+     * Deletes the currentWorkspace and all its sub Workspaces if any.
+     *
+     * @return  True if workspace is removed, false otherwise.
+     */
+    public boolean deleteCurrentWorkspace() {
+        return currentWorkspace.delete();
+    }
+
+    /**
+     * Deletes the workspace in the currentWorkspaces list of workspaces. If the currentWorkspace
+     * is not a Task, nothing happens and false is returned.
+     *
+     * @param workspace Workspace to remove
+     * @return          True if workspace is removed, false if not or if currentWorkspace is an Action
+     */
+    public boolean deleteWorkspace(final Workspace workspace) {
+        if (currentWorkspace instanceof Task) {
+            return ((Task) currentWorkspace).removeWorkspace(workspace);
+        } else {
+            return false;
+        }
     }
 }

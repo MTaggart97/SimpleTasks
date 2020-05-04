@@ -360,14 +360,17 @@ public class Task implements Workspace {
     }
 
     /**
-     * Removes workspace from list of tasks.
+     * Removes workspace from list of tasks if the workspace is there.
      *
      * @param workspace Workspace to remove from list of tasks
      * @return          True if workspace successfully removed
      */
-    public boolean deleteWorkspace(final Workspace workspace) {
-        this.tasks.remove(workspace);
-        return true;
+    public boolean removeWorkspace(final Workspace workspace) {
+        boolean found = this.searchWorkspaces(workspace);
+        if (found) {
+            return workspace.delete();
+        }
+        return found;
     }
     /**
      * Adds workspace to list of tasks.
@@ -377,5 +380,24 @@ public class Task implements Workspace {
      */
     protected boolean addToTask(final Workspace workspace) {
         return this.tasks.add(workspace);
+    }
+    /**
+     * Deletes Task by first deleting all Workspaces in its list. It then tells its parent
+     * to remove it from their list and sets its parent to null.
+     *
+     * @return  True if Task is successfully deleted
+     */
+    @Override
+    public boolean delete() {
+        boolean fin = false;
+        while (!tasks.isEmpty()) {
+            fin = tasks.get(0).delete();
+            if (!fin) {  // If delete fails, stop immediatly
+                return fin;
+            }
+        }
+        parent.getTasks().remove(this);
+        this.setParent(null);
+        return true;
     }
 }
