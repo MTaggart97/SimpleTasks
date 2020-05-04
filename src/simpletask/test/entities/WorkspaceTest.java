@@ -4,6 +4,7 @@ import simpletask.main.entities.Task;
 import simpletask.main.entities.Action;
 import simpletask.main.entities.InvalidPriorityException;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -209,8 +210,8 @@ public class WorkspaceTest {
         // Arrange
         final int totalSubWS = 2;
         Task ws1 = new Task("First");
-        Task subTask = new Task ("Sub Task");
-        Action subAction = new Action ("Sub Action");
+        Task subTask = new Task("Sub Task");
+        Action subAction = new Action("Sub Action");
         ws1.createWorkspace(subTask);
         ws1.createWorkspace(subAction);
         Task ws2 = new Task("Second");
@@ -226,5 +227,182 @@ public class WorkspaceTest {
         assertEquals(ws2, subAction.getParent(), "Ensure sub action has correct parent");
     }
 
-    //TODO: Create a few tests for the new .equals methods.
+    /**
+     * Tests that two tasks with the same name, due date and parent are considered
+     * equal.
+     */
+    @Test
+    public void testTaskNameEquality() {
+        // Arrange
+        Task t2 = new Task("Dup");
+        Task t3 = new Task("Dup");
+        // Act
+        t2.setDueDate(0, 1, 1, 0, 0);
+        t3.setDueDate(0, 1, 1, 0, 0);
+        t1.createWorkspace(t2);
+        t1.createWorkspace(t3);
+        // Assert
+        assertEquals(t2, t3, "Ensure two Tasks are equal");
+    }
+
+    /**
+     * Ensures that tasks which do not share a name.
+     */
+    @Test
+    public void testTaskNotEqualName() {
+        // Arrange
+        Task t2 = new Task("Task 1");
+        Task t3 = new Task("Task 2");
+        // Act -- Ensure parent and dueDates are same
+        t1.createWorkspace(t2);
+        t1.createWorkspace(t3);
+        t2.setDueDate(0, 1, 1, 0, 0);
+        t3.setDueDate(0, 1, 1, 0, 0);
+        // Assert
+        assertNotEquals("Ensure that two tasks with different names are not equal", t2, t3);
+    }
+
+    /**
+     * Ensures that tasks which do not share a parent.
+     */
+    @Test
+    public void testTaskNotEqualParent() {
+        // Arrange
+        Task t2 = new Task("Task");
+        Task t3 = new Task("Task");
+        // Act -- Ensure dueDate and names are same
+        t2.setDueDate(0, 1, 1, 0, 0);
+        t3.setDueDate(0, 1, 1, 0, 0);
+        // Assert
+        assertNotEquals("Ensure that two tasks with different parents are not equal", t2, t3);
+    }
+
+    /**
+     * Ensures that tasks which do not share a due date.
+     */
+    @Test
+    public void testTaskNotEqualDueDate() {
+        // Arrange
+        Task t2 = new Task("Task");
+        Task t3 = new Task("Task");
+        // Act -- Ensure dueDates are different
+        t1.createWorkspace(t2);
+        t1.createWorkspace(t3);
+        t2.setDueDate(0, 2, 1, 0, 0);
+        t3.setDueDate(0, 1, 1, 0, 0);
+        // Assert
+        assertNotEquals("Ensure that two tasks with different dueDates are not equal", t2, t3);
+    }
+
+    /**
+     * Ensures that actions which do not share a name.
+     */
+    @Test
+    public void testActionNotEqualName() {
+        // Arrange
+        Action t2 = new Action("Action 1");
+        Action t3 = new Action("Action 2");
+        // Act -- Ensure parent and dueDates are same
+        t1.createWorkspace(t2);
+        t1.createWorkspace(t3);
+        t2.setDueDate(0, 1, 1, 0, 0);
+        t3.setDueDate(0, 1, 1, 0, 0);
+        // Assert
+        assertNotEquals("Ensure that two actions with different names are not equal", t2, t3);
+    }
+
+    /**
+     * Ensures that actions which do not share a parent.
+     */
+    @Test
+    public void testActionNotEqualParent() {
+        // Arrange
+        Action t2 = new Action("Action");
+        Action t3 = new Action("Action");
+        // Act -- Ensure dueDate and names are same
+        t2.setDueDate(0, 1, 1, 0, 0);
+        t3.setDueDate(0, 1, 1, 0, 0);
+        // Assert
+        assertNotEquals("Ensure that two actions with different parents are not equal", t2, t3);
+    }
+
+    /**
+     * Ensures that actions which do not share a due date.
+     */
+    @Test
+    public void testActionNotEqualDueDate() {
+        // Arrange
+        Action t2 = new Action("Action");
+        Action t3 = new Action("Action");
+        // Act -- Ensure dueDates are different
+        t1.createWorkspace(t2);
+        t1.createWorkspace(t3);
+        t2.setDueDate(0, 2, 1, 0, 0);
+        t3.setDueDate(0, 1, 1, 0, 0);
+        // Assert
+        assertNotEquals("Ensure that two actions with different dueDates are not equal", t2, t3);
+    }
+
+    /**
+     * Ensure Action and Task with same name, due date and parent are not equal.
+     */
+    @Test
+    public void testActionAndTaskNotEqual() {
+        // Arrange
+        Task t2 = new Task("Dup");
+        Action a2 = new Action("Dup");
+        // Act
+        t1.createWorkspace(t2);
+        t1.createWorkspace(a2);
+        t2.setDueDate(0, 1, 1, 0, 0);
+        a2.setDueDate(0, 1, 1, 0, 0);
+        // Assert
+        assertNotEquals("Ensure that similar Task and Action are not equal", t2, a2);
+        assertNotEquals("Ensure that similar Action and Task are not equal", a2, t2);
+    }
+
+    /**
+     * Tests to see if workspace search for Task objects works.
+     */
+    @Test
+    public void testTaskSearch() {
+        // Arrange
+        Task t2 = new Task("Task 1");
+        Task t3 = new Task("Task 2");
+        Action a1 = new Action("Action 1");
+        Action a2 = new Action("Action 2");
+
+        t1.createWorkspace(t2);
+        t1.createWorkspace(t3);
+        t1.createWorkspace(a1);
+        t1.createWorkspace(a2);
+        // Act
+        boolean foundT2 = t1.searchWorkspaces(t2);
+        boolean foundA2 = t1.searchWorkspaces(a2);
+        boolean randomTask = t1.searchWorkspaces(new Task("Random"));
+        boolean randomAction = t1.searchWorkspaces(new Action("Random"));
+        // Assert
+        assertEquals(true, foundT2, "Look for Task in list of workspaces");
+        assertEquals(true, foundA2, "Look for Action in list of workspaces");
+        assertEquals(false, randomTask, "Look for Task that is not in list of workspaces");
+        assertEquals(false, randomAction, "Look for Action that is not in list of workspaces");
+    }
+
+    /**
+     * Tests to see if workspace search for Action objects works. This should always return false
+     * as an Action does not contain a list of Workspaces.
+     */
+    @Test
+    public void testActionSearch() {
+        // Arrange
+        Action a1 = new Action("Base Action");
+        Action a2 = new Action("Action 1");
+        Task t2 = new Task("Task 1");
+        // Act
+        boolean foundA2 = a1.searchWorkspaces(a2);
+        boolean foundT2 = a1.searchWorkspaces(t2);
+        // Assert
+        assertEquals(false, foundA2, "Action should never be found in Action list of tasks");
+        assertEquals(false, foundT2, "Task should never be found in Action list of tasks");
+    }
 }
