@@ -2,6 +2,8 @@ package simpletask.main.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class that describes a singular unit of work. It cannot be broken up into
@@ -83,7 +85,8 @@ public class Action implements Workspace {
     }
     /**
      * This should simply return itself.
-     * @return An array list containing it
+     *
+     * @return An array list containing itself
      */
     @Override
     public ArrayList<Workspace> getTasks() {
@@ -104,8 +107,9 @@ public class Action implements Workspace {
      *
      * @return  Priority of Action
      */
-    public byte getPriority() {
-        return this.priority;
+    @Override
+    public int getPriority() {
+        return (int) this.priority;
     }
     /**
      * Returns description of task.
@@ -123,6 +127,21 @@ public class Action implements Workspace {
     @Override
     public Workspace getParent() {
         return this.parent;
+    }
+    /**
+     * Returns details of this Task.
+     *
+     * @return  Map of details
+     */
+    @Override
+    public Map<String, String> getDetails() {
+        Map<String, String> dict = new HashMap<String, String>();
+
+        dict.put("Name", this.getName());
+        dict.put("Priority", String.valueOf(this.getPriority()));
+        dict.put("Type", "Action");
+
+        return dict;
     }
 
     // Setters

@@ -1,7 +1,6 @@
 package simpletask.main.app;
 
 import simpletask.main.entities.Task;
-import simpletask.main.entities.Action;
 import simpletask.main.entities.Options;
 import simpletask.main.entities.Workspace;
 
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -41,11 +41,7 @@ public final class App {
         Scanner sc = new Scanner(System.in);
         // Create your initial workspace
         System.out.print("Enter the name of your task: ");
-        Workspace workspace = new Task(sc.nextLine());
-
-        // Load workspace
-        // System.out.println("Loading workspace from SavedWorkspace/workspace.ser");
-        // Workspace workspace = loadWorkspace("SavedWorkspace/workspace.ser");
+        WorkspaceManager workspace = new WorkspaceManager(sc.nextLine());
 
         Options option;
         String st;
@@ -62,16 +58,19 @@ public final class App {
 
             switch (option) {
                 case ADD:
-                    addWorkspace((Task) workspace, sc);
+                    addWorkspace(workspace, sc);
                     break;
                 case MOVE:
-                    workspace = moveIntoWorkspace(workspace, sc);
+                    moveIntoWorkspace(workspace, sc);
                     break;
                 case PRINT:
                     System.out.println(workspace);
                     break;
                 case SAVE:
-                    saveWorkspace(workspace);
+                    debugLog("Not yet implemented");
+                    break;
+                case DELETE:
+                    deleteWorkspace(workspace, sc);
                     break;
                 case QUIT:
                     quitSession(sc);
@@ -85,14 +84,14 @@ public final class App {
     }
 
     /**
-     * Adds a workspace into the the Task passed in.
+     * Adds a workspace into the the workspace passed in.
      *
      * @param workspace The parent task
      * @param sc        Scanner to read input from
      */
-    private static void addWorkspace(final Task workspace, final Scanner sc) {
+    private static void addWorkspace(final WorkspaceManager workspace, final Scanner sc) {
         System.out.print("Enter your subtask: ");
-        workspace.createWorkspace(new Task(sc.nextLine()));
+        workspace.addWorkspace(new Task(sc.nextLine()));
     }
 
     /**
@@ -103,27 +102,41 @@ public final class App {
      * @param sc        Scanner to read input from
      * @return          The workspace the user moved into
      */
-    private static Workspace moveIntoWorkspace(final Workspace workspace, final Scanner sc) {
-        Workspace newWorkspace = workspace;
-        System.out.println("0 " + workspace.getParent().getName());
-        ArrayList<Workspace> act = workspace.getTasks();
+    private static boolean moveIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
+        System.out.println("0 " + workspace.getParent().get("Name"));
+        ArrayList<Map<String, String>> act = workspace.getTasks();
         for (int i = 0; i < act.size(); i++) {
-            System.out.println((i + 1) + " " + act.get(i).getName());
+            System.out.println((i + 1) + " " + act.get(i).get("Name"));
         }
         System.out.print("Choose a task to move into: ");
         int i = Integer.parseInt(sc.nextLine());
         if (i == 0) {
-            newWorkspace = workspace.getParent();
+            workspace.moveUp();
         } else {
             try {
-                newWorkspace = act.get(i - 1);
+                workspace.moveIntoWorkspace(i - 1);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println(i + " is not a valid option");
             }
         }
-        return newWorkspace;
+        return true;
     }
-
+    /**
+     * Displays list of workspaces in current Tasks list. Prompts the user to delete one. It then
+     * removes that workspace.
+     *
+     * @param workspace WorkspaceManager responsibe for deleting workspace
+     * @param sc        Scanner used for input
+     */
+    private static void deleteWorkspace(final WorkspaceManager workspace, final Scanner sc) {
+        System.out.println("Choose workspace to delete: ");
+        ArrayList<Map<String, String>> act = workspace.getTasks();
+        for (int i = 0; i < act.size(); i++) {
+            System.out.println((i + " " + act.get(i).get("Name")));
+        }
+        int i = Integer.parseInt(sc.nextLine());
+        workspace.deleteWorkspace(i);
+    }
     /**
      * Save the workspace.
      *
@@ -177,7 +190,7 @@ public final class App {
      */
     private static void quitSession(final Scanner sc) {
         System.out.println("Exiting session...");
-         sc.close();
+        sc.close();
     }
 
     /**

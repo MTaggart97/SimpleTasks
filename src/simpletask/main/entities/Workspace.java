@@ -3,6 +3,9 @@ package simpletask.main.entities;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
+
+//TODO Review which methods are actually needed
 
 /**
  * An interface used by all task classes. A workspace is anywhere that stores
@@ -47,6 +50,18 @@ public interface Workspace extends Serializable {
      * @return  Parent of current workspace
      */
     Workspace getParent();
+    /**
+     * Returns some details of Workspace.
+     *
+     * @return  A Map contianing some details for this workspace
+     */
+    Map<String, String> getDetails();
+    /**
+     * Gets priority for this Workspace.
+     *
+     * @return  Priority of workspace
+     */
+    int getPriority();
     /**
      * Moves the current workspace into another Tasks list.
      *

@@ -1,8 +1,15 @@
 package simpletask.main.app;
 
 import simpletask.main.entities.Workspace;
+
+import java.util.ArrayList;
+import java.util.Map;
+
 import simpletask.main.entities.InvalidPriorityException;
 import simpletask.main.entities.Task;
+
+//TODO Move this into the entities package. Then make Task and Action methods protected. Outside access to Workspace
+//TODO instances will be through the dictionaries
 
 /**
  * This class will be responsible for managing the workspace. Through it, you can add
@@ -30,12 +37,50 @@ public class WorkspaceManager {
         currentWorkspace = rootWorkspace;
     };
     /**
-     * Given a path to a file containing a valid workspace, it will load it in.
+     * Returns a map of details of the currentWorkspace's parent. Keys include:
+     *  Name    :   Name of Parent
+     *  Priority:   Prioity of Task
+     *  Type    :   Will always be "Task" as a parent cannot be an Action
+     *  Tasks   :   Number of tasks in parents list
+     *
+     * @return  Current workspace's parent
+     */
+    public Map<String, String> getParent() {
+        Workspace parent = currentWorkspace.getParent();
+        return parent.getDetails();
+    }
+    /**
+     * Returns a list of summary details about the current workspaces tasks.
+     *
+     * @return  Details on the current Workspaces tasks
+     */
+    public ArrayList<Map<String, String>> getTasks() {
+        ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
+
+        for (Workspace w: currentWorkspace.getTasks()) {
+            array.add(w.getDetails());
+        }
+
+        return array;
+    }
+    /**
+     * Given a path to a file containing a valid workspace, it will load it in. That workspace
+     * will become the rootWorkspace.
      *
      * @param path  Path to workspace
      * @return      True if workspace loads successfully, false otherwise
      */
     public boolean loadWorkspace(final String path) {
+
+        return true;
+    }
+    /**
+     * Given a path to a valid location, it will save the rootWorkspace to that location.
+     *
+     * @param   path    Path to save rootWorkspace to.
+     * @return          True if workspace saved successfully.
+     */
+    public boolean save(final String path) {
 
         return true;
     }
@@ -54,26 +99,32 @@ public class WorkspaceManager {
         }
     }
     /**
-     * Given a workspace, it will set the currentWorkspace to it if it is in the currentWorkspace's
-     * list of workspaces. Returns new currentWorkspace.
+     * Given an integer, this will move the current workspace into that position in its
+     * list of tasks. If the position doesn't exist, then nothing happens.
      *
-     * @param workspace Workspace to move into
+     * @param pos       Position in subTasks of Workspace to move into
      * @return          The workspace the user moved into
      */
-    public Workspace moveIntoWorkspace(final Workspace workspace) {
-        boolean found = currentWorkspace.searchWorkspaces(workspace);
-        if (found) {
+    public Workspace moveIntoWorkspace(final int pos) {
+        try {
+            Workspace workspace = currentWorkspace.getTasks().get(pos);
             currentWorkspace = workspace;
-            return currentWorkspace;
-        } else {
-            return currentWorkspace;
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Doing nothing");
         }
+        return currentWorkspace;
     }
     /**
      * Moves currentWorkspace back to root workspace.
      */
     public void moveHome() {
         currentWorkspace = rootWorkspace;
+    }
+    /**
+     * Moves currentWorkspace up one.
+     */
+    public void moveUp() {
+        currentWorkspace = currentWorkspace.getParent();
     }
     /**
      * Deletes the currentWorkspace and all its sub Workspaces if any.
@@ -84,18 +135,37 @@ public class WorkspaceManager {
         return currentWorkspace.delete();
     }
     /**
-     * Deletes the workspace in the currentWorkspaces list of workspaces. If the currentWorkspace
-     * is not a Task, nothing happens and false is returned.
+     * Deletes the workspace in the currentWorkspaces list of workspaces at position pos. If the currentWorkspace
+     * is not a Task, nothing happens and false is returned. Fails if index entered is out of bounds.
      *
-     * @param workspace Workspace to remove
+     * @param pos       Position of workspace to remove
      * @return          True if workspace is removed, false if not or if currentWorkspace is an Action
      */
-    public boolean deleteWorkspace(final Workspace workspace) {
-        if (currentWorkspace instanceof Task) {
+    public boolean deleteWorkspace(final int pos) {
+        try {
+            Workspace workspace = currentWorkspace.getTasks().get(pos);
+            if (!(currentWorkspace instanceof Task)) {
+                return false;
+            }
             return ((Task) currentWorkspace).removeWorkspace(workspace);
-        } else {
+        } catch (IndexOutOfBoundsException e) {
             return false;
         }
+    }
+    /**
+     * Moves currentWorkspace into target if the target is a Task and if the target
+     * exists under the current rootWorkspace.
+     *
+     * @param   target  Workspace to move currentWorkspace into
+     * @return          True if workspace is move successfully
+     */
+    public boolean moveCurrentWorkspace(final Workspace target) {
+        // Cannot move currentWorkspace if target is not a Task or if it doesn't exist
+        if (!(target instanceof Task) || !rootWorkspace.searchWorkspaces(target)) {
+            return false;
+        }
+
+        return currentWorkspace.moveWorkspace((Task) target);
     }
     /**
      * Sets name of currentWorkspace.
@@ -117,9 +187,37 @@ public class WorkspaceManager {
      * Set priority of currentWorkspace.
      *
      * @param priority  New priority of workspace
-     * @throws          InvalidPriorityException if it fails
+     * @return          True if priority set successfully, false otherwise
      */
-    public void setPrioirty(final int priority) throws InvalidPriorityException {
-        currentWorkspace.setPriority(priority);
+    public boolean setPrioirty(final int priority) {
+        try {
+            currentWorkspace.setPriority(priority);
+            return true;
+        } catch (InvalidPriorityException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    /**
+     * Creates a string representing the  currentWorkspace. If current workspace is a Task, it
+     * will first add all its sub tasks.
+     *
+     * @return  Message to display
+     */
+    private String display() {
+        StringBuilder msg = new StringBuilder(currentWorkspace.getName() + "\n");
+        for (Workspace w: currentWorkspace.getTasks()) {
+            msg.append(w.toString());
+        }
+        return msg.toString();
+    }
+    /**
+     * Override of default Object toString method. Redirects to display.
+     *
+     * @return  Message to display when printing this object.
+     */
+    @Override
+    public String toString() {
+        return display();
     }
 }

@@ -2,6 +2,8 @@ package simpletask.main.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A task is a workspace that can contain other workspaces within
@@ -103,6 +105,7 @@ public class Task implements Workspace {
      *
      * @return  Priority of task
      */
+    @Override
     public int getPriority() {
         return (int) this.priority;
     }
@@ -139,6 +142,22 @@ public class Task implements Workspace {
     @Override
     public Workspace getParent() {
         return this.parent;
+    }
+    /**
+     * Returns details of this Task.
+     *
+     * @return  Map of details
+     */
+    @Override
+    public Map<String, String> getDetails() {
+        Map<String, String> dict = new HashMap<String, String>();
+
+        dict.put("Name", this.getName());
+        dict.put("Priority", String.valueOf(this.getPriority()));
+        dict.put("Type", "Task");
+        dict.put("Tasks", String.valueOf(this.getTasks().size()));
+
+        return dict;
     }
 
     // Setters
@@ -286,9 +305,10 @@ public class Task implements Workspace {
     @Override
     public String toString() {
         StringBuilder display = new StringBuilder(DISPLAYHEADER);
-        display.append(this.name);
+        display.append("| " + this.name + "\n| ");
         for (Workspace a: tasks) {
-            display.append("\n  * " + ((Task) a).display("    "));
+            // display.append("\n  * " + ((Task) a).display("    "));
+            display.append(a.getName() + "\t");
         }
         display.append(DISPLAYHEADER);
         return display.toString();

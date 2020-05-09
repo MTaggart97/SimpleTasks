@@ -8,6 +8,7 @@ package simpletask.main.entities;
  * Move      - Move into a Workspace
  * Print     - Display Workspace
  * Save      - Save Workspace
+ * Delete    - Delete Workspace
  * DoNothing - Does nothing
  *
  * @author Matthew Taggart
@@ -34,6 +35,10 @@ public enum Options {
      * Option to save current workspace.
      */
     SAVE,
+    /**
+     * Option to delete current workspace.
+     */
+    DELETE,
     /**
      * Do nothing.
      */
