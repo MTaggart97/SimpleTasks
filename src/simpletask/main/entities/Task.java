@@ -354,13 +354,17 @@ public class Task implements Workspace {
         return true;
     }
     /**
-     * Searches the list of tasks for the workspace entered.
+     * Searches the list of tasks for the workspace entered. Returns true if workspace
+     * entered is the same as this workspace.
      *
      * @param   workspace   Workspace to find
      * @return              True if found, false otherwise.
      */
     @Override
     public boolean searchWorkspaces(final Workspace workspace) {
+        if (this.equals(workspace)) {
+            return true;
+        }
         for (Workspace w: this.getTasks()) {
             if (w.equals(workspace)) {
                 return true;

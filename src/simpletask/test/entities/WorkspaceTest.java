@@ -401,6 +401,18 @@ public class WorkspaceTest {
         assertEquals(false, randomAction, "Look for Action that is not in list of workspaces");
     }
     /**
+     * Tests to see if workspace search for Task objects works when looking for itself.
+     */
+    @Test
+    public void testTaskSearchSelf() {
+        // Arrange
+
+        // Act
+        boolean foundItself = t1.searchWorkspaces(t1);
+        // Assert
+        assertEquals(true, foundItself, "Ensure that true is returned when looking for itself");
+    }
+    /**
      * Tests to see if workspace search for Action objects works. This should always return false
      * as an Action does not contain a list of Workspaces.
      */

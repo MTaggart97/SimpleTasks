@@ -64,6 +64,38 @@ public class WorkspaceManager {
         return array;
     }
     /**
+     * Returns details of the Workspace at the given path.
+     *
+     * @param   path    Path to workspace
+     * @return          Dictionary containing details of workspace at path
+     */
+    public Map<String, String> detailsOf(final ArrayList<Integer> path) {
+        Workspace w = rootWorkspace;
+        for (Integer i: path) {
+            w = w.getTasks().get(i);
+        }
+        return w.getDetails();
+    }
+    /**
+     * Returns a list of details for the Task at the given path.
+     *
+     * @param   path    Path to workspace
+     * @return          List of dictionaries containing details of workspace at path
+     */
+    public ArrayList<Map<String, String>> taskDetailsOf(final ArrayList<Integer> path) {
+        Workspace w = rootWorkspace;
+        for (Integer i: path) {
+            w = w.getTasks().get(i);
+        }
+
+        ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
+        for (Workspace wrk: w.getTasks()) {
+            array.add(wrk.getDetails());
+        }
+
+        return array;
+    }
+    /**
      * Given a path to a file containing a valid workspace, it will load it in. That workspace
      * will become the rootWorkspace.
      *
@@ -105,7 +137,7 @@ public class WorkspaceManager {
      * @param pos       Position in subTasks of Workspace to move into
      * @return          The workspace the user moved into
      */
-    public Workspace moveIntoWorkspace(final int pos) {
+    public Workspace stepIntoWorkspace(final int pos) {
         try {
             Workspace workspace = currentWorkspace.getTasks().get(pos);
             currentWorkspace = workspace;
@@ -117,13 +149,13 @@ public class WorkspaceManager {
     /**
      * Moves currentWorkspace back to root workspace.
      */
-    public void moveHome() {
+    public void home() {
         currentWorkspace = rootWorkspace;
     }
     /**
      * Moves currentWorkspace up one.
      */
-    public void moveUp() {
+    public void stepUp() {
         currentWorkspace = currentWorkspace.getParent();
     }
     /**
@@ -154,12 +186,17 @@ public class WorkspaceManager {
     }
     /**
      * Moves currentWorkspace into target if the target is a Task and if the target
-     * exists under the current rootWorkspace.
+     * exists under the current rootWorkspace. The target is got from the inputted path
+     * which is directions to the task from the rootWorkspace
      *
-     * @param   target  Workspace to move currentWorkspace into
+     * @param   path    Path to Task
      * @return          True if workspace is move successfully
      */
-    public boolean moveCurrentWorkspace(final Workspace target) {
+    public boolean moveCurrentWorkspace(final ArrayList<Integer> path) {
+        Workspace target = rootWorkspace;
+        for (Integer i: path) {
+            target = target.getTasks().get(i);
+        }
         // Cannot move currentWorkspace if target is not a Task or if it doesn't exist
         if (!(target instanceof Task) || !rootWorkspace.searchWorkspaces(target)) {
             return false;

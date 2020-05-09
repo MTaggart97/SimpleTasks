@@ -60,6 +60,9 @@ public final class App {
                 case ADD:
                     addWorkspace(workspace, sc);
                     break;
+                case STEP:
+                    stepIntoWorkspace(workspace, sc);
+                    break;
                 case MOVE:
                     moveIntoWorkspace(workspace, sc);
                     break;
@@ -93,33 +96,60 @@ public final class App {
         System.out.print("Enter your subtask: ");
         workspace.addWorkspace(new Task(sc.nextLine()));
     }
-
     /**
-     * Given a workspace, give the option to the user to move up into its parent workspace
+     * Given a workspace, give the option to the user to step up into its parent workspace
      * or into one of its sub tasks if there are any.
      *
      * @param workspace Current workspace
      * @param sc        Scanner to read input from
-     * @return          The workspace the user moved into
+     * @return          The workspace the user steps into
      */
-    private static boolean moveIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
+    private static boolean stepIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
         System.out.println("0 " + workspace.getParent().get("Name"));
         ArrayList<Map<String, String>> act = workspace.getTasks();
         for (int i = 0; i < act.size(); i++) {
             System.out.println((i + 1) + " " + act.get(i).get("Name"));
         }
-        System.out.print("Choose a task to move into: ");
+        System.out.print("Choose a task to step into: ");
         int i = Integer.parseInt(sc.nextLine());
         if (i == 0) {
-            workspace.moveUp();
+            workspace.stepUp();
         } else {
             try {
-                workspace.moveIntoWorkspace(i - 1);
+                workspace.stepIntoWorkspace(i - 1);
             } catch (IndexOutOfBoundsException e) {
                 System.out.println(i + " is not a valid option");
             }
         }
         return true;
+    }
+    /**
+     * Prompts user to first find the workspace they want to move the currentWorkspace into. The
+     * workspace manager then puts it into that workspace based on it's absolute path from root.
+     *
+     * @param workspace WorkspaceManager
+     * @param sc        Scanner for input
+     */
+    private static void moveIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
+        ArrayList<Integer> pos = new ArrayList<>();
+        String inp = "RANDOM";
+        ArrayList<Map<String, String>> details = workspace.taskDetailsOf(new ArrayList<Integer>(0));
+
+        while (!inp.equals("")) {
+            for (int i = 0; i < details.size(); i++) {
+                System.out.println(i + " " + details.get(i).get("Name"));
+            }
+            System.out.print("Choose a task to move to (hit enter to select current task): ");
+            try {
+                inp = sc.nextLine();
+                int i = Integer.parseInt(inp);
+                pos.add(i);
+            } catch (Exception e) {
+                System.out.println("Invalid input -- " + inp);
+            }
+            details = workspace.taskDetailsOf(pos);
+        }
+        workspace.moveCurrentWorkspace(pos);
     }
     /**
      * Displays list of workspaces in current Tasks list. Prompts the user to delete one. It then
