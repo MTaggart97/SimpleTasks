@@ -2,13 +2,13 @@ package simpletask.main.app;
 
 import simpletask.main.entities.Task;
 import simpletask.main.entities.Options;
-import simpletask.main.entities.Workspace;
+import simpletask.main.entities.WorkspaceManager;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+// import java.io.FileInputStream;
+// import java.io.FileOutputStream;
+// import java.io.IOException;
+// import java.io.ObjectInputStream;
+// import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
@@ -173,20 +173,20 @@ public final class App {
      * @param   w   The workspace to save
      * @return      True if save was successful, false otherwise
      */
-    public static boolean saveWorkspace(final Workspace w) {
-        try {
-            FileOutputStream fileOut = new FileOutputStream("SavedWorkspace/workspace.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(w);
-            out.close();
-            fileOut.close();
-            System.out.printf("Serialized data is saved in SavedWorkspace/workspace.ser");
-            return true;
-         } catch (IOException i) {
-            i.printStackTrace();
-            return false;
-         }
-    }
+    // public static boolean saveWorkspace(final Workspace w) {
+    //     try {
+    //         FileOutputStream fileOut = new FileOutputStream("SavedWorkspace/workspace.ser");
+    //         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+    //         out.writeObject(w);
+    //         out.close();
+    //         fileOut.close();
+    //         System.out.printf("Serialized data is saved in SavedWorkspace/workspace.ser");
+    //         return true;
+    //      } catch (IOException i) {
+    //         i.printStackTrace();
+    //         return false;
+    //      }
+    // }
 
     /**
      * Load in the workspace in the given file.
@@ -194,23 +194,23 @@ public final class App {
      * @param file  Path to workspace on disk
      * @return      The Task in the file or null if failed
      */
-    public static Workspace loadWorkspace(final String file) {
-        try {
-            FileInputStream fileIn = new FileInputStream(file);
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            Workspace w = (Workspace) in.readObject();
-            in.close();
-            fileIn.close();
-            return w;
-         } catch (IOException i) {
-            i.printStackTrace();
-            return null;
-         } catch (ClassNotFoundException c) {
-            System.out.println("Class not found");
-            c.printStackTrace();
-            return null;
-         }
-    }
+    // public static Workspace loadWorkspace(final String file) {
+    //     try {
+    //         FileInputStream fileIn = new FileInputStream(file);
+    //         ObjectInputStream in = new ObjectInputStream(fileIn);
+    //         Workspace w = (Workspace) in.readObject();
+    //         in.close();
+    //         fileIn.close();
+    //         return w;
+    //      } catch (IOException i) {
+    //         i.printStackTrace();
+    //         return null;
+    //      } catch (ClassNotFoundException c) {
+    //         System.out.println("Class not found");
+    //         c.printStackTrace();
+    //         return null;
+    //      }
+    // }
 
     /**
      * Prints a message to say session is ending. Releases any resources being
