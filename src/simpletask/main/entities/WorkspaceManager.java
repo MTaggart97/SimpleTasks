@@ -1,15 +1,7 @@
-package simpletask.main.app;
-
-import simpletask.main.entities.Workspace;
+package simpletask.main.entities;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import simpletask.main.entities.InvalidPriorityException;
-import simpletask.main.entities.Task;
-
-//TODO Move this into the entities package. Then make Task and Action methods protected. Outside access to Workspace
-//TODO instances will be through the dictionaries
 
 /**
  * This class will be responsible for managing the workspace. Through it, you can add
@@ -20,12 +12,12 @@ public class WorkspaceManager {
      * Users main workspace that the WorkspaceManager manages. Once set, it can never be reset. This
      * is to preven the user from losing their root workspace.
      */
-    private final Workspace rootWorkspace;
+    private final Task rootWorkspace;
     /**
      * Current workspace that user is in. This workspace changes regurlarly as the user moves between
      * workspaces.
      */
-    private Workspace currentWorkspace = null;
+    private Task currentWorkspace = null;
     /**
      * Constructor that takes the name of the workspace to create. It then creates a
      * task with the same name. This task becomes the rootWorkspace and current workspace.
@@ -46,7 +38,7 @@ public class WorkspaceManager {
      * @return  Current workspace's parent
      */
     public Map<String, String> getParent() {
-        Workspace parent = currentWorkspace.getParent();
+        Task parent = currentWorkspace.getParent();
         return parent.getDetails();
     }
     /**
@@ -57,7 +49,7 @@ public class WorkspaceManager {
     public ArrayList<Map<String, String>> getTasks() {
         ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
 
-        for (Workspace w: currentWorkspace.getTasks()) {
+        for (Task w: currentWorkspace.getTasks()) {
             array.add(w.getDetails());
         }
 
@@ -70,7 +62,7 @@ public class WorkspaceManager {
      * @return          Dictionary containing details of workspace at path
      */
     public Map<String, String> detailsOf(final ArrayList<Integer> path) {
-        Workspace w = rootWorkspace;
+        Task w = rootWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);
         }
@@ -83,13 +75,13 @@ public class WorkspaceManager {
      * @return          List of dictionaries containing details of workspace at path
      */
     public ArrayList<Map<String, String>> taskDetailsOf(final ArrayList<Integer> path) {
-        Workspace w = rootWorkspace;
+        Task w = rootWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);
         }
 
         ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
-        for (Workspace wrk: w.getTasks()) {
+        for (Task wrk: w.getTasks()) {
             array.add(wrk.getDetails());
         }
 
@@ -122,7 +114,7 @@ public class WorkspaceManager {
      * @param newWorkspace  New Workspace to add
      * @return              True if workspace added successfully, false otherwise
      */
-    public boolean addWorkspace(final Workspace newWorkspace) {
+    public boolean addWorkspace(final Task newWorkspace) {
         if (currentWorkspace instanceof Task) {
             ((Task) currentWorkspace).createWorkspace(newWorkspace);
             return true;
@@ -137,9 +129,9 @@ public class WorkspaceManager {
      * @param pos       Position in subTasks of Workspace to move into
      * @return          The workspace the user moved into
      */
-    public Workspace stepIntoWorkspace(final int pos) {
+    public Task stepIntoWorkspace(final int pos) {
         try {
-            Workspace workspace = currentWorkspace.getTasks().get(pos);
+            Task workspace = currentWorkspace.getTasks().get(pos);
             currentWorkspace = workspace;
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Doing nothing");
@@ -175,7 +167,7 @@ public class WorkspaceManager {
      */
     public boolean deleteWorkspace(final int pos) {
         try {
-            Workspace workspace = currentWorkspace.getTasks().get(pos);
+            Task workspace = currentWorkspace.getTasks().get(pos);
             if (!(currentWorkspace instanceof Task)) {
                 return false;
             }
@@ -193,7 +185,7 @@ public class WorkspaceManager {
      * @return          True if workspace is move successfully
      */
     public boolean moveCurrentWorkspace(final ArrayList<Integer> path) {
-        Workspace target = rootWorkspace;
+        Task target = rootWorkspace;
         for (Integer i: path) {
             target = target.getTasks().get(i);
         }
@@ -243,7 +235,7 @@ public class WorkspaceManager {
      */
     private String display() {
         StringBuilder msg = new StringBuilder(currentWorkspace.getName() + "\n");
-        for (Workspace w: currentWorkspace.getTasks()) {
+        for (Task w: currentWorkspace.getTasks()) {
             msg.append(w.toString());
         }
         return msg.toString();

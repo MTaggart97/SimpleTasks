@@ -9,10 +9,11 @@ import java.util.Map;
  * Class that describes a singular unit of work. It cannot be broken up into
  * smaller sub tasks
  *
- * @author Matthew Taggart
- * @see Workspace
+ * @author  Matthew Taggart
+ * @see     Task
  */
-public class Action implements Workspace {
+public class Action extends Task {
+    //#region [Fields]
     /**
      * Name of action.
      */
@@ -20,7 +21,7 @@ public class Action implements Workspace {
     /**
      * Parent of current Action.
      */
-    private Workspace parent;
+    private Task parent;
     /**
      * Due date of Action.
      */
@@ -50,15 +51,16 @@ public class Action implements Workspace {
      * Minimum value of importance for a task. Currently set to 0, this avoids negative importance.
      */
     private static final byte MINIMPORTANCE = 0;
+    //#endregion [Fields]
 
-    // Constructors
+    //#region [Constructors]
      /**
      * The basic constructor for an action. At most, an action needs a name, dueDate and parent.
      * It needs all three as it's equals method uses these three to determine equlity. By
      * default, an action is called "Null Action" an action is it's own parent and it's due at the
      * time of creation.
      */
-    private Action() {
+    Action() {
         this.name = "Null Action";
         parent = this;
         dueDate = LocalDateTime.now();
@@ -72,27 +74,24 @@ public class Action implements Workspace {
         this();
         this.name = nm;
     }
+    //#endregion [Constructors]
 
-    // Getters
+    //#region [Getters]
     /**
      * Returns name of action.
      *
      * @return Name of Action
      */
-    @Override
     public String getName() {
         return this.name;
     }
     /**
-     * This should simply return itself.
+     * This should null since an Action has no concept of task lists.
      *
-     * @return An array list containing itself
+     * @return Null
      */
-    @Override
-    public ArrayList<Workspace> getTasks() {
-        ArrayList<Workspace> result = new ArrayList<>();
-        result.add(this);
-        return result;
+    public ArrayList<Task> getTasks() {
+        return null;
     }
     /**
      * Returns due date of Action.
@@ -107,7 +106,6 @@ public class Action implements Workspace {
      *
      * @return  Priority of Action
      */
-    @Override
     public int getPriority() {
         return (int) this.priority;
     }
@@ -124,8 +122,7 @@ public class Action implements Workspace {
      *
      * @return  Parent Workspace of current Action
      */
-    @Override
-    public Workspace getParent() {
+    public Task getParent() {
         return this.parent;
     }
     /**
@@ -133,7 +130,6 @@ public class Action implements Workspace {
      *
      * @return  Map of details
      */
-    @Override
     public Map<String, String> getDetails() {
         Map<String, String> dict = new HashMap<String, String>();
 
@@ -143,14 +139,16 @@ public class Action implements Workspace {
 
         return dict;
     }
+    //#endregion [Getters]
 
+    //#region [Setters]
     // Setters
     /**
      * Sets the parent of current task.
      *
      * @param   parent  New parent of task.
      */
-    private void setParent(final Workspace parent) {
+    private void setParent(final Task parent) {
         this.parent = parent;
 
     }
@@ -159,7 +157,6 @@ public class Action implements Workspace {
      *
      * @param   dt  Date Time to set dueDate to
      */
-    @Override
     public void setDueDate(final LocalDateTime dt) {
         this.dueDate = dt;
     }
@@ -168,7 +165,6 @@ public class Action implements Workspace {
      *
      * @param   imp Importance/Priority of Action
      */
-    @Override
     public void setPriority(final int imp) {
         // Cannot have negative importacne or importance greater than 10
         if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
@@ -182,7 +178,6 @@ public class Action implements Workspace {
      *
      * @param   name    Name to rename Action to.
      */
-    @Override
     public void setName(final String name) {
         this.name = name;
     }
@@ -203,10 +198,10 @@ public class Action implements Workspace {
      *
      * @param   description     Description of Action
      */
-    @Override
     public void setDescription(final String description) {
         this.description = description;
     }
+    //#endregion [Setters]
 
     // Implentation Methods
     /**
@@ -215,9 +210,8 @@ public class Action implements Workspace {
      * @param   target  The new parent of the current action
      * @return          True if Action moved successfully
      */
-    @Override
     public boolean moveWorkspace(final Task target) {
-        Workspace oldParent = this.getParent();
+        Task oldParent = this.getParent();
         // Ensure oldParent is a Task before attempting to remove from its list.
         if (oldParent instanceof Task && oldParent != null) {
             ((Task) oldParent).removeWorkspace(this);
@@ -246,8 +240,7 @@ public class Action implements Workspace {
      * @param   workspace   Workspace to search for
      * @return              Will always return false
      */
-    @Override
-    public boolean searchWorkspaces(final Workspace workspace) {
+    public boolean searchWorkspaces(final Task workspace) {
         return false;
     }
     /**
@@ -273,7 +266,6 @@ public class Action implements Workspace {
      *
      * @return  True if Action deletes successfully, false otherwise
      */
-    @Override
     public boolean delete() {
         parent.getTasks().remove(this);
         this.setParent(null);
@@ -284,7 +276,6 @@ public class Action implements Workspace {
      *
      * @return  True if Action complete, false otherwise
      */
-    @Override
     public boolean isWorkspaceComplete() {
         return isComplete;
     }
@@ -293,7 +284,6 @@ public class Action implements Workspace {
      *
      * @return  True if task is complete, false otherwise
      */
-    @Override
     public boolean flipCompletionStatus() {
         isComplete = !isComplete;
         return isComplete;

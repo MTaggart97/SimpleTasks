@@ -1,5 +1,6 @@
 package simpletask.main.entities;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,10 +14,9 @@ import java.util.Map;
  * flexible and allows the user to create a workspace that suits them
  *
  * @author Matthew Taggart
- * @see Workspace
  */
-public class Task implements Workspace {
-    // Class variables
+public class Task implements Serializable {
+    //#region [Fields]
     /**
      * Unique long value that is used to ensure that this is the correct object
      * during serialisation.
@@ -60,21 +60,22 @@ public class Task implements Workspace {
      * A list of tasks maintianed by current task. For a task to be
      * marked as complete, all its tasks must be marked as complete
      */
-    private ArrayList<Workspace> tasks = new ArrayList<Workspace>();
+    private ArrayList<Task> tasks = new ArrayList<>();
     /**
      * Parent of current task. This is generally used to keep track of
      * the current task, i.e. todo, in progress, Assignment 1 etc.
      */
-    private Workspace parent = null;
+    private Task parent = null;
+    //#endregion [Fields]
 
-    // Constructors
+    //#region [Constructors]
     /**
      * The basic constructor for a task. At most, a task needs a name, dueDate and parent.
      * It needs all three as it's equals method uses these three to determine equlity. By
      * default, a task is called "Null Task" a task is it's own parent and it's due at the
      * time of creation.
      */
-    private Task() {
+    Task() {
         name = "Null Task";
         parent = this;
         dueDate = LocalDateTime.now();
@@ -88,15 +89,14 @@ public class Task implements Workspace {
         this();
         this.name = name;
     }
+    //#endregion [Constructors]
 
-    // Methods
-    // Getters
+    //#region [Getters]
     /**
      * Returns name of the task.
      *
      *  @return Name of task as string
      */
-    @Override
     public String getName() {
         return this.name;
     }
@@ -105,7 +105,6 @@ public class Task implements Workspace {
      *
      * @return  Priority of task
      */
-    @Override
     public int getPriority() {
         return (int) this.priority;
     }
@@ -121,9 +120,8 @@ public class Task implements Workspace {
      * Returns a list of all workspaces contained in the current task.
      *
      *  @return All workspaces tracked by current task
-     */
-    @Override
-    public ArrayList<Workspace> getTasks() {
+    */
+    public ArrayList<Task> getTasks() {
         return tasks;
     }
     /**
@@ -139,8 +137,7 @@ public class Task implements Workspace {
      *
      *  @return The current tasks parent
      */
-    @Override
-    public Workspace getParent() {
+    public Task getParent() {
         return this.parent;
     }
     /**
@@ -148,7 +145,6 @@ public class Task implements Workspace {
      *
      * @return  Map of details
      */
-    @Override
     public Map<String, String> getDetails() {
         Map<String, String> dict = new HashMap<String, String>();
 
@@ -159,8 +155,9 @@ public class Task implements Workspace {
 
         return dict;
     }
+    //#endregion [Getters]
 
-    // Setters
+    //#region [Setters]
     /**
      * Renames Task.
      *
@@ -174,7 +171,7 @@ public class Task implements Workspace {
      *
      *  @param parent    The parent workspace
      */
-    private void setParent(final Workspace parent) {
+    private void setParent(final Task parent) {
         this.parent = parent;
     }
     /**
@@ -182,7 +179,6 @@ public class Task implements Workspace {
      *
      * @param description the description to set
      */
-    @Override
     public void setDescription(final String description) {
         this.description = description;
     }
@@ -203,7 +199,6 @@ public class Task implements Workspace {
      *
      * @param   dt  DateTime to set dueDate to
      */
-    @Override
     public void setDueDate(final LocalDateTime dt) {
         this.dueDate = dt;
     }
@@ -213,7 +208,6 @@ public class Task implements Workspace {
      * @param imp   Number to set priority to
      * @throws      InvalidPriorityException if invalid priority is entered
      */
-    @Override
     public void setPriority(final int imp) throws InvalidPriorityException {
         // Cannot have negative importacne or importance greater than 10
         if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
@@ -222,6 +216,7 @@ public class Task implements Workspace {
             this.priority = (byte) imp;
         }
     }
+    //#endregion [Setters]
 
     // Implementation Methods
     /**
@@ -229,7 +224,6 @@ public class Task implements Workspace {
      *
      * @return True if complete, false otherwise
      */
-    @Override
     public boolean isWorkspaceComplete() {
         return complete;
     }
@@ -240,7 +234,6 @@ public class Task implements Workspace {
      *
      * @return The completion status of the current workspace
      */
-    @Override
     public boolean flipCompletionStatus() {
         this.complete = !this.complete;
         return this.complete;
@@ -252,7 +245,7 @@ public class Task implements Workspace {
      */
     private boolean checkTasks() {
         boolean results = false;
-        for (Workspace w: this.tasks) {
+        for (Task w: this.tasks) {
             results = w.isWorkspaceComplete();
             if (!results) {
                 break;
@@ -268,7 +261,7 @@ public class Task implements Workspace {
      * @param workspace Workspace that has just been completed
      * @return          True if current workspace is complete, fale otherwise
      */
-    boolean isFinished(final Workspace workspace) {
+    boolean isFinished(final Action workspace) {
         this.complete = this.checkTasks();
         return this.complete;
     }
@@ -283,7 +276,7 @@ public class Task implements Workspace {
      * @return                  The newly created task
      */
     //@Override
-    public Workspace createWorkspace(final Workspace workspaceName) {
+    public Task createWorkspace(final Task workspaceName) {
         // Add workspace to list of workspaces and set its parent
         workspaceName.moveWorkspace(this);
         return workspaceName;
@@ -306,7 +299,7 @@ public class Task implements Workspace {
     public String toString() {
         StringBuilder display = new StringBuilder(DISPLAYHEADER);
         display.append("| " + this.name + "\n| ");
-        for (Workspace a: tasks) {
+        for (Task a: tasks) {
             // display.append("\n  * " + ((Task) a).display("    "));
             display.append(a.getName() + "\t");
         }
@@ -328,7 +321,7 @@ public class Task implements Workspace {
     private String display(final String sep) {
         StringBuilder disp = new StringBuilder();
         disp.append(this.getName());
-        for (Workspace a: tasks) {
+        for (Task a: tasks) {
             disp.append("\n" + sep + "* " + ((Task) a).display(sep + "  "));
         }
         return disp.toString();
@@ -341,10 +334,9 @@ public class Task implements Workspace {
      * @param   target  The current tasks new parent
      * @return          True if move was successful
      */
-    @Override
     public boolean moveWorkspace(final Task target) {
         // Only tasks can have childern so we know the result of this will always be a task
-        Task oldParent = (Task) this.getParent();
+        Task oldParent = this.getParent();
         // Task will be it's own parent if no parent exists
         if (oldParent != this) {
             oldParent.tasks.remove(this);
@@ -360,12 +352,11 @@ public class Task implements Workspace {
      * @param   workspace   Workspace to find
      * @return              True if found, false otherwise.
      */
-    @Override
-    public boolean searchWorkspaces(final Workspace workspace) {
+    public boolean searchWorkspaces(final Task workspace) {
         if (this.equals(workspace)) {
             return true;
         }
-        for (Workspace w: this.getTasks()) {
+        for (Task w: this.getTasks()) {
             if (w.equals(workspace)) {
                 return true;
             }
@@ -397,7 +388,7 @@ public class Task implements Workspace {
      * @param workspace Workspace to remove from list of tasks
      * @return          True if workspace successfully removed
      */
-    public boolean removeWorkspace(final Workspace workspace) {
+    public boolean removeWorkspace(final Task workspace) {
         boolean found = this.searchWorkspaces(workspace);
         if (found) {
             return workspace.delete();
@@ -410,7 +401,7 @@ public class Task implements Workspace {
      * @param workspace Workspace to add to list of workspaces
      * @return          True if workspace is added successfully
      */
-    protected boolean addToTask(final Workspace workspace) {
+    protected boolean addToTask(final Task workspace) {
         return this.tasks.add(workspace);
     }
     /**
@@ -419,7 +410,6 @@ public class Task implements Workspace {
      *
      * @return  True if Task is successfully deleted
      */
-    @Override
     public boolean delete() {
         boolean fin = false;
         while (!tasks.isEmpty()) {
