@@ -1,7 +1,5 @@
 package simpletask.test.entities;
 
-import simpletask.main.entities.Task;
-import simpletask.main.entities.Action;
 import simpletask.main.entities.InvalidPriorityException;
 
 import static org.junit.Assert.assertNotEquals;
@@ -13,11 +11,11 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+//TODO: Fix these tests
 /**
  * Class to test the behaviour of a Test instance.
  */
-public class WorkspaceTest {
+public class WorkspaceManagerTest {
     /**
      * Base task instance to test.
      */

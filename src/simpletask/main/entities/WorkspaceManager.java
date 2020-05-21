@@ -1,6 +1,7 @@
 package simpletask.main.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,7 +40,7 @@ public class WorkspaceManager {
      */
     public Map<String, String> getParent() {
         Task parent = currentWorkspace.getParent();
-        return parent.getDetails();
+        return getDetails(parent);
     }
     /**
      * Returns a list of summary details about the current workspaces tasks.
@@ -50,7 +51,7 @@ public class WorkspaceManager {
         ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
 
         for (Task w: currentWorkspace.getTasks()) {
-            array.add(w.getDetails());
+            array.add(getDetails(w));
         }
 
         return array;
@@ -66,7 +67,7 @@ public class WorkspaceManager {
         for (Integer i: path) {
             w = w.getTasks().get(i);
         }
-        return w.getDetails();
+        return getDetails(w);
     }
     /**
      * Returns a list of details for the Task at the given path.
@@ -82,7 +83,7 @@ public class WorkspaceManager {
 
         ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
         for (Task wrk: w.getTasks()) {
-            array.add(wrk.getDetails());
+            array.add(getDetails(wrk));
         }
 
         return array;
@@ -111,10 +112,11 @@ public class WorkspaceManager {
     /**
      * Adds a workspace into the currentWorkspaces task list if it is a Task.
      *
-     * @param newWorkspace  New Workspace to add
+     * @param newWorkspace  Name of Workspace to add
      * @return              True if workspace added successfully, false otherwise
      */
-    public boolean addWorkspace(final Task newWorkspace) {
+    public boolean addWorkspace(final String name) {
+        Task newWorkspace = new Task(name);
         if (currentWorkspace instanceof Task) {
             ((Task) currentWorkspace).createWorkspace(newWorkspace);
             return true;
@@ -248,5 +250,16 @@ public class WorkspaceManager {
     @Override
     public String toString() {
         return display();
+    }
+    
+    private Map<String, String> getDetails(final Task task) {
+        Map<String, String> dict = new HashMap<String, String>();
+
+        dict.put("Name", task.getName());
+        dict.put("Priority", String.valueOf(task.getPriority()));
+        dict.put("Type", task.getClass().toString());
+        dict.put("Tasks", String.valueOf(task.getTasks().size()));
+
+        return dict;
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * @author Matthew Taggart
  */
-public class Task implements Serializable {
+class Task implements Serializable {
     //#region [Fields]
     /**
      * Unique long value that is used to ensure that this is the correct object
@@ -30,32 +30,31 @@ public class Task implements Serializable {
     /**
      * Maximum value of importance for a task. Currently set to 10.
      */
-    private static final byte MAXIMPORTANCE = 10;
+    private static final int MAXIMPORTANCE = 10;
     /**
      * Minimum value of importance for a task. Currently set to 0, this avoids negative importance.
      */
-    private static final byte MINIMPORTANCE = 0;
-    // Instance Variables
+    private static final int MINIMPORTANCE = 0;
     /**
      * Name of task.
      */
-    private String name;
+    protected String name;
     /**
      * Description of task.
      */
-    private String description;
+    protected String description;
     /**
      * Due date of task.
      */
-    private LocalDateTime dueDate;
+    protected LocalDateTime dueDate;
     /**
      * Flag to mark if task is complete.
      */
-    private boolean complete;
+    protected boolean complete;
     /**
-     * Priority of task. From 1-10. Using byte to minimise storage
+     * Priority of task. From 1-10.
      */
-    private byte priority;
+    protected int priority;
     /**
      * A list of tasks maintianed by current task. For a task to be
      * marked as complete, all its tasks must be marked as complete
@@ -65,7 +64,7 @@ public class Task implements Serializable {
      * Parent of current task. This is generally used to keep track of
      * the current task, i.e. todo, in progress, Assignment 1 etc.
      */
-    private Task parent = null;
+    protected Task parent = null;
     //#endregion [Fields]
 
     //#region [Constructors]
@@ -85,7 +84,7 @@ public class Task implements Serializable {
      *
      * @param name  The name of the task
      */
-    public Task(final String name) {
+    Task(final String name) {
         this();
         this.name = name;
     }
@@ -97,7 +96,7 @@ public class Task implements Serializable {
      *
      *  @return Name of task as string
      */
-    public String getName() {
+    protected String getName() {
         return this.name;
     }
     /**
@@ -105,23 +104,23 @@ public class Task implements Serializable {
      *
      * @return  Priority of task
      */
-    public int getPriority() {
-        return (int) this.priority;
+    protected int getPriority() {
+        return this.priority;
     }
     /**
      * Returns description of task.
      *
      * @return  The description of this task
      */
-    public String getDescription() {
+    protected String getDescription() {
         return this.description;
     }
     /**
-     * Returns a list of all workspaces contained in the current task.
+     * Returns the list of all workspaces contained in the current task.
      *
      *  @return All workspaces tracked by current task
     */
-    public ArrayList<Task> getTasks() {
+    protected ArrayList<Task> getTasks() {
         return tasks;
     }
     /**
@@ -129,31 +128,16 @@ public class Task implements Serializable {
      *
      * @return  Returns the date and time that the task is due
      */
-    public LocalDateTime getDueDate() {
+    protected LocalDateTime getDueDate() {
         return this.dueDate;
     }
     /**
-     * Returns parent of current task.
+     * Returns the parent of current task.
      *
      *  @return The current tasks parent
      */
-    public Task getParent() {
+    protected Task getParent() {
         return this.parent;
-    }
-    /**
-     * Returns details of this Task.
-     *
-     * @return  Map of details
-     */
-    public Map<String, String> getDetails() {
-        Map<String, String> dict = new HashMap<String, String>();
-
-        dict.put("Name", this.getName());
-        dict.put("Priority", String.valueOf(this.getPriority()));
-        dict.put("Type", "Task");
-        dict.put("Tasks", String.valueOf(this.getTasks().size()));
-
-        return dict;
     }
     //#endregion [Getters]
 
@@ -163,7 +147,7 @@ public class Task implements Serializable {
      *
      * @param name  Name of task
      */
-    public void setName(final String name) {
+    protected void setName(final String name) {
         this.name = name;
     }
     /**
@@ -179,7 +163,7 @@ public class Task implements Serializable {
      *
      * @param description the description to set
      */
-    public void setDescription(final String description) {
+    protected void setDescription(final String description) {
         this.description = description;
     }
     /**
@@ -191,7 +175,7 @@ public class Task implements Serializable {
      * @param hour      Hour task is due
      * @param minute    Minute task is due
      */
-    public void setDueDate(final int year, final int month, final int day, final int hour, final int minute) {
+    protected void setDueDate(final int year, final int month, final int day, final int hour, final int minute) {
         this.dueDate = LocalDateTime.of(year, month, day, hour, minute);
     }
     /**
@@ -199,7 +183,7 @@ public class Task implements Serializable {
      *
      * @param   dt  DateTime to set dueDate to
      */
-    public void setDueDate(final LocalDateTime dt) {
+    protected void setDueDate(final LocalDateTime dt) {
         this.dueDate = dt;
     }
     /**
@@ -208,12 +192,12 @@ public class Task implements Serializable {
      * @param imp   Number to set priority to
      * @throws      InvalidPriorityException if invalid priority is entered
      */
-    public void setPriority(final int imp) throws InvalidPriorityException {
+    protected void setPriority(final int imp) throws InvalidPriorityException {
         // Cannot have negative importacne or importance greater than 10
         if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
             throw new InvalidPriorityException("Cannot have a negative importance or importance greater than " + MAXIMPORTANCE);
         } else {
-            this.priority = (byte) imp;
+            this.priority = imp;
         }
     }
     //#endregion [Setters]
@@ -224,7 +208,7 @@ public class Task implements Serializable {
      *
      * @return True if complete, false otherwise
      */
-    public boolean isWorkspaceComplete() {
+    protected boolean isWorkspaceComplete() {
         return complete;
     }
     /**
@@ -234,7 +218,7 @@ public class Task implements Serializable {
      *
      * @return The completion status of the current workspace
      */
-    public boolean flipCompletionStatus() {
+    protected boolean flipCompletionStatus() {
         this.complete = !this.complete;
         return this.complete;
     }
@@ -261,7 +245,7 @@ public class Task implements Serializable {
      * @param workspace Workspace that has just been completed
      * @return          True if current workspace is complete, fale otherwise
      */
-    boolean isFinished(final Action workspace) {
+    protected boolean isFinished(final Action workspace) {
         this.complete = this.checkTasks();
         return this.complete;
     }
@@ -275,8 +259,7 @@ public class Task implements Serializable {
      * @param   workspaceName   New workspace to move into current workspace
      * @return                  The newly created task
      */
-    //@Override
-    public Task createWorkspace(final Task workspaceName) {
+    protected Task createWorkspace(final Task workspaceName) {
         // Add workspace to list of workspaces and set its parent
         workspaceName.moveWorkspace(this);
         return workspaceName;
@@ -334,7 +317,7 @@ public class Task implements Serializable {
      * @param   target  The current tasks new parent
      * @return          True if move was successful
      */
-    public boolean moveWorkspace(final Task target) {
+    protected boolean moveWorkspace(final Task target) {
         // Only tasks can have childern so we know the result of this will always be a task
         Task oldParent = this.getParent();
         // Task will be it's own parent if no parent exists
@@ -352,7 +335,7 @@ public class Task implements Serializable {
      * @param   workspace   Workspace to find
      * @return              True if found, false otherwise.
      */
-    public boolean searchWorkspaces(final Task workspace) {
+    protected boolean searchWorkspaces(final Task workspace) {
         if (this.equals(workspace)) {
             return true;
         }
@@ -388,7 +371,7 @@ public class Task implements Serializable {
      * @param workspace Workspace to remove from list of tasks
      * @return          True if workspace successfully removed
      */
-    public boolean removeWorkspace(final Task workspace) {
+    protected boolean removeWorkspace(final Task workspace) {
         boolean found = this.searchWorkspaces(workspace);
         if (found) {
             return workspace.delete();
@@ -410,7 +393,7 @@ public class Task implements Serializable {
      *
      * @return  True if Task is successfully deleted
      */
-    public boolean delete() {
+    protected boolean delete() {
         boolean fin = false;
         while (!tasks.isEmpty()) {
             fin = tasks.get(0).delete();

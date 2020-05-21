@@ -1,6 +1,5 @@
 package simpletask.main.app;
 
-import simpletask.main.entities.Task;
 import simpletask.main.entities.Options;
 import simpletask.main.entities.WorkspaceManager;
 
@@ -94,7 +93,7 @@ public final class App {
      */
     private static void addWorkspace(final WorkspaceManager workspace, final Scanner sc) {
         System.out.print("Enter your subtask: ");
-        workspace.addWorkspace(new Task(sc.nextLine()));
+        workspace.addWorkspace(sc.nextLine());
     }
     /**
      * Given a workspace, give the option to the user to step up into its parent workspace
