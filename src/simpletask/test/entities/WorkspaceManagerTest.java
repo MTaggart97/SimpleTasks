@@ -1,17 +1,19 @@
 package simpletask.test.entities;
 
+import simpletask.main.entities.WorkspaceManager;
+import simpletask.main.entities.Criteria;
 import simpletask.main.entities.InvalidPriorityException;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-//TODO: Fix these tests
+
 /**
  * Class to test the behaviour of a Test instance.
  */
@@ -19,126 +21,131 @@ public class WorkspaceManagerTest {
     /**
      * Base task instance to test.
      */
-    private Task t1;
+    private WorkspaceManager wm;
     /**
-     * Executes before each test method. Simply resets the t1 Task instance
+     * Executes before each test method. Simply resets the wm Task instance
      * to be empty.
      */
     @BeforeEach
     public void setUp() {
-        t1 = new Task("Workspace");
+        wm = new WorkspaceManager("Workspace");
     }
     /**
-     * Executed after each tests. Sets the t1 Task instance to null to ensure
+     * Executed after each tests. Sets the wm Task instance to null to ensure
      * no data is carried over to another test.
      */
     @AfterEach
     public void tearDown() {
-        t1 = null;
+        wm = null;
     }
     /**
      * Tests to see if an empty workspace has zero tasks associated with it.
      */
     @Test
-    public void testCreateWorkspaceZero() {
+    public void testaddWorkspaceZero() {
         // Arrange
         // Act
         // Assert
-        assertEquals(0, t1.getTasks().size(), "Workspace should contain no tasks on initialisation");
+        assertEquals(0, wm.getTasks().size(), "Workspace should contain no tasks on initialisation");
     }
     /**
      * Tests if one Task is added correctly to the workspaces list of tasks.
      */
     @Test
-    public void testCreateWorkspaceOne() {
+    public void testaddWorkspaceOne() {
         // Arrange
         String name = "Child 1";
         // Act
-        t1.createWorkspace(new Task(name));
+        wm.addWorkspace(name);
         // Assert
-        assertEquals(1, t1.getTasks().size(), "Ensure that there is only one workspace in task list");
-        assertEquals(name, t1.getTasks().get(0).getName(), "Ensure that this workspace has the correct name");
+        assertEquals(1, wm.getTasks().size(), "Ensure that there is only one workspace in task list");
+        assertEquals(name, wm.getTasks().get(0).get("Name"), "Ensure that this workspace has the correct name");
     }
     /**
      * Tests if multiple Tasks and Actions are added to list of tasks successfully.
      */
     @Test
-    public void testCreateWorkspaceMultiple() {
+    public void testaddWorkspaceMultiple() {
         // Arrange
         String name1 = "Child 1";
         String name2 = "Child 2";
         String name3 = "Child 3";
         final int numOfWorkspaces = 3;
         // Act
-        t1.createWorkspace(new Task(name1));
-        t1.createWorkspace(new Task(name2));
-        t1.createWorkspace(new Action(name3));
+        wm.addWorkspace(name1);
+        wm.addWorkspace(name2);
+        wm.addWorkspace(name3);
         // Assert
-        assertEquals(numOfWorkspaces, t1.getTasks().size(), "Ensure that there are three workspaces in the task list");
-        assertEquals(name1, t1.getTasks().get(0).getName(), "Ensure that first workspace has the correct name");
-        assertEquals(name2, t1.getTasks().get(1).getName(), "Ensure that second workspace has the correct name");
-        assertEquals(name3, t1.getTasks().get(2).getName(), "Ensure that third workspace has the correct name");
+        assertEquals(numOfWorkspaces, wm.getTasks().size(), "Ensure that there are three workspaces in the task list");
+        assertEquals(name1, wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
+        assertEquals(name2, wm.getTasks().get(1).get("Name"), "Ensure that second workspace has the correct name");
+        assertEquals(name3, wm.getTasks().get(2).get("Name"), "Ensure that third workspace has the correct name");
     }
     /**
      * Tests if Tasks and actions can be added in Tasks within the current tasks list of tasks.
      * -- I do not think this is needed
      */
     @Test
-    public void testCreateWorkspaceNested() {
+    public void testaddWorkspaceNested() {
         // Arrange
         String name1 = "Child 1";
         String name2 = "Child 2";
         String name3 = "Child 2.1";
         String name4 = "Child 2.2";
         // Act
-        t1.createWorkspace(new Task(name1));
-        t1.createWorkspace(new Task(name2));
-        ((Task) t1.getTasks().get(1)).createWorkspace(new Task(name3));
-        ((Task) t1.getTasks().get(1)).createWorkspace(new Action(name4));
+        wm.addWorkspace(name1);
+        wm.addWorkspace(name2);
+        wm.stepIntoWorkspace(1);
+        wm.addWorkspace(name3);
+        wm.addWorkspace(name4);
+        wm.home();
         // Assert
-        assertEquals(2, t1.getTasks().size(), "Ensure that there are two workspaces in root workspace");
-        assertEquals(2, t1.getTasks().get(1).getTasks().size(), "Ensure that there are two workspaces in sub workspace");
-        assertEquals(name1, t1.getTasks().get(0).getName(), "Ensure that first workspace has the correct name");
-        assertEquals(name2, t1.getTasks().get(1).getName(), "Ensure that second workspace has the correct name");
-        assertEquals(name3, t1.getTasks().get(1).getTasks().get(0).getName(), "Ensure that first sub workspace was added correctly");
+        assertEquals(2, wm.getTasks().size(), "Ensure that there are two workspaces in root workspace");
+        assertEquals(2, Integer.parseInt(wm.getTasks().get(1).get("Tasks")), "Ensure that there are two workspaces in sub workspace");
+        assertEquals(name1, wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
+        assertEquals(name2, wm.getTasks().get(1).get("Name"), "Ensure that second workspace has the correct name");
+        wm.stepIntoWorkspace(1);
+        assertEquals(name3, wm.getTasks().get(0).get("Name"), "Ensure that first sub workspace was added correctly");
     }
     /**
      * Tests if Tasks and Actions can be removed from task list.
      */
     @Test
-    public void testRemoveWorkspace() {
+    public void testdeleteWorkspace() {
         // Arrange
-        Task temp = new Task("Task 1");
-        Action tempAction = new Action("Action 1");
+        String temp = "Task 1";
+        String tempAction = "Action 1";
         // Act
-        t1.createWorkspace(temp);
-        t1.createWorkspace(tempAction);
-        t1.removeWorkspace(temp);
-        t1.removeWorkspace(tempAction);
+        wm.addWorkspace(temp);
+        wm.addWorkspace(tempAction);
+        wm.deleteWorkspace(1);
+        wm.deleteWorkspace(0);
         // Assert
-        assertEquals(0, t1.getTasks().size(), "Workspace should contain no tasks after removing all tasks");
+        assertEquals(0, wm.getTasks().size(), "Workspace should contain no tasks after removing all tasks");
     }
     /**
      * Tests that delete works for Task object.
      */
     @Test
-    public void testTaskDelete() {
+    public void testDeleteCurrentWorkspace() {
         // Arrange
-        Task t2 = new Task("Task 1");
-        Task t3 = new Task("Sub Task");
-        Action a1 = new Action("Action");
-        Action a2 = new Action("Sub Action");
-        t1.createWorkspace(t2);
-        t1.createWorkspace(a1);
-        t2.createWorkspace(t3);
-        t2.createWorkspace(a2);
+        String t2 = "Task 1";
+        String t3 = "Sub Task";
+        String a1 = "Action";
+        String a2 = "Sub Action";
+        wm.addWorkspace(t2);
+        wm.addWorkspace(a1);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(t3);
+        wm.addWorkspace(a2);
+        wm.home();
         // Act
-        t1.delete();
+        wm.deleteCurrentWorkspace();
         // Assert
-        assertNull(t2.getParent());
-        assertNull(t3.getParent());
-        assertNull(a1.getParent());
-        assertNull(a2.getParent());
+        assertEquals(0, wm.getTasks().size(), "Ensure that there are no tasks left in current workspace");
+        // assertNull(t3.getParent());
+        // assertNull(a1.getParent());
+        // assertNull(a2.getParent());
     }
     /**
      * Tests if Tasks importance gets set correctly.
@@ -146,14 +153,15 @@ public class WorkspaceManagerTest {
     @Test
     public void testWorkspaceImportance() {
         // Arrange
+        ArrayList<Integer> path = new ArrayList<>();
         // Act
         try {
-            t1.setPriority(2);
+            wm.setPriority(2);
         } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(2, t1.getPriority(), "Ensure importance for root workspace is set correctly");
+        assertEquals(2, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure importance for root workspace is set correctly");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -162,14 +170,15 @@ public class WorkspaceManagerTest {
     public void testWorkspaceImportanceNegative() {
         // Arrange
         final int negValue = -2;
+        ArrayList<Integer> path = new ArrayList<>(0);
         // Act
         try {
-            t1.setPriority(negValue);
+            wm.setPriority(negValue);
         } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(0, t1.getPriority(), "Ensure that importance cannot be set to a negative number");
+        assertEquals(0, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot be set to a negative number");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -178,14 +187,15 @@ public class WorkspaceManagerTest {
     public void testWorkspaceImportanceTooLarge() {
         // Arrange
         final int largeValue = 50;
+        ArrayList<Integer> path = new ArrayList<>(0);
         // Act
         try {
-            t1.setPriority(largeValue);
+            wm.setPriority(largeValue);
         } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(0, t1.getPriority(), "Ensure that importance cannot set to be a number larger than 10");
+        assertEquals(0, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot set to be a number larger than 10");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -194,16 +204,17 @@ public class WorkspaceManagerTest {
     public void testWorkspaceImportanceRemainSame() {
         // Arrange
         final int priority = 5;
-        t1.setPriority(priority);
+        wm.setPriority(priority);
         final int largeValue = 50;
+        ArrayList<Integer> path = new ArrayList<>(0);
         // Act
         try {
-            t1.setPriority(largeValue);
+            wm.setPriority(largeValue);
         } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(priority, t1.getPriority(), "Ensure that importance cannot set to be a number larger than 10");
+        assertEquals(priority, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot set to be a number larger than 10");
     }
     /**
      * Tests to see if the due date gets set correctly.
@@ -217,10 +228,11 @@ public class WorkspaceManagerTest {
         final int hour = 16;
         final int minute = 30;
         final LocalDateTime due = LocalDateTime.of(year, month, day, hour, minute);
+        ArrayList<Integer> path = new ArrayList<>();
         // Act
-        t1.setDueDate(year, month, day, hour, minute);
+        wm.setDueDate(year, month, day, hour, minute);
         // Assert
-        assertEquals(due, t1.getDueDate(), "Check that due date is set correctly");
+        assertEquals(due.toString(), wm.detailsOf(path).get("DueDate"), "Check that due date is set correctly");
     }
     /**
      * Tests if Tasks and Actions get moved correctly.
@@ -229,148 +241,31 @@ public class WorkspaceManagerTest {
     public void testWorkspaceMove() {
         // Arrange
         final int totalSubWS = 2;
-        Task ws1 = new Task("First");
-        Task subTask = new Task("Sub Task");
-        Action subAction = new Action("Sub Action");
-        ws1.createWorkspace(subTask);
-        ws1.createWorkspace(subAction);
-        Task ws2 = new Task("Second");
-        t1.createWorkspace(ws1);
-        t1.createWorkspace(ws2);
+        String ws1 = "First";
+        wm.addWorkspace(ws1);
+        wm.stepIntoWorkspace(0);
+        String subTask = "Sub Task";
+        String subAction = "Sub Action";
+        wm.addWorkspace(subTask);
+        wm.addWorkspace(subAction);
+        wm.home();
+        String ws2 = "Second";
+        wm.addWorkspace(ws2);
+
+        ArrayList<Integer> path = new ArrayList<>();
+        path.add(1);
         // Act
-        subTask.moveWorkspace(ws2);
-        subAction.moveWorkspace(ws2);
+        wm.stepIntoWorkspace(0);
+        wm.stepIntoWorkspace(0);
+        wm.moveCurrentWorkspace(new ArrayList<Integer>(path));
+        wm.home();
+        wm.stepIntoWorkspace(0);
+        wm.stepIntoWorkspace(0);
+        wm.moveCurrentWorkspace(new ArrayList<Integer>(path));
+        wm.home();
         // Assert
-        assertEquals(totalSubWS, t1.getTasks().get(1).getTasks().size(), "Ensure workspaces are in second task");
-        assertEquals(0, t1.getTasks().get(0).getTasks().size(), "Ensure workspaces are not in original task");
-        assertEquals(ws2, subTask.getParent(), "Ensure sub task has correct parent");
-        assertEquals(ws2, subAction.getParent(), "Ensure sub action has correct parent");
-    }
-    /**
-     * Tests that two tasks with the same name, due date and parent are considered
-     * equal.
-     */
-    @Test
-    public void testTaskNameEquality() {
-        // Arrange
-        Task t2 = new Task("Dup");
-        Task t3 = new Task("Dup");
-        // Act
-        t2.setDueDate(0, 1, 1, 0, 0);
-        t3.setDueDate(0, 1, 1, 0, 0);
-        t1.createWorkspace(t2);
-        t1.createWorkspace(t3);
-        // Assert
-        assertEquals(t2, t3, "Ensure two Tasks are equal");
-    }
-    /**
-     * Ensures that tasks which do not share a name.
-     */
-    @Test
-    public void testTaskNotEqualName() {
-        // Arrange
-        Task t2 = new Task("Task 1");
-        Task t3 = new Task("Task 2");
-        // Act -- Ensure parent and dueDates are same
-        t1.createWorkspace(t2);
-        t1.createWorkspace(t3);
-        t2.setDueDate(0, 1, 1, 0, 0);
-        t3.setDueDate(0, 1, 1, 0, 0);
-        // Assert
-        assertNotEquals("Ensure that two tasks with different names are not equal", t2, t3);
-    }
-    /**
-     * Ensures that tasks which do not share a parent.
-     */
-    @Test
-    public void testTaskNotEqualParent() {
-        // Arrange
-        Task t2 = new Task("Task");
-        Task t3 = new Task("Task");
-        // Act -- Ensure dueDate and names are same
-        t2.setDueDate(0, 1, 1, 0, 0);
-        t3.setDueDate(0, 1, 1, 0, 0);
-        // Assert
-        assertNotEquals("Ensure that two tasks with different parents are not equal", t2, t3);
-    }
-    /**
-     * Ensures that tasks which do not share a due date.
-     */
-    @Test
-    public void testTaskNotEqualDueDate() {
-        // Arrange
-        Task t2 = new Task("Task");
-        Task t3 = new Task("Task");
-        // Act -- Ensure dueDates are different
-        t1.createWorkspace(t2);
-        t1.createWorkspace(t3);
-        t2.setDueDate(0, 2, 1, 0, 0);
-        t3.setDueDate(0, 1, 1, 0, 0);
-        // Assert
-        assertNotEquals("Ensure that two tasks with different dueDates are not equal", t2, t3);
-    }
-    /**
-     * Ensures that actions which do not share a name.
-     */
-    @Test
-    public void testActionNotEqualName() {
-        // Arrange
-        Action t2 = new Action("Action 1");
-        Action t3 = new Action("Action 2");
-        // Act -- Ensure parent and dueDates are same
-        t1.createWorkspace(t2);
-        t1.createWorkspace(t3);
-        t2.setDueDate(0, 1, 1, 0, 0);
-        t3.setDueDate(0, 1, 1, 0, 0);
-        // Assert
-        assertNotEquals("Ensure that two actions with different names are not equal", t2, t3);
-    }
-    /**
-     * Ensures that actions which do not share a parent.
-     */
-    @Test
-    public void testActionNotEqualParent() {
-        // Arrange
-        Action t2 = new Action("Action");
-        Action t3 = new Action("Action");
-        // Act -- Ensure dueDate and names are same
-        t2.setDueDate(0, 1, 1, 0, 0);
-        t3.setDueDate(0, 1, 1, 0, 0);
-        // Assert
-        assertNotEquals("Ensure that two actions with different parents are not equal", t2, t3);
-    }
-    /**
-     * Ensures that actions which do not share a due date.
-     */
-    @Test
-    public void testActionNotEqualDueDate() {
-        // Arrange
-        Action t2 = new Action("Action");
-        Action t3 = new Action("Action");
-        // Act -- Ensure dueDates are different
-        t1.createWorkspace(t2);
-        t1.createWorkspace(t3);
-        t2.setDueDate(0, 2, 1, 0, 0);
-        t3.setDueDate(0, 1, 1, 0, 0);
-        // Assert
-        assertNotEquals("Ensure that two actions with different dueDates are not equal", t2, t3);
-    }
-    /**
-     * Ensure Action and Task with same name, due date and parent are not equal.
-     */
-    @Test
-    public void testActionAndTaskNotEqual() {
-        // Arrange
-        Task t2 = new Task("Dup");
-        Action a2 = new Action("Dup");
-        // Act
-        t1.createWorkspace(t2);
-        t1.createWorkspace(a2);
-        t2.setDueDate(0, 1, 1, 0, 0);
-        a2.setDueDate(0, 1, 1, 0, 0);
-        // Assert
-        assertNotEquals("Ensure that similar Task and Action are not equal", t2, a2);
-        assertNotEquals("Ensure that similar Action and Task are not equal", a2, t2);
+        assertEquals(totalSubWS, Integer.parseInt(wm.getTasks().get(1).get("Tasks")), "Ensure workspaces are in second task");
+        assertEquals(0, Integer.parseInt(wm.getTasks().get(0).get("Tasks")), "Ensure workspaces are not in original task");
     }
     /**
      * Tests to see if workspace search for Task objects works.
@@ -378,53 +273,31 @@ public class WorkspaceManagerTest {
     @Test
     public void testTaskSearch() {
         // Arrange
-        Task t2 = new Task("Task 1");
-        Task t3 = new Task("Task 2");
-        Action a1 = new Action("Action 1");
-        Action a2 = new Action("Action 2");
+        String t2 = "Task 1";
+        String t3 = "Task 2";
+        String a1 = "Action 1";
+        String a2 = "Action 2";
 
-        t1.createWorkspace(t2);
-        t1.createWorkspace(t3);
-        t1.createWorkspace(a1);
-        t1.createWorkspace(a2);
-        // Act
-        boolean foundT2 = t1.searchWorkspaces(t2);
-        boolean foundA2 = t1.searchWorkspaces(a2);
-        boolean randomTask = t1.searchWorkspaces(new Task("Random"));
-        boolean randomAction = t1.searchWorkspaces(new Action("Random"));
-        // Assert
-        assertEquals(true, foundT2, "Look for Task in list of workspaces");
-        assertEquals(true, foundA2, "Look for Action in list of workspaces");
-        assertEquals(false, randomTask, "Look for Task that is not in list of workspaces");
-        assertEquals(false, randomAction, "Look for Action that is not in list of workspaces");
-    }
-    /**
-     * Tests to see if workspace search for Task objects works when looking for itself.
-     */
-    @Test
-    public void testTaskSearchSelf() {
-        // Arrange
+        Criteria c2 = new Criteria().addName(t2);
+        Criteria ca1 = new Criteria().addName(a1);
 
+        wm.addWorkspace(t2);
+        wm.addWorkspace(t3);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(a1);
+        wm.home();
+        wm.addWorkspace(a2);
         // Act
-        boolean foundItself = t1.searchWorkspaces(t1);
+        ArrayList<Map<String, String>> foundT2 = wm.searchWorkspaces(c2);
+        ArrayList<Map<String, String>> foundA2 = wm.searchWorkspaces(ca1);
+        ArrayList<Map<String, String>> randomTask = wm.searchWorkspaces(new Criteria().addName("Random"));
+        ArrayList<Map<String, String>> randomAction = wm.searchWorkspaces(new Criteria().addName("Random"));
         // Assert
-        assertEquals(true, foundItself, "Ensure that true is returned when looking for itself");
-    }
-    /**
-     * Tests to see if workspace search for Action objects works. This should always return false
-     * as an Action does not contain a list of Workspaces.
-     */
-    @Test
-    public void testActionSearch() {
-        // Arrange
-        Action a1 = new Action("Base Action");
-        Action a2 = new Action("Action 1");
-        Task t2 = new Task("Task 1");
-        // Act
-        boolean foundA2 = a1.searchWorkspaces(a2);
-        boolean foundT2 = a1.searchWorkspaces(t2);
-        // Assert
-        assertEquals(false, foundA2, "Action should never be found in Action list of tasks");
-        assertEquals(false, foundT2, "Task should never be found in Action list of tasks");
+        assertEquals(1, foundT2.size(), "Look for Task in list of workspaces");
+        assertEquals(t2, foundT2.get(0).get("Name"), "Ensure task has the correct name");
+        assertEquals(1, foundA2.size(), "Look for Action in list of workspaces");
+        assertEquals(a1, foundA2.get(0).get("Name"), "Ensure action has the correct name");
+        assertEquals(0, randomTask.size(), "Look for Task that is not in list of workspaces");
+        assertEquals(0, randomAction.size(), "Look for Action that is not in list of workspaces");
     }
 }

@@ -207,6 +207,18 @@ public class WorkspaceManager {
         currentWorkspace.setName(name);
     }
     /**
+     * Sets the dueDate for the currentWorkspace.
+     *
+     * @param year
+     * @param month
+     * @param day
+     * @param hour
+     * @param minute
+     */
+    public void setDueDate(final int year, final int month, final int day, final int hour, final int minute) {
+        currentWorkspace.setDueDate(year, month, day, hour, minute);
+    }
+    /**
      * Set description of currentWorkspace.
      *
      * @param   msg Description of workspace
@@ -220,7 +232,7 @@ public class WorkspaceManager {
      * @param priority  New priority of workspace
      * @return          True if priority set successfully, false otherwise
      */
-    public boolean setPrioirty(final int priority) {
+    public boolean setPriority(final int priority) {
         try {
             currentWorkspace.setPriority(priority);
             return true;
@@ -251,7 +263,14 @@ public class WorkspaceManager {
     public String toString() {
         return display();
     }
-    
+    /**
+     * Given a task, it will return a summary of it. This is used as a helper function for 
+     * other methods in this class that return info about Tasks without returning the instance
+     * itself.
+     *
+     * @param task  Task to summarise
+     * @return      A dictionary
+     */
     private Map<String, String> getDetails(final Task task) {
         Map<String, String> dict = new HashMap<String, String>();
 
@@ -259,7 +278,26 @@ public class WorkspaceManager {
         dict.put("Priority", String.valueOf(task.getPriority()));
         dict.put("Type", task.getClass().toString());
         dict.put("Tasks", String.valueOf(task.getTasks().size()));
+        dict.put("DueDate",task.getDueDate().toString());
 
         return dict;
+    }
+    /**
+     * Used to search for tasks in the currentWorkspace given a search Criteria.
+     *
+     * @param name  The search Criteria
+     * @return      A list of Tasks matching the criteria
+     */
+    public ArrayList<Map<String,String>> searchWorkspaces(final Criteria criteria) {
+        ArrayList<Map<String,String>> res = new ArrayList<>();
+        for(int i = 0; i <  currentWorkspace.getTasks().size(); i++) {
+            this.stepIntoWorkspace(i);
+            res.addAll(this.searchWorkspaces(criteria));
+            this.stepUp();
+            if (criteria.compare(this.getTasks().get(i))) {
+                res.add(this.getTasks().get(i));
+            }
+        }
+        return res;
     }
 }
