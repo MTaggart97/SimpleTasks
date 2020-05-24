@@ -1,5 +1,10 @@
 package simpletask.main.entities;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +38,16 @@ public class WorkspaceManager {
         rootWorkspace = new Task(name);
         currentWorkspace = rootWorkspace;
     };
+    /**
+     * Given a WorkspaceNode, initialise a new WorkspaceManager. The manager will manage this
+     * given WorkspaceNode.
+     *
+     * @param workspace Workspace to manage
+     */
+    private WorkspaceManager(final WorkspaceNode workspace) {
+        rootWorkspace = workspace;
+        currentWorkspace = workspace;
+    }
     //#endregion [Constructors]
 
     //#region [Getters]
@@ -118,15 +133,28 @@ public class WorkspaceManager {
 
     //#region [Load/Save]
     /**
-     * Given a path to a file containing a valid workspace, it will load it in. That workspace
+     * Given a path to a file containing a valid WorkspaceNode, it will load it in. That workspace
      * will become the rootWorkspace.
      *
      * @param path  Path to workspace
-     * @return      True if workspace loads successfully, false otherwise
+     * @return      The WorkspaceManager that manages the loaded WorkspaceNode
      */
-    public boolean loadWorkspace(final String path) {
-
-        return true;
+    public static WorkspaceManager loadWorkspace(final String path) {
+        try {
+            FileInputStream fileIn = new FileInputStream(path);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            WorkspaceNode w = (WorkspaceNode) in.readObject();
+            in.close();
+            fileIn.close();
+            return new WorkspaceManager(w);
+        } catch (IOException i) {
+            i.printStackTrace();
+            return null;
+        } catch (ClassNotFoundException c) {
+            System.out.println("Class not found");
+            c.printStackTrace();
+            return null;
+        }
     }
     /**
      * Given a path to a valid location, it will save the rootWorkspace to that location.
@@ -135,8 +163,19 @@ public class WorkspaceManager {
      * @return          True if workspace saved successfully.
      */
     public boolean save(final String path) {
-
-        return true;
+        try {
+            FileOutputStream fileOut = new FileOutputStream(path);
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(this.rootWorkspace);
+            out.close();
+            fileOut.close();
+            System.out.println("Serialized data is saved in: " + path);
+            return true;
+        } catch (IOException i) {
+            System.out.println("Failed to save workspace to: " + path);
+            i.printStackTrace();
+            return false;
+        }
     }
     //#endregion [Load/Save]
 
@@ -201,9 +240,9 @@ public class WorkspaceManager {
         /**
      * Adds a workspace into the currentWorkspaces task list if it is a Task.
      *
-     * @param newWorkspace  Name of Workspace to add
-     * @param type          Type of Workspace to add
-     * @return              True if workspace added successfully, false otherwise
+     * @param name  Name of Workspace to add
+     * @param type  Type of Workspace to add
+     * @return      True if workspace added successfully, false otherwise
      */
     public boolean addWorkspace(final String name, final String type) {
         WorkspaceNode newWorkspace;
@@ -247,8 +286,8 @@ public class WorkspaceManager {
     /**
      * Used to search for tasks in the currentWorkspace given a search Criteria.
      *
-     * @param name  The search Criteria
-     * @return      A list of Tasks matching the criteria
+     * @param criteria  The search Criteria
+     * @return          A list of Tasks matching the criteria
      */
     public ArrayList<Map<String,String>> searchWorkspaces(final Criteria criteria) {
         ArrayList<Map<String,String>> res = new ArrayList<>();
@@ -276,11 +315,11 @@ public class WorkspaceManager {
     /**
      * Sets the dueDate for the currentWorkspace.
      *
-     * @param year
-     * @param month
-     * @param day
-     * @param hour
-     * @param minute
+     * @param year      Year of dueDate
+     * @param month     Month of dueDate
+     * @param day       Day of dueDate
+     * @param hour      Hour of dueDate
+     * @param minute    Minute of dueDate
      */
     public void setDueDate(final int year, final int month, final int day, final int hour, final int minute) {
         currentWorkspace.setDueDate(year, month, day, hour, minute);

@@ -38,8 +38,9 @@ public final class App {
     public static void main(final String[] args) {
         Scanner sc = new Scanner(System.in);
         // Create your initial workspace
-        System.out.print("Enter the name of your task: ");
-        WorkspaceManager workspace = new WorkspaceManager(sc.nextLine());
+        // System.out.print("Enter the name of your task: ");
+        // WorkspaceManager workspace = new WorkspaceManager(sc.nextLine());
+        WorkspaceManager workspace = loadWorkspace("SavedWorkspace/workspace.ser");
 
         Options option;
         String st;
@@ -68,7 +69,7 @@ public final class App {
                     System.out.println(workspace);
                     break;
                 case SAVE:
-                    debugLog("Not yet implemented");
+                    saveWorkspace(workspace, "SavedWorkspace/workspace.ser");
                     break;
                 case DELETE:
                     deleteWorkspace(workspace, sc);
@@ -171,47 +172,23 @@ public final class App {
     /**
      * Save the workspace.
      *
-     * @param   w   The workspace to save
-     * @return      True if save was successful, false otherwise
+     * @param   w       The workspace to save
+     * @param   path    The path to save workspace to
+     * @return          True if save was successful, false otherwise
      */
-    // public static boolean saveWorkspace(final Workspace w) {
-    //     try {
-    //         FileOutputStream fileOut = new FileOutputStream("SavedWorkspace/workspace.ser");
-    //         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-    //         out.writeObject(w);
-    //         out.close();
-    //         fileOut.close();
-    //         System.out.printf("Serialized data is saved in SavedWorkspace/workspace.ser");
-    //         return true;
-    //      } catch (IOException i) {
-    //         i.printStackTrace();
-    //         return false;
-    //      }
-    // }
+    public static boolean saveWorkspace(final WorkspaceManager w, final String path) {
+        return w.save(path);
+    }
 
     /**
      * Load in the workspace in the given file.
      *
      * @param file  Path to workspace on disk
-     * @return      The Task in the file or null if failed
+     * @return      The WorkspaceManager that manages the loaded workspace
      */
-    // public static Workspace loadWorkspace(final String file) {
-    //     try {
-    //         FileInputStream fileIn = new FileInputStream(file);
-    //         ObjectInputStream in = new ObjectInputStream(fileIn);
-    //         Workspace w = (Workspace) in.readObject();
-    //         in.close();
-    //         fileIn.close();
-    //         return w;
-    //      } catch (IOException i) {
-    //         i.printStackTrace();
-    //         return null;
-    //      } catch (ClassNotFoundException c) {
-    //         System.out.println("Class not found");
-    //         c.printStackTrace();
-    //         return null;
-    //      }
-    // }
+    public static WorkspaceManager loadWorkspace(final String file) {
+        return WorkspaceManager.loadWorkspace(file);
+    }
 
     /**
      * Prints a message to say session is ending. Releases any resources being
