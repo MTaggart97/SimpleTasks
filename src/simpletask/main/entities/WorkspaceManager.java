@@ -9,16 +9,20 @@ import java.util.Map;
  * to workspace, modify tasks and save workspace.
  */
 public class WorkspaceManager {
+    //#region [Fields]
     /**
      * Users main workspace that the WorkspaceManager manages. Once set, it can never be reset. This
      * is to preven the user from losing their root workspace.
      */
-    private final Task rootWorkspace;
+    private final WorkspaceNode rootWorkspace;
     /**
      * Current workspace that user is in. This workspace changes regurlarly as the user moves between
      * workspaces.
      */
-    private Task currentWorkspace = null;
+    private WorkspaceNode currentWorkspace = null;
+    //#endregion [Fields]
+
+    //#region [Constructors]
     /**
      * Constructor that takes the name of the workspace to create. It then creates a
      * task with the same name. This task becomes the rootWorkspace and current workspace.
@@ -29,6 +33,9 @@ public class WorkspaceManager {
         rootWorkspace = new Task(name);
         currentWorkspace = rootWorkspace;
     };
+    //#endregion [Constructors]
+
+    //#region [Getters]
     /**
      * Returns a map of details of the currentWorkspace's parent. Keys include:
      *  Name    :   Name of Parent
@@ -39,7 +46,7 @@ public class WorkspaceManager {
      * @return  Current workspace's parent
      */
     public Map<String, String> getParent() {
-        Task parent = currentWorkspace.getParent();
+        Task parent = (Task) currentWorkspace.getParent();
         return getDetails(parent);
     }
     /**
@@ -50,11 +57,30 @@ public class WorkspaceManager {
     public ArrayList<Map<String, String>> getTasks() {
         ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
 
-        for (Task w: currentWorkspace.getTasks()) {
+        for (WorkspaceNode w: currentWorkspace.getTasks()) {
             array.add(getDetails(w));
         }
 
         return array;
+    }
+    /**
+     * Given a task, it will return a summary of it. This is used as a helper function for 
+     * other methods in this class that return info about Tasks without returning the instance
+     * itself.
+     *
+     * @param task  Task to summarise
+     * @return      A dictionary
+     */
+    private Map<String, String> getDetails(final WorkspaceNode task) {
+        Map<String, String> dict = new HashMap<String, String>();
+
+        dict.put("Name", task.getName());
+        dict.put("Priority", String.valueOf(task.getPriority()));
+        dict.put("Type", task.getClass().getSimpleName());
+        dict.put("Tasks", String.valueOf(task.getTasks().size()));
+        dict.put("DueDate",task.getDueDate().toString());
+
+        return dict;
     }
     /**
      * Returns details of the Workspace at the given path.
@@ -63,7 +89,7 @@ public class WorkspaceManager {
      * @return          Dictionary containing details of workspace at path
      */
     public Map<String, String> detailsOf(final ArrayList<Integer> path) {
-        Task w = rootWorkspace;
+        WorkspaceNode w = rootWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);
         }
@@ -76,18 +102,21 @@ public class WorkspaceManager {
      * @return          List of dictionaries containing details of workspace at path
      */
     public ArrayList<Map<String, String>> taskDetailsOf(final ArrayList<Integer> path) {
-        Task w = rootWorkspace;
+        WorkspaceNode w = rootWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);
         }
 
         ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
-        for (Task wrk: w.getTasks()) {
+        for (WorkspaceNode wrk: w.getTasks()) {
             array.add(getDetails(wrk));
         }
 
         return array;
     }
+    //#endregion [Getters]
+
+    //#region [Load/Save]
     /**
      * Given a path to a file containing a valid workspace, it will load it in. That workspace
      * will become the rootWorkspace.
@@ -109,21 +138,9 @@ public class WorkspaceManager {
 
         return true;
     }
-    /**
-     * Adds a workspace into the currentWorkspaces task list if it is a Task.
-     *
-     * @param newWorkspace  Name of Workspace to add
-     * @return              True if workspace added successfully, false otherwise
-     */
-    public boolean addWorkspace(final String name) {
-        Task newWorkspace = new Task(name);
-        if (currentWorkspace instanceof Task) {
-            ((Task) currentWorkspace).createWorkspace(newWorkspace);
-            return true;
-        } else {
-            return false;
-        }
-    }
+    //#endregion [Load/Save]
+
+    //#region [Movement]
     /**
      * Given an integer, this will move the current workspace into that position in its
      * list of tasks. If the position doesn't exist, then nothing happens.
@@ -131,9 +148,9 @@ public class WorkspaceManager {
      * @param pos       Position in subTasks of Workspace to move into
      * @return          The workspace the user moved into
      */
-    public Task stepIntoWorkspace(final int pos) {
+    public WorkspaceNode stepIntoWorkspace(final int pos) {
         try {
-            Task workspace = currentWorkspace.getTasks().get(pos);
+            WorkspaceNode workspace = currentWorkspace.getTasks().get(pos);
             currentWorkspace = workspace;
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Doing nothing");
@@ -152,6 +169,9 @@ public class WorkspaceManager {
     public void stepUp() {
         currentWorkspace = currentWorkspace.getParent();
     }
+    //#endregion [Movement]
+
+    //#region [Workspace Management]
     /**
      * Deletes the currentWorkspace and all its sub Workspaces if any.
      *
@@ -169,12 +189,38 @@ public class WorkspaceManager {
      */
     public boolean deleteWorkspace(final int pos) {
         try {
-            Task workspace = currentWorkspace.getTasks().get(pos);
+            WorkspaceNode workspace = currentWorkspace.getTasks().get(pos);
             if (!(currentWorkspace instanceof Task)) {
                 return false;
             }
             return ((Task) currentWorkspace).removeWorkspace(workspace);
         } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
+    }
+        /**
+     * Adds a workspace into the currentWorkspaces task list if it is a Task.
+     *
+     * @param newWorkspace  Name of Workspace to add
+     * @param type          Type of Workspace to add
+     * @return              True if workspace added successfully, false otherwise
+     */
+    public boolean addWorkspace(final String name, final String type) {
+        WorkspaceNode newWorkspace;
+        switch (type) {
+            case ("Action"):
+                newWorkspace = new Action(name);
+                break;
+            case ("Task"):
+                newWorkspace = new Task(name);
+                break;
+            default:
+                return false;
+        }
+        if (currentWorkspace instanceof Task) {
+            ((Task) currentWorkspace).createWorkspace(newWorkspace);
+            return true;
+        } else {
             return false;
         }
     }
@@ -187,7 +233,7 @@ public class WorkspaceManager {
      * @return          True if workspace is move successfully
      */
     public boolean moveCurrentWorkspace(final ArrayList<Integer> path) {
-        Task target = rootWorkspace;
+        WorkspaceNode target = rootWorkspace;
         for (Integer i: path) {
             target = target.getTasks().get(i);
         }
@@ -198,6 +244,27 @@ public class WorkspaceManager {
 
         return currentWorkspace.moveWorkspace((Task) target);
     }
+    /**
+     * Used to search for tasks in the currentWorkspace given a search Criteria.
+     *
+     * @param name  The search Criteria
+     * @return      A list of Tasks matching the criteria
+     */
+    public ArrayList<Map<String,String>> searchWorkspaces(final Criteria criteria) {
+        ArrayList<Map<String,String>> res = new ArrayList<>();
+        for(int i = 0; i <  currentWorkspace.getTasks().size(); i++) {
+            this.stepIntoWorkspace(i);
+            res.addAll(this.searchWorkspaces(criteria));
+            this.stepUp();
+            if (criteria.compare(this.getTasks().get(i))) {
+                res.add(this.getTasks().get(i));
+            }
+        }
+        return res;
+    }
+    //#endregion [Workspace Management]
+    
+    //#region [Setters]
     /**
      * Sets name of currentWorkspace.
      *
@@ -241,6 +308,8 @@ public class WorkspaceManager {
             return false;
         }
     }
+    //#endregion [Setters]
+
     /**
      * Creates a string representing the  currentWorkspace. If current workspace is a Task, it
      * will first add all its sub tasks.
@@ -249,7 +318,7 @@ public class WorkspaceManager {
      */
     private String display() {
         StringBuilder msg = new StringBuilder(currentWorkspace.getName() + "\n");
-        for (Task w: currentWorkspace.getTasks()) {
+        for (WorkspaceNode w: currentWorkspace.getTasks()) {
             msg.append(w.toString());
         }
         return msg.toString();
@@ -262,42 +331,5 @@ public class WorkspaceManager {
     @Override
     public String toString() {
         return display();
-    }
-    /**
-     * Given a task, it will return a summary of it. This is used as a helper function for 
-     * other methods in this class that return info about Tasks without returning the instance
-     * itself.
-     *
-     * @param task  Task to summarise
-     * @return      A dictionary
-     */
-    private Map<String, String> getDetails(final Task task) {
-        Map<String, String> dict = new HashMap<String, String>();
-
-        dict.put("Name", task.getName());
-        dict.put("Priority", String.valueOf(task.getPriority()));
-        dict.put("Type", task.getClass().toString());
-        dict.put("Tasks", String.valueOf(task.getTasks().size()));
-        dict.put("DueDate",task.getDueDate().toString());
-
-        return dict;
-    }
-    /**
-     * Used to search for tasks in the currentWorkspace given a search Criteria.
-     *
-     * @param name  The search Criteria
-     * @return      A list of Tasks matching the criteria
-     */
-    public ArrayList<Map<String,String>> searchWorkspaces(final Criteria criteria) {
-        ArrayList<Map<String,String>> res = new ArrayList<>();
-        for(int i = 0; i <  currentWorkspace.getTasks().size(); i++) {
-            this.stepIntoWorkspace(i);
-            res.addAll(this.searchWorkspaces(criteria));
-            this.stepUp();
-            if (criteria.compare(this.getTasks().get(i))) {
-                res.add(this.getTasks().get(i));
-            }
-        }
-        return res;
     }
 }

@@ -19,6 +19,14 @@ import org.junit.jupiter.api.Test;
  */
 public class WorkspaceManagerTest {
     /**
+     * Used for creating Task objects.
+     */
+    private static String task = "Task";
+    /**
+     * Used for creating Action objects.
+     */
+    private static String action = "Action";
+    /**
      * Base task instance to test.
      */
     private WorkspaceManager wm;
@@ -56,7 +64,7 @@ public class WorkspaceManagerTest {
         // Arrange
         String name = "Child 1";
         // Act
-        wm.addWorkspace(name);
+        wm.addWorkspace(name, task);
         // Assert
         assertEquals(1, wm.getTasks().size(), "Ensure that there is only one workspace in task list");
         assertEquals(name, wm.getTasks().get(0).get("Name"), "Ensure that this workspace has the correct name");
@@ -72,9 +80,9 @@ public class WorkspaceManagerTest {
         String name3 = "Child 3";
         final int numOfWorkspaces = 3;
         // Act
-        wm.addWorkspace(name1);
-        wm.addWorkspace(name2);
-        wm.addWorkspace(name3);
+        wm.addWorkspace(name1, task);
+        wm.addWorkspace(name2, task);
+        wm.addWorkspace(name3, task);
         // Assert
         assertEquals(numOfWorkspaces, wm.getTasks().size(), "Ensure that there are three workspaces in the task list");
         assertEquals(name1, wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
@@ -93,11 +101,11 @@ public class WorkspaceManagerTest {
         String name3 = "Child 2.1";
         String name4 = "Child 2.2";
         // Act
-        wm.addWorkspace(name1);
-        wm.addWorkspace(name2);
+        wm.addWorkspace(name1, task);
+        wm.addWorkspace(name2, task);
         wm.stepIntoWorkspace(1);
-        wm.addWorkspace(name3);
-        wm.addWorkspace(name4);
+        wm.addWorkspace(name3, action);
+        wm.addWorkspace(name4, action);
         wm.home();
         // Assert
         assertEquals(2, wm.getTasks().size(), "Ensure that there are two workspaces in root workspace");
@@ -116,8 +124,8 @@ public class WorkspaceManagerTest {
         String temp = "Task 1";
         String tempAction = "Action 1";
         // Act
-        wm.addWorkspace(temp);
-        wm.addWorkspace(tempAction);
+        wm.addWorkspace(temp, task);
+        wm.addWorkspace(tempAction, action);
         wm.deleteWorkspace(1);
         wm.deleteWorkspace(0);
         // Assert
@@ -133,11 +141,11 @@ public class WorkspaceManagerTest {
         String t3 = "Sub Task";
         String a1 = "Action";
         String a2 = "Sub Action";
-        wm.addWorkspace(t2);
-        wm.addWorkspace(a1);
+        wm.addWorkspace(t2, task);
+        wm.addWorkspace(a1, action);
         wm.stepIntoWorkspace(0);
-        wm.addWorkspace(t3);
-        wm.addWorkspace(a2);
+        wm.addWorkspace(t3, task);
+        wm.addWorkspace(a2, action);
         wm.home();
         // Act
         wm.deleteCurrentWorkspace();
@@ -242,15 +250,15 @@ public class WorkspaceManagerTest {
         // Arrange
         final int totalSubWS = 2;
         String ws1 = "First";
-        wm.addWorkspace(ws1);
+        wm.addWorkspace(ws1, task);
         wm.stepIntoWorkspace(0);
         String subTask = "Sub Task";
         String subAction = "Sub Action";
-        wm.addWorkspace(subTask);
-        wm.addWorkspace(subAction);
+        wm.addWorkspace(subTask, task);
+        wm.addWorkspace(subAction, action);
         wm.home();
         String ws2 = "Second";
-        wm.addWorkspace(ws2);
+        wm.addWorkspace(ws2, task);
 
         ArrayList<Integer> path = new ArrayList<>();
         path.add(1);
@@ -281,23 +289,51 @@ public class WorkspaceManagerTest {
         Criteria c2 = new Criteria().addName(t2);
         Criteria ca1 = new Criteria().addName(a1);
 
-        wm.addWorkspace(t2);
-        wm.addWorkspace(t3);
+        wm.addWorkspace(t2, task);
+        wm.addWorkspace(t3, task);
         wm.stepIntoWorkspace(0);
-        wm.addWorkspace(a1);
+        wm.addWorkspace(a1, action);
         wm.home();
-        wm.addWorkspace(a2);
+        wm.addWorkspace(a2, action);
         // Act
         ArrayList<Map<String, String>> foundT2 = wm.searchWorkspaces(c2);
         ArrayList<Map<String, String>> foundA2 = wm.searchWorkspaces(ca1);
         ArrayList<Map<String, String>> randomTask = wm.searchWorkspaces(new Criteria().addName("Random"));
-        ArrayList<Map<String, String>> randomAction = wm.searchWorkspaces(new Criteria().addName("Random"));
         // Assert
         assertEquals(1, foundT2.size(), "Look for Task in list of workspaces");
         assertEquals(t2, foundT2.get(0).get("Name"), "Ensure task has the correct name");
         assertEquals(1, foundA2.size(), "Look for Action in list of workspaces");
         assertEquals(a1, foundA2.get(0).get("Name"), "Ensure action has the correct name");
         assertEquals(0, randomTask.size(), "Look for Task that is not in list of workspaces");
-        assertEquals(0, randomAction.size(), "Look for Action that is not in list of workspaces");
+    }
+
+    /**
+     * Tests to see if workspace search for Task and Action objects works when multiple nodes are found.
+     */
+    @Test
+    public void testSearchMultiReturn() {
+        // Arrange
+        String t2 = "Task 1";
+        String t3 = "Task 2";
+        String a2 = "Action 2";
+
+        Criteria c2 = new Criteria().addName(t2);
+        Criteria ca1 = new Criteria().addName(t2).addType(action);
+
+        wm.addWorkspace(t2, task);
+        wm.addWorkspace(t3, task);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(t2, action);
+        wm.home();
+        wm.addWorkspace(a2, action);
+        // Act
+        ArrayList<Map<String, String>> foundT2 = wm.searchWorkspaces(c2);
+        ArrayList<Map<String, String>> foundA2 = wm.searchWorkspaces(ca1);
+        // Assert
+        assertEquals(2, foundT2.size(), "Should find two nodes with name: " + t2);
+        assertEquals(t2, foundT2.get(0).get("Name"), "Ensure task has the correct name");
+        assertEquals(t2, foundT2.get(1).get("Name"), "Ensure Action has the correct name");
+        assertEquals(1, foundA2.size(), "Look for Action in list of workspaces");
+        assertEquals(action, foundA2.get(0).get("Type"), "Ensure action has the correct type");
     }
 }

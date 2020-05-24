@@ -1,21 +1,18 @@
 package simpletask.main.entities;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * A task is a workspace that can contain other workspaces within
- * itself. It will be the main way in which to manage tasks/actions.
- * A task could contian multiple workspaces, i.e. a todo workspace,
- * an in progress workspace, an action etc. This makes a task very
- * flexible and allows the user to create a workspace that suits them
+ * A Task object is a WorkspaceNode that can maintain a list of other nodes. It has
+ * the same attribtes as any other node (name, description, due date etc.) but has
+ * the ability to create new nodes and place them in it's list of nodes. The main
+ * use of this class is to group similar Tasks/Actions. For example, ToD0, inProgress,
+ * AssignmentOne, SprintOne etc. It can be a way to tag Tasks/Actions as well.
  *
  * @author Matthew Taggart
  */
-class Task implements Serializable {
+class Task extends WorkspaceNode {
     //#region [Fields]
     /**
      * Unique long value that is used to ensure that this is the correct object
@@ -28,41 +25,15 @@ class Task implements Serializable {
      */
     private static final String DISPLAYHEADER = "\n-------------------------------------\n";
     /**
-     * Maximum value of importance for a task. Currently set to 10.
-     */
-    private static final int MAXIMPORTANCE = 10;
-    /**
-     * Minimum value of importance for a task. Currently set to 0, this avoids negative importance.
-     */
-    private static final int MINIMPORTANCE = 0;
-    /**
-     * Name of task.
-     */
-    protected String name;
-    /**
-     * Description of task.
-     */
-    protected String description;
-    /**
-     * Due date of task.
-     */
-    protected LocalDateTime dueDate;
-    /**
-     * Flag to mark if task is complete.
-     */
-    protected boolean complete;
-    /**
-     * Priority of task. From 1-10.
-     */
-    protected int priority;
-    /**
      * A list of tasks maintianed by current task. For a task to be
      * marked as complete, all its tasks must be marked as complete
      */
-    private ArrayList<Task> tasks = new ArrayList<>();
+    private ArrayList<WorkspaceNode> tasks = new ArrayList<>();
     /**
      * Parent of current task. This is generally used to keep track of
-     * the current task, i.e. todo, in progress, Assignment 1 etc.
+     * the current task, i.e. todo, in progress, Assignment 1 etc. It shadows the field
+     * in WorkspaceNode. Since only Tasks can have nodes, it is safe to assume that any
+     * parent will be a Task.
      */
     protected Task parent = null;
     //#endregion [Fields]
@@ -92,50 +63,19 @@ class Task implements Serializable {
 
     //#region [Getters]
     /**
-     * Returns name of the task.
-     *
-     *  @return Name of task as string
-     */
-    protected String getName() {
-        return this.name;
-    }
-    /**
-     * Returns the user definied importance of task.
-     *
-     * @return  Priority of task
-     */
-    protected int getPriority() {
-        return this.priority;
-    }
-    /**
-     * Returns description of task.
-     *
-     * @return  The description of this task
-     */
-    protected String getDescription() {
-        return this.description;
-    }
-    /**
      * Returns the list of all workspaces contained in the current task.
      *
      *  @return All workspaces tracked by current task
     */
-    protected ArrayList<Task> getTasks() {
+    protected ArrayList<WorkspaceNode> getTasks() {
         return tasks;
-    }
-    /**
-     * Returns due date of task.
-     *
-     * @return  Returns the date and time that the task is due
-     */
-    protected LocalDateTime getDueDate() {
-        return this.dueDate;
     }
     /**
      * Returns the parent of current task.
      *
      *  @return The current tasks parent
      */
+    @Override
     protected Task getParent() {
         return this.parent;
     }
@@ -143,94 +83,28 @@ class Task implements Serializable {
 
     //#region [Setters]
     /**
-     * Renames Task.
-     *
-     * @param name  Name of task
-     */
-    protected void setName(final String name) {
-        this.name = name;
-    }
-    /**
-     * Sets the parent of the current task to the inputted workspace.
+     * Sets the parent of the current task to the inputted workspace. A task is resposible for
+     * setting its own parent and as such, this method is private. Preventing any other class from
+     * changing it's parent and potentially dereferencing it.
      *
      *  @param parent    The parent workspace
      */
     private void setParent(final Task parent) {
         this.parent = parent;
     }
-    /**
-     * Sets the description attribute.
-     *
-     * @param description the description to set
-     */
-    protected void setDescription(final String description) {
-        this.description = description;
-    }
-    /**
-     * Sets the due date of the task.
-     *
-     * @param year      Year that task is due
-     * @param month     Month that task is due
-     * @param day       Day in month that task is due
-     * @param hour      Hour task is due
-     * @param minute    Minute task is due
-     */
-    protected void setDueDate(final int year, final int month, final int day, final int hour, final int minute) {
-        this.dueDate = LocalDateTime.of(year, month, day, hour, minute);
-    }
-    /**
-     * Sets dueDate.
-     *
-     * @param   dt  DateTime to set dueDate to
-     */
-    protected void setDueDate(final LocalDateTime dt) {
-        this.dueDate = dt;
-    }
-    /**
-     * Sets the priority for the task. Cannot have negative importance or greater than 10.
-     *
-     * @param imp   Number to set priority to
-     * @throws      InvalidPriorityException if invalid priority is entered
-     */
-    protected void setPriority(final int imp) throws InvalidPriorityException {
-        // Cannot have negative importacne or importance greater than 10
-        if (imp > MAXIMPORTANCE || imp < MINIMPORTANCE) {
-            throw new InvalidPriorityException("Cannot have a negative importance or importance greater than " + MAXIMPORTANCE);
-        } else {
-            this.priority = imp;
-        }
-    }
     //#endregion [Setters]
 
     // Implementation Methods
     /**
-     * Returns completion status of current task.
-     *
-     * @return True if complete, false otherwise
-     */
-    protected boolean isWorkspaceComplete() {
-        return complete;
-    }
-    /**
-     * Flips the completion status of the current workspace. Can be used
-     * by the user if they wish to manually change the completion status
-     * of the current workspace.
-     *
-     * @return The completion status of the current workspace
-     */
-    protected boolean flipCompletionStatus() {
-        this.complete = !this.complete;
-        return this.complete;
-    }
-    /**
-     * Checks if all workspaces in the tasks list are complete.
+     * Checks if all workspaces in the tasks list are complete. Used when checking
+     * if the current Task is complete.
      *
      * @return True if all workspaces in tasks are complete.
      */
     private boolean checkTasks() {
         boolean results = false;
-        for (Task w: this.tasks) {
-            results = w.isWorkspaceComplete();
+        for (WorkspaceNode w: this.tasks) {
+            results = w.getComplete();
             if (!results) {
                 break;
             }
@@ -242,24 +116,23 @@ class Task implements Serializable {
      * It checks if all other workspaces are complete and if so, marks the
      * current Task as complete.
      *
-     * @param workspace Workspace that has just been completed
      * @return          True if current workspace is complete, fale otherwise
      */
-    protected boolean isFinished(final Action workspace) {
+    @Override
+    protected boolean isFinished() {
         this.complete = this.checkTasks();
         return this.complete;
     }
     /**
-     * This creates a new workspace in the current task. A new
-     * workspace must first be created, then added to the list
-     * of workspaces that the currnet task is tracking. Finally,
-     * the that task assigns itself as the parent of the newly created
-     * task
+     * This creates a new workspace in the current task. This is done by
+     * using the moveWorkspace method on the new workspace. This moves the new
+     * workspace into the current Task.
      *
      * @param   workspaceName   New workspace to move into current workspace
      * @return                  The newly created task
      */
-    protected Task createWorkspace(final Task workspaceName) {
+    @Override
+    protected WorkspaceNode createWorkspace(final WorkspaceNode workspaceName) {
         // Add workspace to list of workspaces and set its parent
         workspaceName.moveWorkspace(this);
         return workspaceName;
@@ -282,33 +155,13 @@ class Task implements Serializable {
     public String toString() {
         StringBuilder display = new StringBuilder(DISPLAYHEADER);
         display.append("| " + this.name + "\n| ");
-        for (Task a: tasks) {
-            // display.append("\n  * " + ((Task) a).display("    "));
+        for (WorkspaceNode a: tasks) {
             display.append(a.getName() + "\t");
         }
         display.append(DISPLAYHEADER);
         return display.toString();
     }
-    /**
-     * Utility funciton used in toString(). Returns a string of the current
-     * task and all its workspaces in tasks in the format,
-     * * Task 1
-     *   * Sub task 1
-     *     * Sub sub task 1
-     *     * Sub sub task 2
-     *   * Sub task 2
-     *
-     * @param sep   Spaces between start of line and where the * appears
-     * @return      A string to display
-     */
-    private String display(final String sep) {
-        StringBuilder disp = new StringBuilder();
-        disp.append(this.getName());
-        for (Task a: tasks) {
-            disp.append("\n" + sep + "* " + ((Task) a).display(sep + "  "));
-        }
-        return disp.toString();
-    }
+
     /**
      * Moves the current Task into another Tasks list of tasks. This is done by updating the current
      * Tasks parent, adding it to the list of tasks of it's new parent and removing it from the list
@@ -317,29 +170,35 @@ class Task implements Serializable {
      * @param   target  The current tasks new parent
      * @return          True if move was successful
      */
-    protected boolean moveWorkspace(final Task target) {
+    @Override
+    protected boolean moveWorkspace(final WorkspaceNode target) {
+        // If target is not an instance of Task, then currnet Task cannot be moved
+        if (!(target instanceof Task)) {
+            return false;
+        };
         // Only tasks can have childern so we know the result of this will always be a task
         Task oldParent = this.getParent();
         // Task will be it's own parent if no parent exists
         if (oldParent != this) {
             oldParent.tasks.remove(this);
         }
-        this.setParent(target);
-        target.addToTask(this);
+        this.setParent((Task) target);
+        ((Task) target).addToTask(this);
         return true;
     }
     /**
-     * Searches the list of tasks for the workspace entered. Returns true if workspace
-     * entered is the same as this workspace.
+     * Searches the list of tasks for the workspace entered. It will also check if current
+     * Task is equal to workspace entered.
      *
      * @param   workspace   Workspace to find
      * @return              True if found, false otherwise.
      */
-    protected boolean searchWorkspaces(final Task workspace) {
+    @Override
+    protected boolean searchWorkspaces(final WorkspaceNode workspace) {
         if (this.equals(workspace)) {
             return true;
         }
-        for (Task w: this.getTasks()) {
+        for (WorkspaceNode w: this.getTasks()) {
             if (w.equals(workspace)) {
                 return true;
             }
@@ -366,12 +225,15 @@ class Task implements Serializable {
         }
     }
     /**
-     * Removes workspace from list of tasks if the workspace is there.
+     * Removes workspace from list of tasks if the workspace is there. Note, this assumes that the
+     * workspace entered is the same instance as the workspace you are trying to remove. If not, this
+     * will fail to remove workspace you want and will simply call the delte method on the workspace
+     * you passed in.
      *
      * @param workspace Workspace to remove from list of tasks
      * @return          True if workspace successfully removed
      */
-    protected boolean removeWorkspace(final Task workspace) {
+    protected boolean removeWorkspace(final WorkspaceNode workspace) {
         boolean found = this.searchWorkspaces(workspace);
         if (found) {
             return workspace.delete();
@@ -384,7 +246,7 @@ class Task implements Serializable {
      * @param workspace Workspace to add to list of workspaces
      * @return          True if workspace is added successfully
      */
-    protected boolean addToTask(final Task workspace) {
+    protected boolean addToTask(final WorkspaceNode workspace) {
         return this.tasks.add(workspace);
     }
     /**
@@ -393,6 +255,7 @@ class Task implements Serializable {
      *
      * @return  True if Task is successfully deleted
      */
+    @Override
     protected boolean delete() {
         boolean fin = false;
         while (!tasks.isEmpty()) {

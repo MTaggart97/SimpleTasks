@@ -2,8 +2,6 @@ package simpletask.main.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Class that describes a singular unit of work. It cannot be broken up into
@@ -12,21 +10,13 @@ import java.util.Map;
  * @author  Matthew Taggart
  * @see     Task
  */
-class Action extends Task {
+class Action extends WorkspaceNode {
     //#region [Fields]
     /**
      * Unique long value that is used to ensure that this is the correct object
      * during serialisation.
      */
     private static final long serialVersionUID = 4278080741841613065L;
-    /**
-     * Maximum value of importance for a task. Currently set to 10.
-     */
-    private static final byte MAXIMPORTANCE = 10;
-    /**
-     * Minimum value of importance for a task. Currently set to 0, this avoids negative importance.
-     */
-    private static final byte MINIMPORTANCE = 0;
     //#endregion [Fields]
 
     //#region [Constructors]
@@ -54,13 +44,13 @@ class Action extends Task {
 
     //#region [Getters]
     /**
-     * This should null since an Action has no concept of task lists.
+     * This returns an empty list since an Action has no concept of task lists.
      *
-     * @return Null
+     * @return An empty list
      */
     @Override
-    public ArrayList<Task> getTasks() {
-        return null;
+    public ArrayList<WorkspaceNode> getTasks() {
+        return new ArrayList<WorkspaceNode>();
     }
     //#endregion [Getters]
 
@@ -70,7 +60,7 @@ class Action extends Task {
     }
     //#endregion [Setters]
 
-    // Implentation Methods
+    //#region [Implementation]
     /**
      * Moves current action into a new workspace.
      *
@@ -78,14 +68,17 @@ class Action extends Task {
      * @return          True if Action moved successfully
      */
     @Override
-    public boolean moveWorkspace(final Task target) {
-        Task oldParent = this.getParent();
+    public boolean moveWorkspace(final WorkspaceNode target) {
+        if (!(target instanceof Task)) {
+            return false;
+        }
+        WorkspaceNode oldParent = this.getParent();
         // Ensure oldParent is a Task before attempting to remove from its list.
         if (oldParent instanceof Task && oldParent != null) {
-            oldParent.removeWorkspace(this);
+            ((Task) oldParent).removeWorkspace(this);
         }
-        this.setParent(target);
-        target.addToTask(this);
+        this.setParent((Task) target);
+        ((Task) target).addToTask(this);
         return true;
     }
     /**
@@ -108,7 +101,8 @@ class Action extends Task {
      * @param   workspace   Workspace to search for
      * @return              Will always return false
      */
-    protected boolean searchWorkspaces(final Task workspace) {
+    @Override
+    protected boolean searchWorkspaces(final WorkspaceNode workspace) {
         return false;
     }
     /**
@@ -148,7 +142,16 @@ class Action extends Task {
      * @return                  Null
      */
     @Override
-    protected Task createWorkspace(final Task workspaceName) {
+    protected Task createWorkspace(final WorkspaceNode workspaceName) {
         return null;
     }
+    /**
+     * Since an Action does not have a list of nodes to maintain, it is finished
+     * whenever the user marks it as finished.
+     */
+    @Override
+    protected boolean isFinished() {
+        return this.getComplete();
+    }
+    //#endregion [Implementation]
 }

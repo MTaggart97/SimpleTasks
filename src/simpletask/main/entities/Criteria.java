@@ -50,16 +50,17 @@ public class Criteria {
         return this;
     }
     /**
-     * To be used to compare a summarised version of a task to the dict.
+     * To be used to compare a summarised version of a task to the dict. Returns true if all
+     * values in the Criteria dictionary are matched (ignoring case).
      *
      * @param task  Summarised version of task
      * @return      True if it matches, false otherwise
      */
     protected boolean compare(final Map<String, String> task) {
-        boolean res = false;
+        boolean res = true;
         for (Map.Entry<String, String> entry: dict.entrySet()) {
             if (null != task.get(entry.getKey())) {
-                res |= task.get(entry.getKey()).equals(entry.getValue());
+                res &= task.get(entry.getKey()).equalsIgnoreCase(entry.getValue());
             }
         }
         return res;
