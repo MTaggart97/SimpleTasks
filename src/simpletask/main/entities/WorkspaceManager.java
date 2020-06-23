@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -103,6 +104,7 @@ public class WorkspaceManager {
         Map<String, String> dict = new HashMap<String, String>();
 
         dict.put("Name", task.getName());
+        // dict.put("Description", task.getDescription());
         dict.put("Priority", String.valueOf(task.getPriority()));
         dict.put("Type", task.getClass().getSimpleName());
         dict.put("Tasks", String.valueOf(task.getTasks().size()));
@@ -280,6 +282,32 @@ public class WorkspaceManager {
             default:
                 return false;
         }
+        if (currentWorkspace instanceof Task) {
+            ((Task) currentWorkspace).createWorkspace(newWorkspace);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /**
+     * Adds the new node to the current workspace.
+     *
+     * @param node  Node to add
+     * @return      True if successful, false otherwise
+     */
+    public boolean addWorkspace(final Map<String, String> node) {
+        WorkspaceNode newWorkspace;
+        String name = (null == node.get("Name")) ? "New Task" : node.get("Name");
+        if ("Action".equals(node.get("Type"))) {
+            newWorkspace = new Action(name);
+        } else {
+            newWorkspace = new Task(name);
+        }
+        //TODO: Nulls need to be handled in the set* methods (i.e. defaults)
+        newWorkspace.setDescription(node.get("Description"));
+        newWorkspace.setPriority(Integer.parseInt(null == node.get("Priority") ? "0" : node.get("Priority")));
+        newWorkspace.setDueDate(LocalDateTime.parse(null == node.get("DueDate") ? LocalDateTime.now().toString() : node.get("DueDate")));
+        
         if (currentWorkspace instanceof Task) {
             ((Task) currentWorkspace).createWorkspace(newWorkspace);
             return true;

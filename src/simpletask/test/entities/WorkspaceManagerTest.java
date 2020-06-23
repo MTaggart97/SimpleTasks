@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -88,6 +89,28 @@ public class WorkspaceManagerTest {
         assertEquals(name1, wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
         assertEquals(name2, wm.getTasks().get(1).get("Name"), "Ensure that second workspace has the correct name");
         assertEquals(name3, wm.getTasks().get(2).get("Name"), "Ensure that third workspace has the correct name");
+    }
+    /**
+     * Tests if tasks are added when passed in as dictionaries
+     */
+    @Test
+    public void testaddWorkspaceDict() {
+        // Arrange
+        Map<String, String> first = new HashMap<>();
+        Map<String, String> second = new HashMap<>();
+        Map<String, String> third = new HashMap<>();
+        first.put("Name", "first");
+        second.put("Name", "second");second.put("Type", action);
+        third.put("Name", "third");
+        // Act
+        wm.addWorkspace(first);
+        wm.addWorkspace(second);
+        wm.addWorkspace(third);
+        // Assert
+        assertEquals("first", wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
+        assertEquals("second", wm.getTasks().get(1).get("Name"), "Ensure that second workspace has the correct name");
+        assertEquals(action, wm.getTasks().get(1).get("Type"), "Ensure that second workspace has the correct type");
+        assertEquals("third", wm.getTasks().get(2).get("Name"), "Ensure that third workspace has the correct name");
     }
     /**
      * Tests if Tasks and actions can be added in Tasks within the current tasks list of tasks.

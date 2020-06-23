@@ -8,6 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  * Controller for main window.
@@ -20,6 +22,17 @@ public class MainController {
      */
     @FXML
     private BorderPane mainBorderPane;
+    /**
+     * Reference to the HBox in the main window.
+     */
+    @FXML
+    private HBox mainHBox;
+    /**
+     * Actions to take on initialisation.
+     */
+    public void initialize() {
+
+    }
     /**
      * Used to show the New Card Dialog. Uses the NewCardDialog.fxml file, sets it's parent
      * to be the mainBorderPane.
@@ -45,11 +58,9 @@ public class MainController {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // DialogController controller = fxmlLoader.getController();
-            // ToDoItem newItem = controller.processResults();
-            System.out.println("OK pressed");
-        } else {
-            System.out.println("Cancel pressed");
+            NewCardDialogController controller = fxmlLoader.getController();
+            VBox card = controller.processInput();
+            mainHBox.getChildren().add(card);
         }
     }
 }
