@@ -2,11 +2,6 @@ package simpletask.main.app;
 
 import simpletask.main.entities.WorkspaceManager;
 
-// import java.io.FileInputStream;
-// import java.io.FileOutputStream;
-// import java.io.IOException;
-// import java.io.ObjectInputStream;
-// import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,11 +13,6 @@ import java.util.Scanner;
  */
 public final class App {
     // Application constants
-    /**
-     * Switch for debug statements.
-     */
-    private static final boolean DEBUG = true;
-
     /**
      * Private constroter so the application class cannot be extended.
      */
@@ -216,16 +206,5 @@ public final class App {
             }
         }
         System.out.println();
-    }
-
-    /**
-     * Utility to display a message to stdout when the DEBUG flag is true.
-     *
-     * @param msg   Message to display to console
-     */
-    private static void debugLog(final String msg) {
-        if (DEBUG) {
-            System.out.println("[Debug] - " + msg);
-        }
     }
 }
