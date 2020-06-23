@@ -36,7 +36,7 @@ public class WorkspaceManagerTest {
      */
     @BeforeEach
     public void setUp() {
-        wm = new WorkspaceManager("Workspace");
+        wm = WorkspaceManager.initialise("Workspace");
     }
     /**
      * Executed after each tests. Sets the wm Task instance to null to ensure

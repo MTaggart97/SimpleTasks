@@ -11,7 +11,8 @@ import java.util.Map;
 
 /**
  * This class will be responsible for managing the workspace. Through it, you can add
- * to workspace, modify tasks and save workspace.
+ * to workspace, modify tasks and save workspace. It is a singleton as only one manager
+ * should be created over the course of the app's lifetime.
  */
 public class WorkspaceManager {
     //#region [Fields]
@@ -25,6 +26,10 @@ public class WorkspaceManager {
      * workspaces.
      */
     private WorkspaceNode currentWorkspace = null;
+    /**
+     * The only instance of WorkspaceManager.
+     */
+    private static WorkspaceManager workspaceManager;
     //#endregion [Fields]
 
     //#region [Constructors]
@@ -34,7 +39,7 @@ public class WorkspaceManager {
      *
      * @param name  Name of workspace to create
      */
-    public WorkspaceManager(final String name) {
+    private WorkspaceManager(final String name) {
         rootWorkspace = new Task(name);
         currentWorkspace = rootWorkspace;
     };
@@ -51,6 +56,14 @@ public class WorkspaceManager {
     //#endregion [Constructors]
 
     //#region [Getters]
+    /**
+     * Used to get only instance of WorkspaceManager. This may return null if workspace is uninitialised.
+     *
+     * @return  The WorkspaceManager
+     */
+    public static WorkspaceManager getInstance() {
+        return workspaceManager;
+    }
     /**
      * Returns a map of details of the currentWorkspace's parent. Keys include:
      *  Name    :   Name of Parent
@@ -146,7 +159,8 @@ public class WorkspaceManager {
             WorkspaceNode w = (WorkspaceNode) in.readObject();
             in.close();
             fileIn.close();
-            return new WorkspaceManager(w);
+            workspaceManager = new WorkspaceManager(w);
+            return workspaceManager;
         } catch (IOException i) {
             i.printStackTrace();
             return null;
@@ -210,7 +224,17 @@ public class WorkspaceManager {
     }
     //#endregion [Movement]
 
-    //#region [Workspace Management]
+    //#region [Workspace Management]#
+    /**
+     * Used to initailise the WorkspaceManager.
+     *
+     * @param name  Name of root node
+     * @return      The WorkspaceManager instance
+     */
+    public static WorkspaceManager initialise(final String name) {
+        workspaceManager = new WorkspaceManager(name);
+        return workspaceManager;
+    }
     /**
      * Deletes the currentWorkspace and all its sub Workspaces if any.
      *
@@ -237,7 +261,7 @@ public class WorkspaceManager {
             return false;
         }
     }
-        /**
+    /**
      * Adds a workspace into the currentWorkspaces task list if it is a Task.
      *
      * @param name  Name of Workspace to add

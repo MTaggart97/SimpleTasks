@@ -30,7 +30,7 @@ public final class App {
         // Create your initial workspace
         // System.out.print("Enter the name of your task: ");
         // WorkspaceManager workspace = new WorkspaceManager(sc.nextLine());
-        WorkspaceManager workspace = loadWorkspace("SavedWorkspace/workspace.ser");
+        WorkspaceManager workspace = WorkspaceManager.loadWorkspace("SavedWorkspace/workspace.ser");
 
         Options option;
         String st;
@@ -168,16 +168,6 @@ public final class App {
      */
     public static boolean saveWorkspace(final WorkspaceManager w, final String path) {
         return w.save(path);
-    }
-
-    /**
-     * Load in the workspace in the given file.
-     *
-     * @param file  Path to workspace on disk
-     * @return      The WorkspaceManager that manages the loaded workspace
-     */
-    public static WorkspaceManager loadWorkspace(final String file) {
-        return WorkspaceManager.loadWorkspace(file);
     }
 
     /**
