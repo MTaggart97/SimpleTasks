@@ -34,7 +34,7 @@ public class TestGUI extends Application {
      */
     @Override
     public void stop() throws Exception {
-        // WorkspaceManager.getInstance().save("SavedWorkspace/workspace.ser");
+        WorkspaceManager.getInstance().save("SavedWorkspace/workspace.ser");
     }
 
     public static void main(final String[] args) {

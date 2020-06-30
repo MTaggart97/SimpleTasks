@@ -18,7 +18,7 @@
             <ToolBar prefHeight="40.0" prefWidth="200.0">
               <items>
                 <Button mnemonicParsing="false" onAction="#showNewCardDialog" text="New..." />
-                  <Button mnemonicParsing="false" text="Save" />
+                  <Button mnemonicParsing="false" onAction="#saveWorkspace" text="Save" />
               </items>
             </ToolBar>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Workspace Name" textAlignment="CENTER">

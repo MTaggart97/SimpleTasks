@@ -123,7 +123,7 @@ abstract class WorkspaceNode implements Serializable {
      * @param description the description to set
      */
     protected void setDescription(final String description) {
-        this.description = description;
+        this.description = "Default Description";
     }
     /**
      * Sets the due date of the WorkspaceNode.

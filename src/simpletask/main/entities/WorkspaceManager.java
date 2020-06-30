@@ -297,16 +297,18 @@ public class WorkspaceManager {
      */
     public boolean addWorkspace(final Map<String, String> node) {
         WorkspaceNode newWorkspace;
-        String name = (null == node.get("Name")) ? "New Task" : node.get("Name");
+        validateInputs(node);
+        String name = node.get("Name");
         if ("Action".equals(node.get("Type"))) {
             newWorkspace = new Action(name);
         } else {
             newWorkspace = new Task(name);
         }
-        //TODO: Nulls need to be handled in the set* methods (i.e. defaults)
         newWorkspace.setDescription(node.get("Description"));
-        newWorkspace.setPriority(Integer.parseInt(null == node.get("Priority") ? "0" : node.get("Priority")));
-        newWorkspace.setDueDate(LocalDateTime.parse(null == node.get("DueDate") ? LocalDateTime.now().toString() : node.get("DueDate")));
+        // newWorkspace.setPriority(Integer.parseInt(null == node.get("Priority") ? "0" : node.get("Priority")));
+        // newWorkspace.setDueDate(LocalDateTime.parse(null == node.get("DueDate") ? LocalDateTime.now().toString() : node.get("DueDate")));
+        newWorkspace.setPriority(Integer.parseInt(node.get("Priority")));
+        newWorkspace.setDueDate(LocalDateTime.parse(node.get("DueDate")));
         
         if (currentWorkspace instanceof Task) {
             ((Task) currentWorkspace).createWorkspace(newWorkspace);
@@ -316,12 +318,33 @@ public class WorkspaceManager {
         }
     }
     /**
-     * Moves currentWorkspace into target if the target is a Task and if the target
-     * exists under the current rootWorkspace. The target is got from the inputted path
-     * which is directions to the task from the rootWorkspace
+     * Validates inputs. If an invalid input is given it is set to the default. Input is deemed as invalid
+     * if it is null or empty.
      *
-     * @param   path    Path to Task
-     * @return          True if workspace is move successfully
+     * @param node  Item to check if valid
+     */
+    private void validateInputs(Map<String, String> node) {
+        String[] keys = {"Name", "Type", "Description", "DueDate", "Priority"};
+        for(String k: keys) {
+            if (node.get(k) == null || node.get(k).isEmpty()) {
+                switch (k) {
+                    case "Name"       : node.put(k, "Default")            ;         break;
+                    case "Type"       : node.put(k, "Task")               ;         break;
+                    case "Description": node.put(k, "Default Description");         break;
+                    case "DueDate"    : node.put(k, LocalDateTime.now().toString());break;
+                    case "Priority"   : node.put(k, "0");                           break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Moves currentWorkspace into target if the target is a Task and if the target
+     * exists under the current rootWorkspace. The target is got from the inputted
+     * path which is directions to the task from the rootWorkspace
+     *
+     * @param path Path to Task
+     * @return True if workspace is move successfully
      */
     public boolean moveCurrentWorkspace(final ArrayList<Integer> path) {
         WorkspaceNode target = rootWorkspace;

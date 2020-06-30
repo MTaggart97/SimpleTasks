@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -18,6 +17,12 @@ public class NewNodeDialogController {
     @FXML
     private TextField newNodePriority;
 
+    /**
+     * Takes the user inputs and creates a dictionary that can be used to
+     * add to the list of tasks. Validation checking should be done here.
+     *
+     * @return  A dictionary representing the new item
+     */
     public Map<String, String> processInputs() {
         Map<String, String> input = new HashMap<>();
 
@@ -27,6 +32,21 @@ public class NewNodeDialogController {
         // input.put("DueDate", newNodeDate.getValue().toString());
 
         return input;
+    }
+
+    public NewNodeDialogController setNewNodeName(final String newName) {
+        newNodeName.setText(newName);
+        return this;
+    }
+
+    public NewNodeDialogController setNewNodeDesc(final String newDesc) {
+        newNodeDesc.setText(newDesc);
+        return this;
+    }
+
+    public NewNodeDialogController setNewNodeProirity(final String newPriority) {
+        newNodePriority.setText(newPriority);
+        return this;
     }
     
 }
