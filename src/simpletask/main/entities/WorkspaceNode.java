@@ -81,7 +81,7 @@ abstract class WorkspaceNode implements Serializable {
      * @return  The description of this task
      */
     protected String getDescription() {
-        return new String(this.description);
+        return this.description;
     }
     /**
      * Returns due date of WorkspaceNode.
@@ -123,7 +123,7 @@ abstract class WorkspaceNode implements Serializable {
      * @param description the description to set
      */
     protected void setDescription(final String description) {
-        this.description = "Default Description";
+        this.description = description;
     }
     /**
      * Sets the due date of the WorkspaceNode.

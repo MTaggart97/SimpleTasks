@@ -104,7 +104,7 @@ public class WorkspaceManager {
         Map<String, String> dict = new HashMap<String, String>();
 
         dict.put("Name", task.getName());
-        // dict.put("Description", task.getDescription());
+        dict.put("Description", task.getDescription());
         dict.put("Priority", String.valueOf(task.getPriority()));
         dict.put("Type", task.getClass().getSimpleName());
         dict.put("Tasks", String.valueOf(task.getTasks().size()));
