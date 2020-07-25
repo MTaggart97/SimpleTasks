@@ -13,9 +13,19 @@ import simpletask.main.entities.WorkspaceManager;
  * @author Matthew Taggart
  */
 public class TestGUI extends Application {
+    private static Stage primaryStage;
+
+    public static Stage getStage() {
+        return primaryStage;
+    }
+
+    private void setStage(final Stage primaryStage) {
+        TestGUI.primaryStage = primaryStage;
+    }
     @Override
     public void start(final Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("../gui/resources/Workspace.fxml"));
+        setStage(primaryStage);
         primaryStage.setTitle("Simple Task");
         primaryStage.setScene(new Scene(root, 900, 500));
         primaryStage.show();

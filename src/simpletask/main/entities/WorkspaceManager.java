@@ -93,6 +93,14 @@ public class WorkspaceManager {
         return array;
     }
     /**
+     * 
+     * @return
+     */
+    //TODO: Need to make unit tests for this
+    public Map<String, String> getCurrentWorkspaceDetails() {
+        return getDetails(currentWorkspace);
+    }
+    /**
      * Given a task, it will return a summary of it. This is used as a helper function for 
      * other methods in this class that return info about Tasks without returning the instance
      * itself.

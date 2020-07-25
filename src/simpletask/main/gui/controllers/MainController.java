@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import simpletask.main.entities.WorkspaceManager;
 import simpletask.main.gui.Manager;
 
@@ -33,23 +36,41 @@ public class MainController {
     @FXML
     private HBox mainHBox;
     /**
+     * Reference to SplitPane in main window.
+     */
+    @FXML
+    private SplitPane splitPane;
+    /**
+     * Reference to WorkspaceName in main window.
+     */
+    @FXML
+    private Text workspaceName;
+
+    /**
      * Actions to take on initialisation. Loads the workspace into the gui.
      */
-    @SuppressWarnings({"unchecked"})
+    // @SuppressWarnings({"unchecked"})
+    @FXML
     public void initialize() {
+        clearWorkspace();
         ArrayList<VBox> vboxs = Manager.getInstance().loadWorkspace();
-        for (VBox b: vboxs) {
+        workspaceName.setText(WorkspaceManager.getInstance().getCurrentWorkspaceDetails().get("Name"));
+        for (VBox b : vboxs) {
             mainHBox.getChildren().add(b);
             WorkspaceManager.getInstance().stepIntoWorkspace(mainHBox.getChildren().indexOf(b));
             for (Map<String, String> item : WorkspaceManager.getInstance().getTasks()) {
+                // ListView<Map<String, String>> temp = new ListView<Map<String, String>>();
+                // ListView<Map<String, String>> temp2 = temp.getClass().cast(b.getChildren().get(1));// .getItems(); //.add(item);
+                
                 ((ListView<Map<String, String>>) b.getChildren().get(1)).getItems().add(item);
             }
             WorkspaceManager.getInstance().stepUp();
         }
     }
+
     /**
-     * Used to show the New Card Dialog. Uses the NewCardDialog.fxml file, sets it's parent
-     * to be the mainBorderPane.
+     * Used to show the New Card Dialog. Uses the NewCardDialog.fxml file, sets it's
+     * parent to be the mainBorderPane.
      */
     @FXML
     public void showNewCardDialog() {
@@ -86,5 +107,24 @@ public class MainController {
         System.out.println("Saving Workspace...");
         WorkspaceManager.getInstance().save("SavedWorkspace/workspace.ser");
         System.out.println("Saved");
+    }
+
+    @FXML
+    public void moveUp() {
+        WorkspaceManager.getInstance().stepUp();
+        initialize();
+    }
+
+    @FXML
+    public void moveHome() {
+        WorkspaceManager.getInstance().home();
+        initialize();
+    }
+
+    /**
+     * Clears current workspace.
+     */
+    public void clearWorkspace() {
+        mainHBox.getChildren().clear();
     }
 }

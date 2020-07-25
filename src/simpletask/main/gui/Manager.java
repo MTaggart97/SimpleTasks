@@ -10,6 +10,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
@@ -21,12 +23,14 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import simpletask.main.app.TestGUI;
 import simpletask.main.entities.WorkspaceManager;
 import simpletask.main.gui.controllers.NewNodeDialogController;
 
@@ -79,6 +83,7 @@ public class Manager {
     }
 
     public ArrayList<VBox> loadWorkspace() {
+        workspace.clear();
         ArrayList<VBox> vBoxs = new ArrayList<>();
         for (Map<String, String> w: WorkspaceManager.getInstance().getTasks()) {
             ListView<Map<String,String>> newList = Manager.getInstance().addNewList();
@@ -210,6 +215,30 @@ public class Manager {
                         cell.setContextMenu(listContextMenu);
                     }
                 );
+                // Double click logic
+                cell.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                            if(mouseEvent.getClickCount() == 2){
+                                // Move into workspace containing this cell
+                                int index = workspace.indexOf(cell.getListView());
+                                System.out.println(WorkspaceManager.getInstance().getTasks().get(index));
+                                System.out.println(index);
+                                WorkspaceManager.getInstance().stepIntoWorkspace(index);
+                                // Redraw scene
+                                FXMLLoader mainWorkspace = new FXMLLoader(getClass().getResource("resources/Workspace.fxml"));
+                                try {
+                                    Parent root = mainWorkspace.load();
+                                    TestGUI.getStage().setScene(new Scene(root, 900, 500));
+                                    
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                });
                 
                 // Drag and Drop Logic
                 //TODO: This is working but really needs tidying...

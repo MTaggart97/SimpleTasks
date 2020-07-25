@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -19,9 +23,11 @@
               <items>
                 <Button mnemonicParsing="false" onAction="#showNewCardDialog" text="New..." />
                   <Button mnemonicParsing="false" onAction="#saveWorkspace" text="Save" />
+                  <Button mnemonicParsing="false" onAction="#moveHome" text="Home" />
+                  <Button mnemonicParsing="false" onAction="#moveUp" text="Up" />
               </items>
             </ToolBar>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Workspace Name" textAlignment="CENTER">
+            <Text fx:id="workspaceName" strokeType="OUTSIDE" strokeWidth="0.0" text="Workspace Name" textAlignment="CENTER">
                <font>
                   <Font size="16.0" />
                </font>
@@ -29,4 +35,30 @@
          </children>
       </VBox>
    </top>
+   <bottom>
+      <SplitPane fx:id="splitPane" dividerPositions="0.333" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane>
+               <children>
+                  <VBox>
+                     <children>
+                        <TextField />
+                        <TextArea prefColumnCount="2" prefRowCount="3" wrapText="true" />
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <VBox>
+                     <children>
+                        <TextField />
+                        <TextArea prefRowCount="3" wrapText="true" />
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </bottom>
 </BorderPane>
