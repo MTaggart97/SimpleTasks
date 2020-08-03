@@ -6,16 +6,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -26,6 +30,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -375,7 +380,7 @@ public class Manager {
         }
     }
     /**
-     * Edits the selected item in the ObservableList. A diablog will popup, which wiill be
+     * Edits the selected item in the ObservableList. A diablog will popup, which will be
      * populated with the items current details, which the user can edit. It then saves these
      * changes in the underlying workspace and ObservabelList.
      *
@@ -394,10 +399,16 @@ public class Manager {
             e.printStackTrace();
             return;
         }
+        if (!obsList.getItems().get(obsList.getSelectionModel().getSelectedIndex()).get("Tasks").equals("0")) {
+            // Note, this relies on the last element being the combo list
+            ObservableList<Node> temp = ((GridPane) ((DialogPane) dialog.getDialogPane().getChildren().get(3)).getChildren().get(3)).getChildren();
+            ((ComboBox<String>) temp.get(temp.size() - 1)).setDisable(true);
+        }
 
         Map<String, String> item = obsList.getSelectionModel().getSelectedItem();
         NewNodeDialogController controller = fxmlLoader.getController();
-        controller.setNewNodeDesc(item.get("Description")).setNewNodeName(item.get("Name")).setNewNodeProirity(item.get("Priority"));
+        controller.setNewNodeDesc(item.get("Description")).setNewNodeName(item.get("Name")).setNewNodeProirity(item.get("Priority"))
+            .setNewNodeDueDate(item.get("DueDate")).setNewNodeType(item.get("Type"));
 
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
@@ -405,9 +416,6 @@ public class Manager {
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Map<String, String> newItem = controller.processInputs();
-            item.put("Name", newItem.get("Name"));
-            item.put("Description", newItem.get("Description"));
-            item.put("Priority", newItem.get("Priority"));
 
             obsList.edit(obsList.getSelectionModel().getSelectedIndex());
 
@@ -428,7 +436,10 @@ public class Manager {
         WorkspaceManager.getInstance().stepIntoWorkspace(workspace.get(workspace.indexOf(obsList)).getItems().indexOf(item));
         WorkspaceManager.getInstance().setName(newItem.get("Name"));
         WorkspaceManager.getInstance().setDescription(newItem.get("Description"));
-        WorkspaceManager.getInstance().setPriority(Integer.parseInt(newItem.get("Priority")));
+        // Don't change if unsucessful
+        if (!WorkspaceManager.getInstance().setPriority(newItem.get("Priority"))) {
+            newItem.put("Priority", item.get("Priority"));
+        };
         WorkspaceManager.getInstance().stepUp();
         WorkspaceManager.getInstance().stepUp();
         int index = workspace.get(workspace.indexOf(obsList)).getItems().indexOf(item);
@@ -464,6 +475,8 @@ public class Manager {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             NewNodeDialogController controller = fxmlLoader.getController();
             Map<String, String> newItem = controller.processInputs();
+            // TODO: Need to create a DateTime Picker in JavaFX to get rid of this
+            newItem.put("DueDate", newItem.get("DueDate") + "T00:00:00.000000000");
             WorkspaceManager.getInstance().stepIntoWorkspace(workspace.indexOf(obsList));
             WorkspaceManager.getInstance().addWorkspace(newItem);
             WorkspaceManager.getInstance().stepUp();

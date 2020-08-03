@@ -234,7 +234,7 @@ public class WorkspaceManager {
     }
     //#endregion [Movement]
 
-    //#region [Workspace Management]#
+    //#region [Workspace Management]
     /**
      * Used to initailise the WorkspaceManager.
      *
@@ -313,9 +313,16 @@ public class WorkspaceManager {
             newWorkspace = new Task(name);
         }
         newWorkspace.setDescription(node.get("Description"));
-        // newWorkspace.setPriority(Integer.parseInt(null == node.get("Priority") ? "0" : node.get("Priority")));
-        // newWorkspace.setDueDate(LocalDateTime.parse(null == node.get("DueDate") ? LocalDateTime.now().toString() : node.get("DueDate")));
-        newWorkspace.setPriority(Integer.parseInt(node.get("Priority")));
+        try {
+            newWorkspace.setPriority(Integer.parseInt(node.get("Priority")));
+        } catch (InvalidPriorityException ex) {
+            ex.printStackTrace();
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+        } finally {
+            System.out.println("Setting priority to 0");
+            newWorkspace.setPriority(0);
+        }
         newWorkspace.setDueDate(LocalDateTime.parse(node.get("DueDate")));
         
         if (currentWorkspace instanceof Task) {
@@ -421,11 +428,14 @@ public class WorkspaceManager {
      * @param priority  New priority of workspace
      * @return          True if priority set successfully, false otherwise
      */
-    public boolean setPriority(final int priority) {
+    public boolean setPriority(final String priority) {
         try {
-            currentWorkspace.setPriority(priority);
+            currentWorkspace.setPriority(Integer.parseInt(priority));
             return true;
-        } catch (InvalidPriorityException e) {
+        } catch (InvalidPriorityException ex) {
+            ex.printStackTrace();
+            return false;
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return false;
         }

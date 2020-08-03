@@ -187,7 +187,7 @@ public class WorkspaceManagerTest {
         ArrayList<Integer> path = new ArrayList<>();
         // Act
         try {
-            wm.setPriority(2);
+            wm.setPriority("2");
         } catch (InvalidPriorityException e) {
             e.printStackTrace();
         }
@@ -200,7 +200,7 @@ public class WorkspaceManagerTest {
     @Test
     public void testWorkspaceImportanceNegative() {
         // Arrange
-        final int negValue = -2;
+        final String negValue = "-2";
         ArrayList<Integer> path = new ArrayList<>(0);
         // Act
         try {
@@ -217,7 +217,7 @@ public class WorkspaceManagerTest {
     @Test
     public void testWorkspaceImportanceTooLarge() {
         // Arrange
-        final int largeValue = 50;
+        final String largeValue = "50";
         ArrayList<Integer> path = new ArrayList<>(0);
         // Act
         try {
@@ -234,9 +234,9 @@ public class WorkspaceManagerTest {
     @Test
     public void testWorkspaceImportanceRemainSame() {
         // Arrange
-        final int priority = 5;
+        final String priority = "5";
         wm.setPriority(priority);
-        final int largeValue = 50;
+        final String largeValue = "50";
         ArrayList<Integer> path = new ArrayList<>(0);
         // Act
         try {
@@ -245,7 +245,7 @@ public class WorkspaceManagerTest {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(priority, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot set to be a number larger than 10");
+        assertEquals(Integer.parseInt(priority), Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot set to be a number larger than 10");
     }
     /**
      * Tests to see if the due date gets set correctly.

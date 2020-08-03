@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
@@ -31,6 +33,9 @@
             <Label text="DueDate" GridPane.rowIndex="4" />
             <TextArea fx:id="newNodeDesc" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <TextField fx:id="newNodePriority" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <DatePicker fx:id="newNodeDueDate" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label text="Type" GridPane.rowIndex="3" />
+            <ComboBox fx:id="newNodeComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>
       </GridPane>
    </content>
