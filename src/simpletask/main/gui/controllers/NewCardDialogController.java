@@ -1,7 +1,6 @@
 package simpletask.main.gui.controllers;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import simpletask.main.entities.NodeData;
 import simpletask.main.gui.Manager;
 
 public class NewCardDialogController {
@@ -26,7 +26,7 @@ public class NewCardDialogController {
      */
     public VBox processInput() {
         String name = NewCardName.getText().trim();
-        ListView<Map<String,String>> newList = Manager.getInstance().addToWorkspace(name);
+        ListView<NodeData> newList = Manager.getInstance().addToWorkspace(name);
         VBox card;
         try {
             card = FXMLLoader.load(getClass().getResource("../resources/Card.fxml"));

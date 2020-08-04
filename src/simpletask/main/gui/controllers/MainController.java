@@ -2,7 +2,6 @@ package simpletask.main.gui.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 
 import javafx.fxml.FXML;
@@ -15,6 +14,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import simpletask.main.entities.NodeData;
+import simpletask.main.entities.NodeKeys;
 import simpletask.main.entities.WorkspaceManager;
 import simpletask.main.gui.Manager;
 
@@ -53,15 +54,12 @@ public class MainController {
     public void initialize() {
         clearWorkspace();
         ArrayList<VBox> vboxs = Manager.getInstance().loadWorkspace();
-        workspaceName.setText(WorkspaceManager.getInstance().getCurrentWorkspaceDetails().get("Name"));
+        workspaceName.setText(WorkspaceManager.getInstance().getCurrentWorkspaceDetails().getAttr(NodeKeys.NAME));
         for (VBox b : vboxs) {
             mainHBox.getChildren().add(b);
             WorkspaceManager.getInstance().stepIntoWorkspace(mainHBox.getChildren().indexOf(b));
-            for (Map<String, String> item : WorkspaceManager.getInstance().getTasks()) {
-                // ListView<Map<String, String>> temp = new ListView<Map<String, String>>();
-                // ListView<Map<String, String>> temp2 = temp.getClass().cast(b.getChildren().get(1));// .getItems(); //.add(item);
-                
-                ((ListView<Map<String, String>>) b.getChildren().get(1)).getItems().add(item);
+            for (NodeData item : WorkspaceManager.getInstance().getTasks()) {
+                ((ListView<NodeData>) b.getChildren().get(1)).getItems().add(item);
             }
             WorkspaceManager.getInstance().stepUp();
         }

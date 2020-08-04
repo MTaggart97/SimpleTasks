@@ -7,8 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class will be responsible for managing the workspace. Through it, you can add
@@ -74,7 +72,7 @@ public class WorkspaceManager {
      *
      * @return  Current workspace's parent
      */
-    public Map<String, String> getParent() {
+    public NodeData getParent() {
         Task parent = (Task) currentWorkspace.getParent();
         return getDetails(parent);
     }
@@ -83,8 +81,8 @@ public class WorkspaceManager {
      *
      * @return  Details on the current Workspaces tasks
      */
-    public ArrayList<Map<String, String>> getTasks() {
-        ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
+    public ArrayList<NodeData> getTasks() {
+        ArrayList<NodeData> array = new ArrayList<NodeData>();
 
         for (WorkspaceNode w: currentWorkspace.getTasks()) {
             array.add(getDetails(w));
@@ -97,7 +95,7 @@ public class WorkspaceManager {
      * @return
      */
     //TODO: Need to make unit tests for this
-    public Map<String, String> getCurrentWorkspaceDetails() {
+    public NodeData getCurrentWorkspaceDetails() {
         return getDetails(currentWorkspace);
     }
     /**
@@ -106,19 +104,10 @@ public class WorkspaceManager {
      * itself.
      *
      * @param task  Task to summarise
-     * @return      A dictionary
+     * @return      An instance of NodeData summarising the task
      */
-    private Map<String, String> getDetails(final WorkspaceNode task) {
-        Map<String, String> dict = new HashMap<String, String>();
-
-        dict.put("Name", task.getName());
-        dict.put("Description", task.getDescription());
-        dict.put("Priority", String.valueOf(task.getPriority()));
-        dict.put("Type", task.getClass().getSimpleName());
-        dict.put("Tasks", String.valueOf(task.getTasks().size()));
-        dict.put("DueDate",task.getDueDate().toString());
-
-        return dict;
+    private NodeData getDetails(final WorkspaceNode task) {
+        return new NodeData(task);
     }
     /**
      * Returns details of the Workspace at the given path.
@@ -126,7 +115,7 @@ public class WorkspaceManager {
      * @param   path    Path to workspace
      * @return          Dictionary containing details of workspace at path
      */
-    public Map<String, String> detailsOf(final ArrayList<Integer> path) {
+    public NodeData detailsOf(final ArrayList<Integer> path) {
         WorkspaceNode w = rootWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);
@@ -139,13 +128,13 @@ public class WorkspaceManager {
      * @param   path    Path to workspace
      * @return          List of dictionaries containing details of workspace at path
      */
-    public ArrayList<Map<String, String>> taskDetailsOf(final ArrayList<Integer> path) {
+    public ArrayList<NodeData> taskDetailsOf(final ArrayList<Integer> path) {
         WorkspaceNode w = rootWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);
         }
 
-        ArrayList<Map<String, String>> array = new ArrayList<Map<String, String>>();
+        ArrayList<NodeData> array = new ArrayList<NodeData>();
         for (WorkspaceNode wrk: w.getTasks()) {
             array.add(getDetails(wrk));
         }
@@ -303,27 +292,25 @@ public class WorkspaceManager {
      * @param node  Node to add
      * @return      True if successful, false otherwise
      */
-    public boolean addWorkspace(final Map<String, String> node) {
+    public boolean addWorkspace(final NodeData node) {
         WorkspaceNode newWorkspace;
         validateInputs(node);
-        String name = node.get("Name");
-        if ("Action".equals(node.get("Type"))) {
+        String name = node.getAttr(NodeKeys.NAME);
+        if ("Action".equals(node.getAttr(NodeKeys.TYPE))) {
             newWorkspace = new Action(name);
         } else {
             newWorkspace = new Task(name);
         }
-        newWorkspace.setDescription(node.get("Description"));
+        newWorkspace.setDescription(node.getAttr(NodeKeys.DESCRIPTION));
+        newWorkspace.setPriority(0);
         try {
-            newWorkspace.setPriority(Integer.parseInt(node.get("Priority")));
+            newWorkspace.setPriority(Integer.parseInt(node.getAttr(NodeKeys.PRIORITY)));
         } catch (InvalidPriorityException ex) {
             ex.printStackTrace();
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
-        } finally {
-            System.out.println("Setting priority to 0");
-            newWorkspace.setPriority(0);
         }
-        newWorkspace.setDueDate(LocalDateTime.parse(node.get("DueDate")));
+        newWorkspace.setDueDate(LocalDateTime.parse(node.getAttr(NodeKeys.DUEDATE)));
         
         if (currentWorkspace instanceof Task) {
             ((Task) currentWorkspace).createWorkspace(newWorkspace);
@@ -338,16 +325,17 @@ public class WorkspaceManager {
      *
      * @param node  Item to check if valid
      */
-    private void validateInputs(Map<String, String> node) {
-        String[] keys = {"Name", "Type", "Description", "DueDate", "Priority"};
-        for(String k: keys) {
-            if (node.get(k) == null || node.get(k).isEmpty()) {
-                switch (k) {
-                    case "Name"       : node.put(k, "Default")            ;         break;
-                    case "Type"       : node.put(k, "Task")               ;         break;
-                    case "Description": node.put(k, "Default Description");         break;
-                    case "DueDate"    : node.put(k, LocalDateTime.now().toString());break;
-                    case "Priority"   : node.put(k, "0");                           break;
+    private void validateInputs(NodeData node) {
+        for (NodeKeys nKeys: NodeKeys.values()) {
+            if (node.getAttr(nKeys) == null || node.getAttr(nKeys).isEmpty()) {
+                switch (nKeys) {
+                    case NAME       : node.setAttr(nKeys, "Default")            ;         break;
+                    case TYPE       : node.setAttr(nKeys, "Task")               ;         break;
+                    case DESCRIPTION: node.setAttr(nKeys, "Default Description");         break;
+                    case DUEDATE    : node.setAttr(nKeys, LocalDateTime.now().toString());break;
+                    case PRIORITY   : node.setAttr(nKeys, "0");                           break;
+                    case COMPLETE   : node.setAttr(nKeys, "false");                       break;
+                    case TASKS      : node.setAttr(nKeys, "0");                           break;
                 }
             }
         }
@@ -379,8 +367,8 @@ public class WorkspaceManager {
      * @param criteria  The search Criteria
      * @return          A list of Tasks matching the criteria
      */
-    public ArrayList<Map<String,String>> searchWorkspaces(final Criteria criteria) {
-        ArrayList<Map<String,String>> res = new ArrayList<>();
+    public ArrayList<NodeData> searchWorkspaces(final Criteria criteria) {
+        ArrayList<NodeData> res = new ArrayList<>();
         for(int i = 0; i <  currentWorkspace.getTasks().size(); i++) {
             this.stepIntoWorkspace(i);
             res.addAll(this.searchWorkspaces(criteria));

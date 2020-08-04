@@ -1,9 +1,10 @@
 package simpletask.main.app;
 
+import simpletask.main.entities.NodeData;
+import simpletask.main.entities.NodeKeys;
 import simpletask.main.entities.WorkspaceManager;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -97,10 +98,10 @@ public final class App {
      * @return          The workspace the user steps into
      */
     private static boolean stepIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
-        System.out.println("0 " + workspace.getParent().get("Name"));
-        ArrayList<Map<String, String>> act = workspace.getTasks();
+        System.out.println("0 " + workspace.getParent().getAttr(NodeKeys.NAME));
+        ArrayList<NodeData> act = workspace.getTasks();
         for (int i = 0; i < act.size(); i++) {
-            System.out.println((i + 1) + " " + act.get(i).get("Name"));
+            System.out.println((i + 1) + " " + act.get(i).getAttr(NodeKeys.NAME));
         }
         System.out.print("Choose a task to step into: ");
         int i = Integer.parseInt(sc.nextLine());
@@ -125,11 +126,11 @@ public final class App {
     private static void moveIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
         ArrayList<Integer> pos = new ArrayList<>();
         String inp = "RANDOM";
-        ArrayList<Map<String, String>> details = workspace.taskDetailsOf(new ArrayList<Integer>(0));
+        ArrayList<NodeData> details = workspace.taskDetailsOf(new ArrayList<Integer>(0));
 
         while (!inp.equals("")) {
             for (int i = 0; i < details.size(); i++) {
-                System.out.println(i + " " + details.get(i).get("Name"));
+                System.out.println(i + " " + details.get(i).getAttr(NodeKeys.NAME));
             }
             System.out.print("Choose a task to move to (hit enter to select current task): ");
             try {
@@ -152,9 +153,9 @@ public final class App {
      */
     private static void deleteWorkspace(final WorkspaceManager workspace, final Scanner sc) {
         System.out.println("Choose workspace to delete: ");
-        ArrayList<Map<String, String>> act = workspace.getTasks();
+        ArrayList<NodeData> act = workspace.getTasks();
         for (int i = 0; i < act.size(); i++) {
-            System.out.println((i + " " + act.get(i).get("Name")));
+            System.out.println((i + " " + act.get(i).getAttr(NodeKeys.NAME)));
         }
         int i = Integer.parseInt(sc.nextLine());
         workspace.deleteWorkspace(i);

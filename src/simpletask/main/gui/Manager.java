@@ -3,7 +3,6 @@ package simpletask.main.gui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javafx.collections.ObservableList;
@@ -36,6 +35,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import simpletask.main.app.TestGUI;
+import simpletask.main.entities.NodeData;
+import simpletask.main.entities.NodeKeys;
 import simpletask.main.entities.WorkspaceManager;
 import simpletask.main.gui.controllers.NewNodeDialogController;
 
@@ -50,7 +51,7 @@ import simpletask.main.gui.controllers.NewNodeDialogController;
  */
 public class Manager {
     @FXML
-    private List<ListView<Map<String, String>>> workspace;
+    private List<ListView<NodeData>> workspace;
 
     private static final Manager manager = new Manager();
 
@@ -73,7 +74,7 @@ public class Manager {
      *
      * @param   obsList List to add
      */
-    public void addList(final ListView<Map<String,String>> obsList) {
+    public void addList(final ListView<NodeData> obsList) {
         workspace.add(obsList);
     }
 
@@ -83,15 +84,15 @@ public class Manager {
      * @param element   Element to add to the ObservableList
      * @param obsList   The list to add to
      */
-    public void addToList(final ListView<Map<String,String>> obsList, final Map<String, String> element) {
+    public void addToList(final ListView<NodeData> obsList, final NodeData element) {
         workspace.get(workspace.indexOf(obsList)).getItems().add(element);
     }
 
     public ArrayList<VBox> loadWorkspace() {
         workspace.clear();
         ArrayList<VBox> vBoxs = new ArrayList<>();
-        for (Map<String, String> w: WorkspaceManager.getInstance().getTasks()) {
-            ListView<Map<String,String>> newList = Manager.getInstance().addNewList();
+        for (NodeData w: WorkspaceManager.getInstance().getTasks()) {
+            ListView<NodeData> newList = Manager.getInstance().addNewList();
             VBox card;
             try {
                 card = FXMLLoader.load(getClass().getResource("resources/Card.fxml"));
@@ -100,7 +101,7 @@ public class Manager {
                 e.printStackTrace();
                 return null;
             }
-            ((Text) card.getChildren().get(0)).setText(w.get("Name"));
+            ((Text) card.getChildren().get(0)).setText(w.getAttr(NodeKeys.NAME));
             card.getChildren().remove(1);
             //TODO: Try to get list view to grow
             VBox.setVgrow(newList, Priority.ALWAYS);
@@ -117,8 +118,8 @@ public class Manager {
     /**
      * Adds a new list to the workspace. Used when loading.
      */
-    public ListView<Map<String,String>> addNewList() {
-        ListView<Map<String,String>> obsList = new ListView<>();
+    public ListView<NodeData> addNewList() {
+        ListView<NodeData> obsList = new ListView<>();
 
         addContextMenu(obsList);
         addCellFactory(obsList);
@@ -127,9 +128,9 @@ public class Manager {
         return obsList;
     }
 
-    public ListView<Map<String,String>> addToWorkspace(final String name) {
+    public ListView<NodeData> addToWorkspace(final String name) {
         WorkspaceManager.getInstance().addWorkspace(name, "Task");
-        ListView<Map<String,String>> obsList = new ListView<>();
+        ListView<NodeData> obsList = new ListView<>();
 
         // TODO: Needs to be handled better. Ideally set in one place with options blurred out if they are invalid
         addContextMenu(obsList);
@@ -139,7 +140,7 @@ public class Manager {
         return obsList;
     }
 
-    private void addContextMenu(final ListView<Map<String,String>> obsList) {
+    private void addContextMenu(final ListView<NodeData> obsList) {
         ContextMenu listContextMenu = new ContextMenu();
         MenuItem deleteMenuItem = new MenuItem("Delete");
         deleteMenuItem.setOnAction(new EventHandler<ActionEvent>(){
@@ -167,24 +168,24 @@ public class Manager {
         obsList.setContextMenu(listContextMenu);
     }
 
-    private void addCellFactory(final ListView<Map<String,String>> obsList) {
-        obsList.setCellFactory(new Callback<ListView<Map<String,String>>,ListCell<Map<String,String>>>(){
+    private void addCellFactory(final ListView<NodeData> obsList) {
+        obsList.setCellFactory(new Callback<ListView<NodeData>,ListCell<NodeData>>(){
             @Override
-            public ListCell<Map<String,String>> call(ListView<Map<String,String>> param) {
-                ListCell<Map<String,String>> cell = new ListCell<>() {
+            public ListCell<NodeData> call(ListView<NodeData> param) {
+                ListCell<NodeData> cell = new ListCell<>() {
                     @Override
-                    protected void updateItem(Map<String,String> item, boolean empty) {
+                    protected void updateItem(NodeData item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
                             setText(null);
                         } else {
-                            setText(item.get("Name"));
+                            setText(item.getAttr(NodeKeys.NAME));
                         }
                     }
 
                     @Override
                     public void startEdit() {
-                        setText(getListView().getSelectionModel().getSelectedItem().get("Name"));
+                        setText(getListView().getSelectionModel().getSelectedItem().getAttr(NodeKeys.NAME));
                     }
                 };
 
@@ -317,9 +318,9 @@ public class Manager {
                         if (db.hasString()) {
                             ArrayList<Integer> path = new ArrayList<>();
                             path.add(workspace.indexOf(cell.getListView()));
-                            cell.getListView().getItems().add((Map<String, String>) db.getContent(df));
+                            cell.getListView().getItems().add((NodeData) db.getContent(df));
                             WorkspaceManager.getInstance().stepIntoWorkspace((Integer) db.getContent(position));
-                            WorkspaceManager.getInstance().stepIntoWorkspace(workspace.get((Integer) db.getContent(position)).getItems().indexOf((Map<String, String>) db.getContent(df)));
+                            WorkspaceManager.getInstance().stepIntoWorkspace(workspace.get((Integer) db.getContent(position)).getItems().indexOf((NodeData) db.getContent(df)));
                             WorkspaceManager.getInstance().moveCurrentWorkspace(path);
                             WorkspaceManager.getInstance().stepUp();
                             WorkspaceManager.getInstance().stepUp();
@@ -340,8 +341,8 @@ public class Manager {
                         Dragboard db = event.getDragboard();
                         /* if the data was successfully moved, clear it */
                         if (event.getTransferMode() == TransferMode.MOVE) {
-                            // int pos2 = cell.getListView().getItems().indexOf((Map<String, String>) db.getContent(df));
-                            cell.getListView().getItems().remove((Map<String, String>) db.getContent(df));
+                            // int pos2 = cell.getListView().getItems().indexOf((NodeData) db.getContent(df));
+                            cell.getListView().getItems().remove((NodeData) db.getContent(df));
                             // int pos = workspace.indexOf(cell.getListView());
                             // WorkspaceManager.getInstance().stepIntoWorkspace(pos);
                             // WorkspaceManager.getInstance().deleteWorkspace(pos2);
@@ -365,11 +366,11 @@ public class Manager {
      *
      * @param   obsList The observable list that contains the item to be deleted
      */
-    private void deleteItem(final ListView<Map<String,String>> obsList) {
+    private void deleteItem(final ListView<NodeData> obsList) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delelte Item");
-        Map<String, String> item = obsList.getSelectionModel().getSelectedItem();
-        alert.setHeaderText("Delete item: " + item.get("Name"));
+        NodeData item = obsList.getSelectionModel().getSelectedItem();
+        alert.setHeaderText("Delete item: " + item.getAttr(NodeKeys.NAME));
         alert.setContentText("Are you sure? Press OK to confirm or Cancel to exit.");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get().equals(ButtonType.OK)) {
@@ -386,7 +387,7 @@ public class Manager {
      *
      * @param   obsList The observable list that contains the item to be edited
      */
-    private void editItem(final ListView<Map<String,String>> obsList) {
+    private void editItem(final ListView<NodeData> obsList) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Item");
         dialog.setHeaderText("Use this dialog to edit item");
@@ -399,23 +400,23 @@ public class Manager {
             e.printStackTrace();
             return;
         }
-        if (!obsList.getItems().get(obsList.getSelectionModel().getSelectedIndex()).get("Tasks").equals("0")) {
+        if (!obsList.getItems().get(obsList.getSelectionModel().getSelectedIndex()).getAttr(NodeKeys.TASKS).equals("0")) {
             // Note, this relies on the last element being the combo list
             ObservableList<Node> temp = ((GridPane) ((DialogPane) dialog.getDialogPane().getChildren().get(3)).getChildren().get(3)).getChildren();
             ((ComboBox<String>) temp.get(temp.size() - 1)).setDisable(true);
         }
 
-        Map<String, String> item = obsList.getSelectionModel().getSelectedItem();
+        NodeData item = obsList.getSelectionModel().getSelectedItem();
         NewNodeDialogController controller = fxmlLoader.getController();
-        controller.setNewNodeDesc(item.get("Description")).setNewNodeName(item.get("Name")).setNewNodeProirity(item.get("Priority"))
-            .setNewNodeDueDate(item.get("DueDate")).setNewNodeType(item.get("Type"));
+        controller.setNewNodeDesc(item.getAttr(NodeKeys.DESCRIPTION)).setNewNodeName(item.getAttr(NodeKeys.NAME)).setNewNodeProirity(item.getAttr(NodeKeys.PRIORITY))
+            .setNewNodeDueDate(item.getAttr(NodeKeys.DUEDATE)).setNewNodeType(item.getAttr(NodeKeys.TYPE));
 
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            Map<String, String> newItem = controller.processInputs();
+            NodeData newItem = controller.processInputs();
 
             obsList.edit(obsList.getSelectionModel().getSelectedIndex());
 
@@ -431,14 +432,14 @@ public class Manager {
      * @param item      Item to repace
      * @param newItem   The item to take its place
      */
-    private void replaceItem(final ListView<Map<String, String>> obsList, Map<String, String> item, Map<String, String> newItem) {
+    private void replaceItem(final ListView<NodeData> obsList, NodeData item, NodeData newItem) {
         WorkspaceManager.getInstance().stepIntoWorkspace(workspace.indexOf(obsList));
         WorkspaceManager.getInstance().stepIntoWorkspace(workspace.get(workspace.indexOf(obsList)).getItems().indexOf(item));
-        WorkspaceManager.getInstance().setName(newItem.get("Name"));
-        WorkspaceManager.getInstance().setDescription(newItem.get("Description"));
+        WorkspaceManager.getInstance().setName(newItem.getAttr(NodeKeys.NAME));
+        WorkspaceManager.getInstance().setDescription(newItem.getAttr(NodeKeys.DESCRIPTION));
         // Don't change if unsucessful
-        if (!WorkspaceManager.getInstance().setPriority(newItem.get("Priority"))) {
-            newItem.put("Priority", item.get("Priority"));
+        if (!WorkspaceManager.getInstance().setPriority(newItem.getAttr(NodeKeys.PRIORITY))) {
+            newItem.setAttr(NodeKeys.PRIORITY, item.getAttr(NodeKeys.PRIORITY));
         };
         WorkspaceManager.getInstance().stepUp();
         WorkspaceManager.getInstance().stepUp();
@@ -454,7 +455,7 @@ public class Manager {
      * @param obsList
      * @param event
      */
-    private void addItemToList(final ListView<Map<String,String>> obsList, final ActionEvent event) {
+    private void addItemToList(final ListView<NodeData> obsList, final ActionEvent event) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit ToDo Item");
         dialog.setHeaderText("Use this dialog to edit todo item");
@@ -474,9 +475,9 @@ public class Manager {
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             NewNodeDialogController controller = fxmlLoader.getController();
-            Map<String, String> newItem = controller.processInputs();
+            NodeData newItem = controller.processInputs();
             // TODO: Need to create a DateTime Picker in JavaFX to get rid of this
-            newItem.put("DueDate", newItem.get("DueDate") + "T00:00:00.000000000");
+            newItem.setAttr(NodeKeys.DUEDATE, newItem.getAttr(NodeKeys.DUEDATE) + "T00:00:00.000000000");
             WorkspaceManager.getInstance().stepIntoWorkspace(workspace.indexOf(obsList));
             WorkspaceManager.getInstance().addWorkspace(newItem);
             WorkspaceManager.getInstance().stepUp();

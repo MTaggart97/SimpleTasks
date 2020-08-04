@@ -3,13 +3,13 @@ package simpletask.test.entities;
 import simpletask.main.entities.WorkspaceManager;
 import simpletask.main.entities.Criteria;
 import simpletask.main.entities.InvalidPriorityException;
+import simpletask.main.entities.NodeData;
+import simpletask.main.entities.NodeKeys;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +68,7 @@ public class WorkspaceManagerTest {
         wm.addWorkspace(name, task);
         // Assert
         assertEquals(1, wm.getTasks().size(), "Ensure that there is only one workspace in task list");
-        assertEquals(name, wm.getTasks().get(0).get("Name"), "Ensure that this workspace has the correct name");
+        assertEquals(name, wm.getTasks().get(0).getAttr(NodeKeys.NAME), "Ensure that this workspace has the correct name");
     }
     /**
      * Tests if multiple Tasks and Actions are added to list of tasks successfully.
@@ -86,9 +86,9 @@ public class WorkspaceManagerTest {
         wm.addWorkspace(name3, task);
         // Assert
         assertEquals(numOfWorkspaces, wm.getTasks().size(), "Ensure that there are three workspaces in the task list");
-        assertEquals(name1, wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
-        assertEquals(name2, wm.getTasks().get(1).get("Name"), "Ensure that second workspace has the correct name");
-        assertEquals(name3, wm.getTasks().get(2).get("Name"), "Ensure that third workspace has the correct name");
+        assertEquals(name1, wm.getTasks().get(0).getAttr(NodeKeys.NAME), "Ensure that first workspace has the correct name");
+        assertEquals(name2, wm.getTasks().get(1).getAttr(NodeKeys.NAME), "Ensure that second workspace has the correct name");
+        assertEquals(name3, wm.getTasks().get(2).getAttr(NodeKeys.NAME), "Ensure that third workspace has the correct name");
     }
     /**
      * Tests if tasks are added when passed in as dictionaries
@@ -96,21 +96,21 @@ public class WorkspaceManagerTest {
     @Test
     public void testaddWorkspaceDict() {
         // Arrange
-        Map<String, String> first = new HashMap<>();
-        Map<String, String> second = new HashMap<>();
-        Map<String, String> third = new HashMap<>();
-        first.put("Name", "first");
-        second.put("Name", "second");second.put("Type", action);
-        third.put("Name", "third");
+        NodeData first = new NodeData();
+        NodeData second = new NodeData();
+        NodeData third = new NodeData();
+        first.setAttr(NodeKeys.NAME, "first");
+        second.setAttr(NodeKeys.NAME, "second");second.setAttr(NodeKeys.TYPE, action);
+        third.setAttr(NodeKeys.NAME, "third");
         // Act
         wm.addWorkspace(first);
         wm.addWorkspace(second);
         wm.addWorkspace(third);
         // Assert
-        assertEquals("first", wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
-        assertEquals("second", wm.getTasks().get(1).get("Name"), "Ensure that second workspace has the correct name");
-        assertEquals(action, wm.getTasks().get(1).get("Type"), "Ensure that second workspace has the correct type");
-        assertEquals("third", wm.getTasks().get(2).get("Name"), "Ensure that third workspace has the correct name");
+        assertEquals("first", wm.getTasks().get(0).getAttr(NodeKeys.NAME), "Ensure that first workspace has the correct name");
+        assertEquals("second", wm.getTasks().get(1).getAttr(NodeKeys.NAME), "Ensure that second workspace has the correct name");
+        assertEquals(action, wm.getTasks().get(1).getAttr(NodeKeys.TYPE), "Ensure that second workspace has the correct type");
+        assertEquals("third", wm.getTasks().get(2).getAttr(NodeKeys.NAME), "Ensure that third workspace has the correct name");
     }
     /**
      * Tests if Tasks and actions can be added in Tasks within the current tasks list of tasks.
@@ -132,11 +132,11 @@ public class WorkspaceManagerTest {
         wm.home();
         // Assert
         assertEquals(2, wm.getTasks().size(), "Ensure that there are two workspaces in root workspace");
-        assertEquals(2, Integer.parseInt(wm.getTasks().get(1).get("Tasks")), "Ensure that there are two workspaces in sub workspace");
-        assertEquals(name1, wm.getTasks().get(0).get("Name"), "Ensure that first workspace has the correct name");
-        assertEquals(name2, wm.getTasks().get(1).get("Name"), "Ensure that second workspace has the correct name");
+        assertEquals(2, Integer.parseInt(wm.getTasks().get(1).getAttr(NodeKeys.TASKS)), "Ensure that there are two workspaces in sub workspace");
+        assertEquals(name1, wm.getTasks().get(0).getAttr(NodeKeys.NAME), "Ensure that first workspace has the correct name");
+        assertEquals(name2, wm.getTasks().get(1).getAttr(NodeKeys.NAME), "Ensure that second workspace has the correct name");
         wm.stepIntoWorkspace(1);
-        assertEquals(name3, wm.getTasks().get(0).get("Name"), "Ensure that first sub workspace was added correctly");
+        assertEquals(name3, wm.getTasks().get(0).getAttr(NodeKeys.NAME), "Ensure that first sub workspace was added correctly");
     }
     /**
      * Tests if Tasks and Actions can be removed from task list.
@@ -192,7 +192,7 @@ public class WorkspaceManagerTest {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(2, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure importance for root workspace is set correctly");
+        assertEquals(2, Integer.parseInt(wm.detailsOf(path).getAttr(NodeKeys.PRIORITY)), "Ensure importance for root workspace is set correctly");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -209,7 +209,7 @@ public class WorkspaceManagerTest {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(0, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot be set to a negative number");
+        assertEquals(0, Integer.parseInt(wm.detailsOf(path).getAttr(NodeKeys.PRIORITY)), "Ensure that importance cannot be set to a negative number");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -226,7 +226,7 @@ public class WorkspaceManagerTest {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(0, Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot set to be a number larger than 10");
+        assertEquals(0, Integer.parseInt(wm.detailsOf(path).getAttr(NodeKeys.PRIORITY)), "Ensure that importance cannot set to be a number larger than 10");
     }
     /**
      * Tests if Tasks importance does not get set if invalid number is entered.
@@ -245,7 +245,7 @@ public class WorkspaceManagerTest {
             e.printStackTrace();
         }
         // Assert
-        assertEquals(Integer.parseInt(priority), Integer.parseInt(wm.detailsOf(path).get("Priority")), "Ensure that importance cannot set to be a number larger than 10");
+        assertEquals(Integer.parseInt(priority), Integer.parseInt(wm.detailsOf(path).getAttr(NodeKeys.PRIORITY)), "Ensure that importance cannot set to be a number larger than 10");
     }
     /**
      * Tests to see if the due date gets set correctly.
@@ -263,7 +263,7 @@ public class WorkspaceManagerTest {
         // Act
         wm.setDueDate(year, month, day, hour, minute);
         // Assert
-        assertEquals(due.toString(), wm.detailsOf(path).get("DueDate"), "Check that due date is set correctly");
+        assertEquals(due.toString(), wm.detailsOf(path).getAttr(NodeKeys.DUEDATE), "Check that due date is set correctly");
     }
     /**
      * Tests if Tasks and Actions get moved correctly.
@@ -295,8 +295,8 @@ public class WorkspaceManagerTest {
         wm.moveCurrentWorkspace(new ArrayList<Integer>(path));
         wm.home();
         // Assert
-        assertEquals(totalSubWS, Integer.parseInt(wm.getTasks().get(1).get("Tasks")), "Ensure workspaces are in second task");
-        assertEquals(0, Integer.parseInt(wm.getTasks().get(0).get("Tasks")), "Ensure workspaces are not in original task");
+        assertEquals(totalSubWS, Integer.parseInt(wm.getTasks().get(1).getAttr(NodeKeys.TASKS)), "Ensure workspaces are in second task");
+        assertEquals(0, Integer.parseInt(wm.getTasks().get(0).getAttr(NodeKeys.TASKS)), "Ensure workspaces are not in original task");
     }
     /**
      * Tests to see if workspace search for Task objects works.
@@ -309,8 +309,8 @@ public class WorkspaceManagerTest {
         String a1 = "Action 1";
         String a2 = "Action 2";
 
-        Criteria c2 = new Criteria().addName(t2);
-        Criteria ca1 = new Criteria().addName(a1);
+        Criteria c2 = new Criteria().addAttr(NodeKeys.NAME, t2);
+        Criteria ca1 = new Criteria().addAttr(NodeKeys.NAME, a1);
 
         wm.addWorkspace(t2, task);
         wm.addWorkspace(t3, task);
@@ -319,14 +319,14 @@ public class WorkspaceManagerTest {
         wm.home();
         wm.addWorkspace(a2, action);
         // Act
-        ArrayList<Map<String, String>> foundT2 = wm.searchWorkspaces(c2);
-        ArrayList<Map<String, String>> foundA2 = wm.searchWorkspaces(ca1);
-        ArrayList<Map<String, String>> randomTask = wm.searchWorkspaces(new Criteria().addName("Random"));
+        ArrayList<NodeData> foundT2 = wm.searchWorkspaces(c2);
+        ArrayList<NodeData> foundA2 = wm.searchWorkspaces(ca1);
+        ArrayList<NodeData> randomTask = wm.searchWorkspaces(new Criteria().addAttr(NodeKeys.NAME, "Random"));
         // Assert
         assertEquals(1, foundT2.size(), "Look for Task in list of workspaces");
-        assertEquals(t2, foundT2.get(0).get("Name"), "Ensure task has the correct name");
+        assertEquals(t2, foundT2.get(0).getAttr(NodeKeys.NAME), "Ensure task has the correct name");
         assertEquals(1, foundA2.size(), "Look for Action in list of workspaces");
-        assertEquals(a1, foundA2.get(0).get("Name"), "Ensure action has the correct name");
+        assertEquals(a1, foundA2.get(0).getAttr(NodeKeys.NAME), "Ensure action has the correct name");
         assertEquals(0, randomTask.size(), "Look for Task that is not in list of workspaces");
     }
 
@@ -340,8 +340,8 @@ public class WorkspaceManagerTest {
         String t3 = "Task 2";
         String a2 = "Action 2";
 
-        Criteria c2 = new Criteria().addName(t2);
-        Criteria ca1 = new Criteria().addName(t2).addType(action);
+        Criteria c2 = new Criteria().addAttr(NodeKeys.NAME,t2);
+        Criteria ca1 = new Criteria().addAttr(NodeKeys.NAME,t2).addAttr(NodeKeys.TYPE,action);
 
         wm.addWorkspace(t2, task);
         wm.addWorkspace(t3, task);
@@ -350,13 +350,13 @@ public class WorkspaceManagerTest {
         wm.home();
         wm.addWorkspace(a2, action);
         // Act
-        ArrayList<Map<String, String>> foundT2 = wm.searchWorkspaces(c2);
-        ArrayList<Map<String, String>> foundA2 = wm.searchWorkspaces(ca1);
+        ArrayList<NodeData> foundT2 = wm.searchWorkspaces(c2);
+        ArrayList<NodeData> foundA2 = wm.searchWorkspaces(ca1);
         // Assert
         assertEquals(2, foundT2.size(), "Should find two nodes with name: " + t2);
-        assertEquals(t2, foundT2.get(0).get("Name"), "Ensure task has the correct name");
-        assertEquals(t2, foundT2.get(1).get("Name"), "Ensure Action has the correct name");
+        assertEquals(t2, foundT2.get(0).getAttr(NodeKeys.NAME), "Ensure task has the correct name");
+        assertEquals(t2, foundT2.get(1).getAttr(NodeKeys.NAME), "Ensure Action has the correct name");
         assertEquals(1, foundA2.size(), "Look for Action in list of workspaces");
-        assertEquals(action, foundA2.get(0).get("Type"), "Ensure action has the correct type");
+        assertEquals(action, foundA2.get(0).getAttr(NodeKeys.TYPE), "Ensure action has the correct type");
     }
 }

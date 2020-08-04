@@ -1,14 +1,14 @@
 package simpletask.main.gui.controllers;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import simpletask.main.entities.NodeData;
+import simpletask.main.entities.NodeKeys;
 
 public class NewNodeDialogController {
     @FXML
@@ -37,14 +37,15 @@ public class NewNodeDialogController {
      *
      * @return  A dictionary representing the new item
      */
-    public Map<String, String> processInputs() {
-        final Map<String, String> input = new HashMap<>();
+    public NodeData processInputs() {
+        final NodeData input = new NodeData();
 
-        input.put("Name", newNodeName.getText().trim());
-        input.put("Description", newNodeDesc.getText().trim());
-        input.put("Priority", newNodePriority.getText().trim());
-        input.put("DueDate", newNodeDueDate.getValue().toString());
-        input.put("Type", newNodeComboBox.getValue().trim());
+        input.setAttr(NodeKeys.NAME, newNodeName.getText().trim());
+        input.setAttr(NodeKeys.DESCRIPTION, newNodeDesc.getText().trim());
+        input.setAttr(NodeKeys.PRIORITY, newNodePriority.getText().trim());
+        input.setAttr(NodeKeys.DUEDATE, newNodeDueDate.getValue().toString());
+        input.setAttr(NodeKeys.TYPE, newNodeComboBox.getValue().trim());
+        input.setAttr(NodeKeys.TASKS, "0");
 
         return input;
     }

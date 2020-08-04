@@ -106,6 +106,25 @@ abstract class WorkspaceNode implements Serializable {
      * @return  List of WorkspaceNodes that current node is parent of
      */
     protected abstract ArrayList<WorkspaceNode> getTasks();
+    /**
+     * 
+     * @param nKeys
+     * @return
+     */
+    protected String getAttr(final NodeKeys nKeys) {
+        String res;
+        switch(nKeys) {
+            case NAME:        res = getName();                         break;
+            case DESCRIPTION: res = getDescription();                  break;
+            case PRIORITY:    res = String.valueOf(getPriority());     break;
+            case TYPE:        res = getClass().getSimpleName();        break;
+            case TASKS:       res = String.valueOf(getTasks().size()); break;
+            case DUEDATE:     res = getDueDate().toString();           break;
+            case COMPLETE:    res = String.valueOf(getComplete());     break;
+            default:          res = "No Value Set";                    break;
+        }
+        return res;
+	}
     //#endregion [Getters]
 
     //#region [Setters]
@@ -214,5 +233,4 @@ abstract class WorkspaceNode implements Serializable {
     protected abstract boolean searchWorkspaces(final WorkspaceNode workspace);
     //#endregion [Abstract]
     //#endregion [Implementation]
-
 }
