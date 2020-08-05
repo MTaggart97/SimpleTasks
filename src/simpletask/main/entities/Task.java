@@ -1,5 +1,6 @@
 package simpletask.main.entities;
 
+import java.io.InvalidClassException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -199,7 +200,10 @@ class Task extends WorkspaceNode {
             return true;
         }
         for (WorkspaceNode w: this.getTasks()) {
-            if (w.equals(workspace)) {
+            // if (w.equals(workspace)) {
+            //     return true;
+            // }
+            if (w.searchWorkspaces(workspace)) {
                 return true;
             }
         }
@@ -267,5 +271,30 @@ class Task extends WorkspaceNode {
         parent.getTasks().remove(this);
         this.setParent(null);
         return true;
+    }
+
+    @Override
+    protected Action asAction() throws InvalidClassException {
+        if (tasks.size() == 0) {
+            Action action = new Action(this.name);
+            action.setDescription(this.description);
+            action.setComplete(String.valueOf(this.complete));
+            action.parent = (Task) this.parent;
+            ((Task) action.parent).addToTask(action);
+            action.setDueDate(this.dueDate);
+            action.setPriority(this.priority);
+            
+            // Delete this object
+            this.delete();
+
+            return action;
+        } else {
+            throw new InvalidClassException("Cannot convert Task to Action as Task still has sub tasks");
+        }
+    }
+
+    @Override
+    protected Task asTask() {
+        return this;
     }
 }

@@ -58,6 +58,9 @@ public class Manager {
     private DataFormat df = new DataFormat("WorkspaceNode");
     private DataFormat position = new DataFormat("Position");
 
+    public NodeData mainTaskData = null;
+    public NodeData subTaskData = null;
+
     private Manager() {
         workspace = new ArrayList<>();
     };
@@ -226,24 +229,29 @@ public class Manager {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                            if(mouseEvent.getClickCount() == 1) {
-                                // TODO: Get node and parent of node (in the form of NodeData)
-                                // TODO: Create a new instance of the Workspace.fxml + add these nodes to it (may need two fields to hold the two NodeDatas)
-                                // TODO: Redraw workspace
-                            } else if(mouseEvent.getClickCount() == 2) {
-                                // Move into workspace containing this cell
-                                int index = workspace.indexOf(cell.getListView());
-                                System.out.println(WorkspaceManager.getInstance().getTasks().get(index));
-                                System.out.println(index);
-                                WorkspaceManager.getInstance().stepIntoWorkspace(index);
-                                // Redraw scene
-                                FXMLLoader mainWorkspace = new FXMLLoader(getClass().getResource("resources/Workspace.fxml"));
-                                try {
-                                    Parent root = mainWorkspace.load();
-                                    TestGUI.getStage().setScene(new Scene(root, 1200, 850));
-                                    
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                            if (cell.getIndex() < cell.getListView().getItems().size()) {
+                                // Get node and parent of node (in the form of NodeData)
+                                int mainTaskIndex = workspace.indexOf(cell.getListView());
+                                ArrayList<Integer> path = new ArrayList<>();
+                                path.add(mainTaskIndex);
+                                mainTaskData = WorkspaceManager.getInstance().relativeDetailsOf(path);
+                                path = new ArrayList<>();
+                                path.add(mainTaskIndex);
+                                path.add(cell.getIndex());
+                                subTaskData = WorkspaceManager.getInstance().relativeDetailsOf(path);
+                                if(mouseEvent.getClickCount() == 2) {
+                                    // Move into workspace containing this cell
+                                    int index = workspace.indexOf(cell.getListView());
+                                    WorkspaceManager.getInstance().stepIntoWorkspace(index);
+                                    // Redraw scene
+                                    FXMLLoader mainWorkspace = new FXMLLoader(getClass().getResource("resources/Workspace.fxml"));
+                                    try {
+                                        Parent root = mainWorkspace.load();
+                                        TestGUI.getStage().setScene(new Scene(root, 1200, 850));
+                                        
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -320,7 +328,8 @@ public class Manager {
                         Dragboard db = event.getDragboard();
                         boolean success = false;
                         if (db.hasString()) {
-                            ArrayList<Integer> path = new ArrayList<>();
+                            // TODO: I think this is where the DnD goes wrong (wrong path)
+                            ArrayList<Integer> path = new ArrayList<>(WorkspaceManager.getInstance().getPath());
                             path.add(workspace.indexOf(cell.getListView()));
                             cell.getListView().getItems().add((NodeData) db.getContent(df));
                             WorkspaceManager.getInstance().stepIntoWorkspace((Integer) db.getContent(position));
@@ -385,7 +394,7 @@ public class Manager {
         }
     }
     /**
-     * Edits the selected item in the ObservableList. A diablog will popup, which will be
+     * Edits the selected item in the ObservableList. A dialog will popup, which will be
      * populated with the items current details, which the user can edit. It then saves these
      * changes in the underlying workspace and ObservabelList.
      *
@@ -448,6 +457,9 @@ public class Manager {
         if (!WorkspaceManager.getInstance().setPriority(newItem.getAttr(NodeKeys.PRIORITY))) {
             newItem.setAttr(NodeKeys.PRIORITY, item.getAttr(NodeKeys.PRIORITY));
         };
+        WorkspaceManager.getInstance().setComplete(newItem.getAttr(NodeKeys.COMPLETE));
+        WorkspaceManager.getInstance().setType(newItem.getAttr(NodeKeys.TYPE));
+        WorkspaceManager.getInstance().setDueDate(newItem.getAttr(NodeKeys.DUEDATE));
         WorkspaceManager.getInstance().stepUp();
         WorkspaceManager.getInstance().stepUp();
         int index = workspace.get(workspace.indexOf(obsList)).getItems().indexOf(item);
@@ -492,6 +504,21 @@ public class Manager {
             addToList(workspace.get(workspace.indexOf(obsList)), newItem);
         } else {
             System.out.println("Cancel pressed");
+        }
+    }
+
+    private void replaceCard(final int index, final NodeData item) {
+        
+    }
+
+    public void editAtIndex(final int[] index, final NodeData item) {
+        ListView<NodeData> obsList = workspace.get(index[0]);
+        if (index.length == 1) {
+
+        } else if (index.length == 2) {
+            replaceItem(obsList, obsList.getItems().get(index[1]), item);
+        } else {
+            System.err.println("NYI");
         }
     }
 }

@@ -1,5 +1,6 @@
 package simpletask.main.entities;
 
+import java.io.InvalidClassException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -180,6 +181,14 @@ abstract class WorkspaceNode implements Serializable {
             this.priority = imp;
         }
     }
+
+    protected void setComplete(final String complete) {
+        this.complete = Boolean.valueOf(complete);
+    }
+
+    protected void setDueDate(final String dueDate) {
+        this.dueDate = LocalDateTime.parse(dueDate);
+    }
     //#endregion [Setters]
 
     //#region [Implementation]
@@ -231,6 +240,10 @@ abstract class WorkspaceNode implements Serializable {
      * @return              True if found, false otherwise.
      */
     protected abstract boolean searchWorkspaces(final WorkspaceNode workspace);
+
+    protected abstract WorkspaceNode asTask();
+
+    protected abstract WorkspaceNode asAction() throws InvalidClassException;
     //#endregion [Abstract]
     //#endregion [Implementation]
 }

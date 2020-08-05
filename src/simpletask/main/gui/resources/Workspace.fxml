@@ -75,7 +75,7 @@
                         </GridPane>
                      </children>
                   </VBox>
-                  <Button fx:id="mainNodeSave" layoutX="216.0" layoutY="302.0" mnemonicParsing="false" text="Save" />
+                  <Button fx:id="mainNodeSave" layoutX="216.0" layoutY="302.0" mnemonicParsing="false" onAction="#saveMainNode" text="Save" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -111,7 +111,7 @@
                         </GridPane>
                      </children>
                   </VBox>
-                  <Button fx:id="subNodeSave" layoutX="426.0" layoutY="309.0" mnemonicParsing="false" text="Save" />
+                  <Button fx:id="subNodeSave" layoutX="426.0" layoutY="309.0" mnemonicParsing="false" onAction="#saveSubNode" text="Save" />
                </children>
             </AnchorPane>
         </items>

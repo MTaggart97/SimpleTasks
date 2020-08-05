@@ -35,7 +35,6 @@ public class NewNodeDialogController {
     public void initialize() {
         newNodeComboBox.getItems().addAll("Task","Action");
         newNodeComboBox.getSelectionModel().select("Task");
-        System.out.println(newNodeDesc.isResizable());
     }
     
     /**

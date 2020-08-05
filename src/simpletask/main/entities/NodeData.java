@@ -50,8 +50,6 @@ public class NodeData  implements Serializable {
      * @param workspace
      */
     public void setNodeData(final WorkspaceNode workspace) {
-        System.out.println(workspace);
-        System.out.println(nodeData);
         for(NodeKeys nKeys : NodeKeys.values()) {
             nodeData.put(nKeys, workspace.getAttr(nKeys));
         }

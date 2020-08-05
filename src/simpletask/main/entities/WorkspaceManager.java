@@ -3,10 +3,12 @@ package simpletask.main.entities;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This class will be responsible for managing the workspace. Through it, you can add
@@ -29,6 +31,8 @@ public class WorkspaceManager {
      * The only instance of WorkspaceManager.
      */
     private static WorkspaceManager workspaceManager;
+
+    private ArrayList<Integer> pathFromRoot = new ArrayList<>();
     //#endregion [Fields]
 
     //#region [Constructors]
@@ -62,6 +66,14 @@ public class WorkspaceManager {
      */
     public static WorkspaceManager getInstance() {
         return workspaceManager;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public ArrayList<Integer> getPath() {
+        return new ArrayList<Integer>(pathFromRoot);
     }
     /**
      * Returns a map of details of the currentWorkspace's parent. Keys include:
@@ -116,6 +128,21 @@ public class WorkspaceManager {
      */
     public NodeData detailsOf(final ArrayList<Integer> path) {
         WorkspaceNode w = rootWorkspace;
+        for (Integer i: path) {
+            w = w.getTasks().get(i);
+        }
+        return getDetails(w);
+    }
+
+    /**
+     * Returns details of the Workspace at the given path relative to current workspace.
+     *
+     * @param   path    Path to workspace
+     * @return          Dictionary containing details of workspace at path
+     */
+    public NodeData relativeDetailsOf(final ArrayList<Integer> path) {
+        // TODO: Write unit tests for this
+        WorkspaceNode w = currentWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);
         }
@@ -203,6 +230,7 @@ public class WorkspaceManager {
         try {
             WorkspaceNode workspace = currentWorkspace.getTasks().get(pos);
             currentWorkspace = workspace;
+            pathFromRoot.add(pos);
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Doing nothing");
         }
@@ -213,12 +241,16 @@ public class WorkspaceManager {
      */
     public void home() {
         currentWorkspace = rootWorkspace;
+        pathFromRoot.clear();
     }
     /**
      * Moves currentWorkspace up one.
      */
     public void stepUp() {
         currentWorkspace = currentWorkspace.getParent();
+        if (pathFromRoot.size() > 0) {
+            pathFromRoot.remove(pathFromRoot.size() - 1);
+        }
     }
     //#endregion [Movement]
 
@@ -357,7 +389,6 @@ public class WorkspaceManager {
         if (!(target instanceof Task) || !rootWorkspace.searchWorkspaces(target)) {
             return false;
         }
-
         return currentWorkspace.moveWorkspace((Task) target);
     }
     /**
@@ -425,6 +456,26 @@ public class WorkspaceManager {
         } catch (NumberFormatException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public void setComplete(final String complete) {
+        currentWorkspace.setComplete(complete);
+    }
+
+    public void setDueDate(final String dueDate) {
+        currentWorkspace.setDueDate(dueDate + "T00:00:00.000000000");
+    }
+
+    public void setType(final String type) {
+        if (type.equals("Action") && currentWorkspace.getTasks().size() == 0) {
+            try {
+                currentWorkspace = currentWorkspace.asAction();
+            } catch (InvalidClassException ex) {
+                // This shouldn't be thrown as it is handled in the if statement
+            }
+        } else if (type.equals("Task")) {
+            currentWorkspace = currentWorkspace.asTask();
         }
     }
     //#endregion [Setters]
