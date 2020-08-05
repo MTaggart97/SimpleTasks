@@ -27,7 +27,7 @@ public class TestGUI extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("../gui/resources/Workspace.fxml"));
         setStage(primaryStage);
         primaryStage.setTitle("Simple Task");
-        primaryStage.setScene(new Scene(root, 900, 500));
+        primaryStage.setScene(new Scene(root, 1200, 800));
         primaryStage.show();
     }
     /**

@@ -389,6 +389,7 @@ public class Manager {
      */
     private void editItem(final ListView<NodeData> obsList) {
         Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setResizable(true);
         dialog.setTitle("Edit Item");
         dialog.setHeaderText("Use this dialog to edit item");
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -400,16 +401,18 @@ public class Manager {
             e.printStackTrace();
             return;
         }
-        if (!obsList.getItems().get(obsList.getSelectionModel().getSelectedIndex()).getAttr(NodeKeys.TASKS).equals("0")) {
-            // Note, this relies on the last element being the combo list
+        String numOfTasks = obsList.getItems().get(obsList.getSelectionModel().getSelectedIndex()).getAttr(NodeKeys.TASKS);
+        if (!numOfTasks.equals("0")) {
+            // Note, this relies on the thrid last element being the combo list
             ObservableList<Node> temp = ((GridPane) ((DialogPane) dialog.getDialogPane().getChildren().get(3)).getChildren().get(3)).getChildren();
-            ((ComboBox<String>) temp.get(temp.size() - 1)).setDisable(true);
+            ((ComboBox<String>) temp.get(temp.size() - 5)).setDisable(true);
         }
 
         NodeData item = obsList.getSelectionModel().getSelectedItem();
         NewNodeDialogController controller = fxmlLoader.getController();
         controller.setNewNodeDesc(item.getAttr(NodeKeys.DESCRIPTION)).setNewNodeName(item.getAttr(NodeKeys.NAME)).setNewNodeProirity(item.getAttr(NodeKeys.PRIORITY))
-            .setNewNodeDueDate(item.getAttr(NodeKeys.DUEDATE)).setNewNodeType(item.getAttr(NodeKeys.TYPE));
+            .setNewNodeDueDate(item.getAttr(NodeKeys.DUEDATE)).setNewNodeType(item.getAttr(NodeKeys.TYPE)).setNewNodeComplete(item.getAttr(NodeKeys.COMPLETE))
+            .setNewNodeTasks(numOfTasks);
 
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
@@ -457,6 +460,7 @@ public class Manager {
      */
     private void addItemToList(final ListView<NodeData> obsList, final ActionEvent event) {
         Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setResizable(true);
         dialog.setTitle("Edit ToDo Item");
         dialog.setHeaderText("Use this dialog to edit todo item");
         FXMLLoader fxmlLoader = new FXMLLoader();
