@@ -94,7 +94,6 @@ public class WorkspaceManager {
      * 
      * @return
      */
-    //TODO: Need to make unit tests for this
     public NodeData getCurrentWorkspaceDetails() {
         return getDetails(currentWorkspace);
     }

@@ -32,12 +32,16 @@ public class WorkspaceManagerTest {
      */
     private WorkspaceManager wm;
     /**
+     * Name of base workspace.
+     */
+    private String workspaceName = "Workspace";
+    /**
      * Executes before each test method. Simply resets the wm Task instance
      * to be empty.
      */
     @BeforeEach
     public void setUp() {
-        wm = WorkspaceManager.initialise("Workspace");
+        wm = WorkspaceManager.initialise(workspaceName);
     }
     /**
      * Executed after each tests. Sets the wm Task instance to null to ensure
@@ -358,5 +362,50 @@ public class WorkspaceManagerTest {
         assertEquals(t2, foundT2.get(1).getAttr(NodeKeys.NAME), "Ensure Action has the correct name");
         assertEquals(1, foundA2.size(), "Look for Action in list of workspaces");
         assertEquals(action, foundA2.get(0).getAttr(NodeKeys.TYPE), "Ensure action has the correct type");
+    }
+
+    /**
+     * Tests getCurrentWorkspaceDetails method on unmodified workspace.
+     */
+    @Test
+    public void testGetCurrentWorkspaceDetails() {
+        // Arrange
+
+        // Act
+        
+        // Assert
+        assertEquals(workspaceName, wm.getCurrentWorkspaceDetails().getAttr(NodeKeys.NAME), "Ensure that name of root workspace is " + workspaceName);
+        assertEquals("0", wm.getCurrentWorkspaceDetails().getAttr(NodeKeys.TASKS), "Ensure that root workspace has no sub tasks");
+    }
+    
+    /**
+     * 
+     */
+    @Test
+    public void testGetCurrentWorkspaceDetailsModified() {
+        // Arrange
+        final String totalSubWS = "2";
+        String ws1 = "First";
+        wm.addWorkspace(ws1, task);
+        wm.stepIntoWorkspace(0);
+        String subTask = "Sub Task";
+        String subAction = "Sub Action";
+        wm.addWorkspace(subTask, task);
+        wm.addWorkspace(subAction, action);
+        wm.home();
+        String ws2 = "Second";
+        wm.addWorkspace(ws2, task);
+        // Act
+        wm.stepIntoWorkspace(0);
+        String ws1Name = wm.getCurrentWorkspaceDetails().getAttr(NodeKeys.NAME);
+        wm.home();
+        wm.stepIntoWorkspace(1);
+        String ws2Name = wm.getCurrentWorkspaceDetails().getAttr(NodeKeys.NAME);
+        wm.home();
+        String numOfWS = wm.getCurrentWorkspaceDetails().getAttr(NodeKeys.TASKS);
+        // Assert
+        assertEquals(totalSubWS, numOfWS, "Ensure that there are " + totalSubWS + " workspaces in root workspace");
+        assertEquals(ws1Name, ws1, "Ensure first workspace has correct name");
+        assertEquals(ws2Name, ws2, "Ensure second workspace has correct name");
     }
 }

@@ -226,7 +226,11 @@ public class Manager {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                            if(mouseEvent.getClickCount() == 2){
+                            if(mouseEvent.getClickCount() == 1) {
+                                // TODO: Get node and parent of node (in the form of NodeData)
+                                // TODO: Create a new instance of the Workspace.fxml + add these nodes to it (may need two fields to hold the two NodeDatas)
+                                // TODO: Redraw workspace
+                            } else if(mouseEvent.getClickCount() == 2) {
                                 // Move into workspace containing this cell
                                 int index = workspace.indexOf(cell.getListView());
                                 System.out.println(WorkspaceManager.getInstance().getTasks().get(index));
@@ -236,7 +240,7 @@ public class Manager {
                                 FXMLLoader mainWorkspace = new FXMLLoader(getClass().getResource("resources/Workspace.fxml"));
                                 try {
                                     Parent root = mainWorkspace.load();
-                                    TestGUI.getStage().setScene(new Scene(root, 900, 500));
+                                    TestGUI.getStage().setScene(new Scene(root, 1200, 850));
                                     
                                 } catch (IOException e) {
                                     e.printStackTrace();

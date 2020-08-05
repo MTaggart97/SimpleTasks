@@ -45,6 +45,7 @@ public class MainController {
      */
     @FXML
     private Text workspaceName;
+    // TODO: Add the rest of the fields
 
     /**
      * Actions to take on initialisation. Loads the workspace into the gui.
@@ -64,6 +65,8 @@ public class MainController {
             WorkspaceManager.getInstance().stepUp();
         }
     }
+
+    // TODO: Create a method to populate the bottom UI based on the data in Manager.
 
     /**
      * Used to show the New Card Dialog. Uses the NewCardDialog.fxml file, sets it's
@@ -95,6 +98,8 @@ public class MainController {
             mainHBox.getChildren().add(card);
         }
     }
+
+    //TODO: Add logic to populate the bottom of UI based of NodeData instance
 
     /**
      * Used to save workspace.
