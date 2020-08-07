@@ -468,4 +468,37 @@ public class WorkspaceManagerTest {
         // Assert
         assertEquals("Action 2", data.getAttr(NodeKeys.NAME), "Ensure that the correct task is returned from relative details");
     }
+
+    /**
+     * Tests to see if detailsOf works correctly
+     */
+    @Test
+    public void testDetailsOf() {
+        // Arrange
+        String t2 = "Task 1";
+        String t3 = "Task 2";
+        String a2 = "Action 2";
+
+        wm.addWorkspace(t2, task);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(t3, task);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(a2, action);
+        wm.home();
+
+        ArrayList<Integer> path1 = new ArrayList<>();
+        path1.add(0);path1.add(0);
+
+        ArrayList<Integer> path2 = new ArrayList<>();
+        path2.add(0);path2.add(0);path2.add(0);
+        // Act
+        wm.stepIntoWorkspace(0);
+        NodeData data1 = wm.detailsOf(path1);
+        wm.home();
+        NodeData data2 = wm.detailsOf(path2);
+
+        // Assert
+        assertEquals("Task 2", data1.getAttr(NodeKeys.NAME), "Ensure that the correct task is returned from details");
+        assertEquals("Action 2", data2.getAttr(NodeKeys.NAME), "Ensure that the correct task is returned from details");
+    }
 }
