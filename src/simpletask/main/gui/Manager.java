@@ -328,7 +328,6 @@ public class Manager {
                         Dragboard db = event.getDragboard();
                         boolean success = false;
                         if (db.hasString()) {
-                            // TODO: I think this is where the DnD goes wrong (wrong path)
                             ArrayList<Integer> path = new ArrayList<>(WorkspaceManager.getInstance().getPath());
                             path.add(workspace.indexOf(cell.getListView()));
                             cell.getListView().getItems().add((NodeData) db.getContent(df));

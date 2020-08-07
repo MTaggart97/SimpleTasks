@@ -2,8 +2,6 @@ package simpletask.main.app;
 
 import java.io.File;
 
-import javax.swing.JFileChooser;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

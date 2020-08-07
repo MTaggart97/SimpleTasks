@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * This class will be responsible for managing the workspace. Through it, you can add
@@ -141,7 +140,6 @@ public class WorkspaceManager {
      * @return          Dictionary containing details of workspace at path
      */
     public NodeData relativeDetailsOf(final ArrayList<Integer> path) {
-        // TODO: Write unit tests for this
         WorkspaceNode w = currentWorkspace;
         for (Integer i: path) {
             w = w.getTasks().get(i);

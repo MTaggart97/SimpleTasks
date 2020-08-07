@@ -200,7 +200,6 @@ class Task extends WorkspaceNode {
             return true;
         }
         for (WorkspaceNode w: this.getTasks()) {
-            // TODO: Create a unit test to cover recursive search
             if (w.searchWorkspaces(workspace)) {
                 return true;
             }

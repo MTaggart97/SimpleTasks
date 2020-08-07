@@ -335,6 +335,39 @@ public class WorkspaceManagerTest {
     }
 
     /**
+     * Tests to see if nodes are found when they are deep inside the workspace
+     */
+    @Test
+    public void testSearchRecursive() {
+        String t2 = "Task 1";
+        String t3 = "Task 2";
+        String a1 = "Action 1";
+        String a2 = "Action 2";
+
+        Criteria c2 = new Criteria().addAttr(NodeKeys.NAME, t2);
+        Criteria ca1 = new Criteria().addAttr(NodeKeys.NAME, a1);
+
+        wm.addWorkspace(t2, task);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(t3, task);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(a1, action);
+        wm.addWorkspace(a2, action);
+        wm.home();
+        // Act
+        ArrayList<NodeData> foundT2 = wm.searchWorkspaces(c2);
+        ArrayList<NodeData> foundA2 = wm.searchWorkspaces(ca1);
+        ArrayList<NodeData> randomTask = wm.searchWorkspaces(new Criteria().addAttr(NodeKeys.NAME, "Random"));
+
+        // Assert
+        assertEquals(1, foundT2.size(), "Look for Task in list of workspaces");
+        assertEquals(t2, foundT2.get(0).getAttr(NodeKeys.NAME), "Ensure task has the correct name");
+        assertEquals(1, foundA2.size(), "Look for Action in list of workspaces");
+        assertEquals(a1, foundA2.get(0).getAttr(NodeKeys.NAME), "Ensure action has the correct name");
+        assertEquals(0, randomTask.size(), "Look for Task that is not in list of workspaces");
+    }
+
+    /**
      * Tests to see if workspace search for Task and Action objects works when multiple nodes are found.
      */
     @Test
@@ -407,5 +440,32 @@ public class WorkspaceManagerTest {
         assertEquals(totalSubWS, numOfWS, "Ensure that there are " + totalSubWS + " workspaces in root workspace");
         assertEquals(ws1Name, ws1, "Ensure first workspace has correct name");
         assertEquals(ws2Name, ws2, "Ensure second workspace has correct name");
+    }
+
+    /**
+     * Tests to see if relative details works correctly
+     */
+    @Test
+    public void testRelativeDetailsOf() {
+        // Arrange
+        String t2 = "Task 1";
+        String t3 = "Task 2";
+        String a2 = "Action 2";
+
+        wm.addWorkspace(t2, task);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(t3, task);
+        wm.stepIntoWorkspace(0);
+        wm.addWorkspace(a2, action);
+        wm.home();
+
+        ArrayList<Integer> path = new ArrayList<>();
+        path.add(0);path.add(0);
+        // Act
+        wm.stepIntoWorkspace(0);
+        NodeData data = wm.relativeDetailsOf(path);
+
+        // Assert
+        assertEquals("Action 2", data.getAttr(NodeKeys.NAME), "Ensure that the correct task is returned from relative details");
     }
 }
