@@ -25,6 +25,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import simpletask.main.app.Config;
+import simpletask.main.app.ConfigKeys;
 import simpletask.main.entities.NodeData;
 import simpletask.main.entities.NodeKeys;
 import simpletask.main.entities.WorkspaceManager;
@@ -36,6 +38,7 @@ import simpletask.main.gui.Manager;
  * @author Matthew Taggart
  */
 public class MainController {
+    private Config config;
     /**
      * This is the BorderPane of the main window.
      */
@@ -104,6 +107,9 @@ public class MainController {
     @FXML
     private RadioButton mainNodeComplete;
 
+    public MainController() {
+        config = new Config(".config");
+    }
     /**
      * Actions to take on initialisation. Loads the workspace into the gui.
      */
@@ -204,7 +210,7 @@ public class MainController {
     @FXML
     public void saveWorkspace() {
         System.out.println("Saving Workspace...");
-        WorkspaceManager.getInstance().save("SavedWorkspace/workspace.ser");
+        WorkspaceManager.getInstance().save(config.getConfig(ConfigKeys.DIR));
         System.out.println("Saved");
     }
 
