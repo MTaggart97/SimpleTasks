@@ -1,14 +1,10 @@
 package simpletask.main.app;
 
+import simpletask.main.entities.NodeData;
+import simpletask.main.entities.NodeKeys;
 import simpletask.main.entities.WorkspaceManager;
 
-// import java.io.FileInputStream;
-// import java.io.FileOutputStream;
-// import java.io.IOException;
-// import java.io.ObjectInputStream;
-// import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -18,11 +14,6 @@ import java.util.Scanner;
  */
 public final class App {
     // Application constants
-    /**
-     * Switch for debug statements.
-     */
-    private static final boolean DEBUG = true;
-
     /**
      * Private constroter so the application class cannot be extended.
      */
@@ -38,8 +29,9 @@ public final class App {
     public static void main(final String[] args) {
         Scanner sc = new Scanner(System.in);
         // Create your initial workspace
-        System.out.print("Enter the name of your task: ");
-        WorkspaceManager workspace = new WorkspaceManager(sc.nextLine());
+        // System.out.print("Enter the name of your task: ");
+        // WorkspaceManager workspace = new WorkspaceManager(sc.nextLine());
+        WorkspaceManager workspace = WorkspaceManager.loadWorkspace("SavedWorkspace/workspace.ser");
 
         Options option;
         String st;
@@ -68,7 +60,7 @@ public final class App {
                     System.out.println(workspace);
                     break;
                 case SAVE:
-                    debugLog("Not yet implemented");
+                    saveWorkspace(workspace, "SavedWorkspace/workspace.ser");
                     break;
                 case DELETE:
                     deleteWorkspace(workspace, sc);
@@ -106,10 +98,10 @@ public final class App {
      * @return          The workspace the user steps into
      */
     private static boolean stepIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
-        System.out.println("0 " + workspace.getParent().get("Name"));
-        ArrayList<Map<String, String>> act = workspace.getTasks();
+        System.out.println("0 " + workspace.getParent().getAttr(NodeKeys.NAME));
+        ArrayList<NodeData> act = workspace.getTasks();
         for (int i = 0; i < act.size(); i++) {
-            System.out.println((i + 1) + " " + act.get(i).get("Name"));
+            System.out.println((i + 1) + " " + act.get(i).getAttr(NodeKeys.NAME));
         }
         System.out.print("Choose a task to step into: ");
         int i = Integer.parseInt(sc.nextLine());
@@ -134,11 +126,11 @@ public final class App {
     private static void moveIntoWorkspace(final WorkspaceManager workspace, final Scanner sc) {
         ArrayList<Integer> pos = new ArrayList<>();
         String inp = "RANDOM";
-        ArrayList<Map<String, String>> details = workspace.taskDetailsOf(new ArrayList<Integer>(0));
+        ArrayList<NodeData> details = workspace.taskDetailsOf(new ArrayList<Integer>(0));
 
         while (!inp.equals("")) {
             for (int i = 0; i < details.size(); i++) {
-                System.out.println(i + " " + details.get(i).get("Name"));
+                System.out.println(i + " " + details.get(i).getAttr(NodeKeys.NAME));
             }
             System.out.print("Choose a task to move to (hit enter to select current task): ");
             try {
@@ -161,9 +153,9 @@ public final class App {
      */
     private static void deleteWorkspace(final WorkspaceManager workspace, final Scanner sc) {
         System.out.println("Choose workspace to delete: ");
-        ArrayList<Map<String, String>> act = workspace.getTasks();
+        ArrayList<NodeData> act = workspace.getTasks();
         for (int i = 0; i < act.size(); i++) {
-            System.out.println((i + " " + act.get(i).get("Name")));
+            System.out.println((i + " " + act.get(i).getAttr(NodeKeys.NAME)));
         }
         int i = Integer.parseInt(sc.nextLine());
         workspace.deleteWorkspace(i);
@@ -171,47 +163,13 @@ public final class App {
     /**
      * Save the workspace.
      *
-     * @param   w   The workspace to save
-     * @return      True if save was successful, false otherwise
+     * @param   w       The workspace to save
+     * @param   path    The path to save workspace to
+     * @return          True if save was successful, false otherwise
      */
-    // public static boolean saveWorkspace(final Workspace w) {
-    //     try {
-    //         FileOutputStream fileOut = new FileOutputStream("SavedWorkspace/workspace.ser");
-    //         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-    //         out.writeObject(w);
-    //         out.close();
-    //         fileOut.close();
-    //         System.out.printf("Serialized data is saved in SavedWorkspace/workspace.ser");
-    //         return true;
-    //      } catch (IOException i) {
-    //         i.printStackTrace();
-    //         return false;
-    //      }
-    // }
-
-    /**
-     * Load in the workspace in the given file.
-     *
-     * @param file  Path to workspace on disk
-     * @return      The Task in the file or null if failed
-     */
-    // public static Workspace loadWorkspace(final String file) {
-    //     try {
-    //         FileInputStream fileIn = new FileInputStream(file);
-    //         ObjectInputStream in = new ObjectInputStream(fileIn);
-    //         Workspace w = (Workspace) in.readObject();
-    //         in.close();
-    //         fileIn.close();
-    //         return w;
-    //      } catch (IOException i) {
-    //         i.printStackTrace();
-    //         return null;
-    //      } catch (ClassNotFoundException c) {
-    //         System.out.println("Class not found");
-    //         c.printStackTrace();
-    //         return null;
-    //      }
-    // }
+    public static boolean saveWorkspace(final WorkspaceManager w, final String path) {
+        return w.save(path);
+    }
 
     /**
      * Prints a message to say session is ending. Releases any resources being
@@ -239,16 +197,5 @@ public final class App {
             }
         }
         System.out.println();
-    }
-
-    /**
-     * Utility to display a message to stdout when the DEBUG flag is true.
-     *
-     * @param msg   Message to display to console
-     */
-    private static void debugLog(final String msg) {
-        if (DEBUG) {
-            System.out.println("[Debug] - " + msg);
-        }
     }
 }

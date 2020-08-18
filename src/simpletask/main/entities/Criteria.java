@@ -1,8 +1,5 @@
 package simpletask.main.entities;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Class to be used when searching for Tasks and Actions in a list.
  *
@@ -12,41 +9,21 @@ public class Criteria {
     /**
      * Dictionary containing the search keys and values.
      */
-    private Map<String, String> dict;
+    private NodeData dict;
     /**
      * Public construtor that initialises and empty dictionary.
      */
     public Criteria() {
-        dict = new HashMap<String, String>();
+        dict = new NodeData();
     }
     /**
-     * Add name constraint to search criteria.
-     *
-     * @param name  Name to look for
-     * @return      The newly update search Criteria
+     * 
+     * @param nKeys
+     * @param data
+     * @return
      */
-    public Criteria addName(final String name) {
-        dict.put("Name", name);
-        return this;
-    }
-    /**
-     * Add priority constraint to search criteria.
-     *
-     * @param priority  Priority to look for
-     * @return          The newly update search Criteria
-     */
-    public Criteria addPriority(final String priority) {
-        dict.put("Priority", priority);
-        return this;
-    }
-    /**
-     * Add type constraint to search criteria.
-     *
-     * @param type  Type to look for
-     * @return      The newly update search Criteria
-     */
-    public Criteria addType(final String type) {
-        dict.put("Type", type);
+    public Criteria addAttr(final NodeKeys nKeys, final String data) {
+        dict.setAttr(nKeys, data);
         return this;
     }
     /**
@@ -56,11 +33,11 @@ public class Criteria {
      * @param task  Summarised version of task
      * @return      True if it matches, false otherwise
      */
-    protected boolean compare(final Map<String, String> task) {
+    protected boolean compare(final NodeData task) {
         boolean res = true;
-        for (Map.Entry<String, String> entry: dict.entrySet()) {
-            if (null != task.get(entry.getKey())) {
-                res &= task.get(entry.getKey()).equalsIgnoreCase(entry.getValue());
+        for (NodeKeys nKeys: NodeKeys.values()) {
+            if (null != task.getAttr(nKeys) && null != dict.getAttr(nKeys)) {
+                res &= task.getAttr(nKeys).equalsIgnoreCase(dict.getAttr(nKeys));
             }
         }
         return res;

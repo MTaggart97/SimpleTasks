@@ -21,3 +21,7 @@ Extends [WorkspaceNode](#workspacenode). This object represents a singular actio
 ### WorkspaceManager
 
 Manages the workspace. The workspace consists of a root [WorkspaceNode](#workspacenode), generally a [Task](#task), but it does not need to be. All interaction by GUI's or other external processes are done through the manager. It maintains two nodes, the root node and the current node. The root node is the top level node and should not change (I think). While the current node represents the node that the manager is currently managing. i.e. if you add another node, it will be added to the current node.
+
+### GUI -- WIP
+
+`StartGUI` - The goal for this branch is to create a simple gui that can display a task and its subtasks/actions.

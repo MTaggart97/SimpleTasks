@@ -1,5 +1,6 @@
 package simpletask.main.entities;
 
+import java.io.InvalidClassException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ abstract class WorkspaceNode implements Serializable {
      * @return  The description of this task
      */
     protected String getDescription() {
-        return new String(this.description);
+        return this.description;
     }
     /**
      * Returns due date of WorkspaceNode.
@@ -106,6 +107,25 @@ abstract class WorkspaceNode implements Serializable {
      * @return  List of WorkspaceNodes that current node is parent of
      */
     protected abstract ArrayList<WorkspaceNode> getTasks();
+    /**
+     * 
+     * @param nKeys
+     * @return
+     */
+    protected String getAttr(final NodeKeys nKeys) {
+        String res;
+        switch(nKeys) {
+            case NAME:        res = getName();                         break;
+            case DESCRIPTION: res = getDescription();                  break;
+            case PRIORITY:    res = String.valueOf(getPriority());     break;
+            case TYPE:        res = getClass().getSimpleName();        break;
+            case TASKS:       res = String.valueOf(getTasks().size()); break;
+            case DUEDATE:     res = getDueDate().toString();           break;
+            case COMPLETE:    res = String.valueOf(getComplete());     break;
+            default:          res = "No Value Set";                    break;
+        }
+        return res;
+	}
     //#endregion [Getters]
 
     //#region [Setters]
@@ -161,6 +181,14 @@ abstract class WorkspaceNode implements Serializable {
             this.priority = imp;
         }
     }
+
+    protected void setComplete(final String complete) {
+        this.complete = Boolean.valueOf(complete);
+    }
+
+    protected void setDueDate(final String dueDate) {
+        this.dueDate = LocalDateTime.parse(dueDate);
+    }
     //#endregion [Setters]
 
     //#region [Implementation]
@@ -212,7 +240,10 @@ abstract class WorkspaceNode implements Serializable {
      * @return              True if found, false otherwise.
      */
     protected abstract boolean searchWorkspaces(final WorkspaceNode workspace);
+
+    protected abstract WorkspaceNode asTask();
+
+    protected abstract WorkspaceNode asAction() throws InvalidClassException;
     //#endregion [Abstract]
     //#endregion [Implementation]
-
 }

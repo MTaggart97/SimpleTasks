@@ -9,6 +9,7 @@ bin/*
 
 # Test outputs
 SavedWorkspace/*
+.config
 
 # Documentation
 docs/*

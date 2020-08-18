@@ -95,15 +95,15 @@ class Action extends WorkspaceNode {
         return msg.toString();
     }
     /**
-     * Since an Action does not have any sub workspaces, you cannot search it's list of workspaces.
-     * As a result, this method will always return false.
+     * Since an Action does not have any sub workspaces, you only need to check if the workspace is equal to the
+     * current Action. Thus, this is a wrapper for .equals(Object obj)
      *
      * @param   workspace   Workspace to search for
-     * @return              Will always return false
+     * @return              True if workspace equals this Action
      */
     @Override
     protected boolean searchWorkspaces(final WorkspaceNode workspace) {
-        return false;
+        return this.equals(workspace);
     }
     /**
      * Override of Object equals method. Two Actions are equal if they share the same name, dueDate and
@@ -152,6 +152,27 @@ class Action extends WorkspaceNode {
     @Override
     protected boolean isFinished() {
         return this.getComplete();
+    }
+
+    @Override
+    protected Action asAction() {
+        return this;
+    }
+
+    @Override
+    protected Task asTask() {
+        Task task = new Task(this.name);
+        task.setDescription(this.description);
+        task.setComplete(String.valueOf(this.complete));
+        task.parent = (Task) this.parent;
+        task.parent.addToTask(task);
+        task.setDueDate(this.dueDate);
+        task.setPriority(this.priority);
+        
+        // Delete this object
+        this.delete();
+
+        return task;
     }
     //#endregion [Implementation]
 }
