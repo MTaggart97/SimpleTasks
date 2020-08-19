@@ -28,27 +28,27 @@ abstract class WorkspaceNode implements Serializable {
     /**
      * Name of WorkspaceNode.
      */
-    protected String name;
+    String name;
     /**
      * Description of WorkspaceNode.
      */
-    protected String description;
+    String description;
     /**
      * Due date of WorkspaceNode.
      */
-    protected LocalDateTime dueDate;
+    LocalDateTime dueDate;
     /**
      * Flag to mark if WorkspaceNode is complete.
      */
-    protected boolean complete;
+    boolean complete;
     /**
      * Priority of WorkspaceNode. Can be any value between MINIMPORTANCE and MAXINIMPORTANCE.
      */
-    protected int priority;
+    int priority;
     /**
      * Parent of current WorkspaceNode.
      */
-    protected WorkspaceNode parent;
+    WorkspaceNode parent;
     //#endregion [Fields]
 
     //#region [Getters]
@@ -108,13 +108,14 @@ abstract class WorkspaceNode implements Serializable {
      */
     protected abstract ArrayList<WorkspaceNode> getTasks();
     /**
-     * 
-     * @param nKeys
-     * @return
+     * Given a key, it will extrace the value of the node.
+     *
+     * @param nKeys The key to extract the value from
+     * @return      The value at the given key
      */
     protected String getAttr(final NodeKeys nKeys) {
         String res;
-        switch(nKeys) {
+        switch (nKeys) {
             case NAME:        res = getName();                         break;
             case DESCRIPTION: res = getDescription();                  break;
             case PRIORITY:    res = String.valueOf(getPriority());     break;
@@ -125,7 +126,7 @@ abstract class WorkspaceNode implements Serializable {
             default:          res = "No Value Set";                    break;
         }
         return res;
-	}
+    }
     //#endregion [Getters]
 
     //#region [Setters]
@@ -181,11 +182,19 @@ abstract class WorkspaceNode implements Serializable {
             this.priority = imp;
         }
     }
-
+    /**
+     * Sets the completions status of the node.
+     *
+     * @param complete  Either true or false
+     */
     protected void setComplete(final String complete) {
         this.complete = Boolean.valueOf(complete);
     }
-
+    /**
+     * Sets the due date of the node.
+     *
+     * @param dueDate   The date to set the dueDate to
+     */
     protected void setDueDate(final String dueDate) {
         this.dueDate = LocalDateTime.parse(dueDate);
     }
@@ -218,7 +227,7 @@ abstract class WorkspaceNode implements Serializable {
      * @param   target  The new parent of the node
      * @return          True if move was successful
      */
-    protected abstract boolean moveWorkspace(final WorkspaceNode target);
+    protected abstract boolean moveWorkspace(WorkspaceNode target);
     /**
      * Returns completion status, taking into account the completion status of any nodes
      * that may be maintained by this one.
@@ -232,17 +241,27 @@ abstract class WorkspaceNode implements Serializable {
      * @param   workspaceName   New workspace to move into current workspace
      * @return                  Newly added WorkspaceNode
      */
-    protected abstract WorkspaceNode createWorkspace(final WorkspaceNode workspaceName);
+    protected abstract WorkspaceNode createWorkspace(WorkspaceNode workspaceName);
     /**
      * Searches the list of tasks for the workspace entered.
      *
      * @param   workspace   WorkspaceNode to find
      * @return              True if found, false otherwise.
      */
-    protected abstract boolean searchWorkspaces(final WorkspaceNode workspace);
-
+    protected abstract boolean searchWorkspaces(WorkspaceNode workspace);
+    /**
+     * Method to convert this node to a Task.
+     *
+     * @return  The node as a task
+     */
     protected abstract WorkspaceNode asTask();
-
+    /**
+     * Method to convert this node to an Action. Can throw an error if trying to convert
+     * a Task that has sub tasks to an Action.
+     *
+     * @return                          This node as an Action
+     * @throws InvalidClassException    If you cannot convert to an Action
+     */
     protected abstract WorkspaceNode asAction() throws InvalidClassException;
     //#endregion [Abstract]
     //#endregion [Implementation]

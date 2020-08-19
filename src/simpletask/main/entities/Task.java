@@ -36,7 +36,7 @@ class Task extends WorkspaceNode {
      * in WorkspaceNode. Since only Tasks can have nodes, it is safe to assume that any
      * parent will be a Task.
      */
-    protected Task parent = null;
+    Task parent = null;
     //#endregion [Fields]
 
     //#region [Constructors]
@@ -141,13 +141,24 @@ class Task extends WorkspaceNode {
     /**
      * Used to display the task in a readable format to the console.
      * The format is currently,
+     * <p>
      * DISPLAYHEADER
-     * * {Name of Workspace}
-     *   * Sub task 1
-     *   * Sub task 2
-     *     * Sub sub task 1
-     *     * Sub sub task 2
-     *   * Sub task 3
+     * <ol>
+     *  <li> {Name of Workspace} </li>
+     *  <li>
+     *  <ul>
+     *   <li> Sub task 1 </li>
+     *   <li> Sub task 2 </li>
+     *   <li>
+     *    <ul>
+     *     <li> Sub sub task 1 </li>
+     *     <li> Sub sub task 2 </li>
+     *    </ul>
+     *    </li>
+     *    <li> Sub task 3 </li>
+     *  </ul>
+     *  </li>
+     * </ol>
      * DISPLAYHEADER
      *
      * @return String to display
@@ -176,7 +187,7 @@ class Task extends WorkspaceNode {
         // If target is not an instance of Task, then currnet Task cannot be moved
         if (!(target instanceof Task)) {
             return false;
-        };
+        }
         // Only tasks can have childern so we know the result of this will always be a task
         Task oldParent = this.getParent();
         // Task will be it's own parent if no parent exists
@@ -224,6 +235,13 @@ class Task extends WorkspaceNode {
         } else {
             return false;
         }
+    }
+    /**
+     * Overrides the default hashcode. Currently just uses the hashCode defined in WorkspaceNode.
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
     /**
      * Removes workspace from list of tasks if the workspace is there. Note, this assumes that the
@@ -280,7 +298,7 @@ class Task extends WorkspaceNode {
             ((Task) action.parent).addToTask(action);
             action.setDueDate(this.dueDate);
             action.setPriority(this.priority);
-            
+
             // Delete this object
             this.delete();
 

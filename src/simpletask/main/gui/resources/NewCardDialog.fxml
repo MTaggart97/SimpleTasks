@@ -20,7 +20,7 @@
         </rowConstraints>
          <children>
             <Label text="Card Name" />
-            <TextField fx:id="NewCardName" GridPane.columnIndex="1" />
+            <TextField fx:id="newCardName" GridPane.columnIndex="1" />
          </children>
       </GridPane>
    </content>

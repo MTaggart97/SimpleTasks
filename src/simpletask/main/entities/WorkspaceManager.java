@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * to workspace, modify tasks and save workspace. It is a singleton as only one manager
  * should be created over the course of the app's lifetime.
  */
-public class WorkspaceManager {
+public final class WorkspaceManager {
     //#region [Fields]
     /**
      * Users main workspace that the WorkspaceManager manages. Once set, it can never be reset. This
@@ -30,7 +30,9 @@ public class WorkspaceManager {
      * The only instance of WorkspaceManager.
      */
     private static WorkspaceManager workspaceManager;
-
+    /**
+     * Variable to keep check of the currentWorkspace's path relative to the root.
+     */
     private ArrayList<Integer> pathFromRoot = new ArrayList<>();
     //#endregion [Fields]
 
@@ -68,17 +70,22 @@ public class WorkspaceManager {
     }
 
     /**
-     * 
-     * @return
+     * Returns a copy of the relative path to root.
+     *
+     * @return  Copy of pathFromRoot
      */
     public ArrayList<Integer> getPath() {
         return new ArrayList<Integer>(pathFromRoot);
     }
     /**
      * Returns a map of details of the currentWorkspace's parent. Keys include:
+     * <p>
      *  Name    :   Name of Parent
+     * <p>
      *  Priority:   Prioity of Task
+     * <p>
      *  Type    :   Will always be "Task" as a parent cannot be an Action
+     * <p>
      *  Tasks   :   Number of tasks in parents list
      *
      * @return  Current workspace's parent
@@ -102,14 +109,15 @@ public class WorkspaceManager {
         return array;
     }
     /**
-     * 
-     * @return
+     * Shortcut to get current detials of the current workspace.
+     *
+     * @return  The details of the current workspace as NodeData
      */
     public NodeData getCurrentWorkspaceDetails() {
         return getDetails(currentWorkspace);
     }
     /**
-     * Given a task, it will return a summary of it. This is used as a helper function for 
+     * Given a task, it will return a summary of it. This is used as a helper function for
      * other methods in this class that return info about Tasks without returning the instance
      * itself.
      *
@@ -340,7 +348,7 @@ public class WorkspaceManager {
             ex.printStackTrace();
         }
         newWorkspace.setDueDate(LocalDateTime.parse(node.getAttr(NodeKeys.DUEDATE)));
-        
+
         if (currentWorkspace instanceof Task) {
             ((Task) currentWorkspace).createWorkspace(newWorkspace);
             return true;
@@ -354,17 +362,18 @@ public class WorkspaceManager {
      *
      * @param node  Item to check if valid
      */
-    private void validateInputs(NodeData node) {
+    private void validateInputs(final NodeData node) {
         for (NodeKeys nKeys: NodeKeys.values()) {
             if (node.getAttr(nKeys) == null || node.getAttr(nKeys).isEmpty()) {
                 switch (nKeys) {
-                    case NAME       : node.setAttr(nKeys, "Default")            ;         break;
-                    case TYPE       : node.setAttr(nKeys, "Task")               ;         break;
-                    case DESCRIPTION: node.setAttr(nKeys, "Default Description");         break;
-                    case DUEDATE    : node.setAttr(nKeys, LocalDateTime.now().toString());break;
-                    case PRIORITY   : node.setAttr(nKeys, "0");                           break;
-                    case COMPLETE   : node.setAttr(nKeys, "false");                       break;
-                    case TASKS      : node.setAttr(nKeys, "0");                           break;
+                    case NAME       : node.setAttr(nKeys, "Default");                      break;
+                    case TYPE       : node.setAttr(nKeys, "Task");                         break;
+                    case DESCRIPTION: node.setAttr(nKeys, "Default Description");          break;
+                    case DUEDATE    : node.setAttr(nKeys, LocalDateTime.now().toString()); break;
+                    case PRIORITY   : node.setAttr(nKeys, "0");                            break;
+                    case COMPLETE   : node.setAttr(nKeys, "false");                        break;
+                    case TASKS      : node.setAttr(nKeys, "0");                            break;
+                    default         : System.err.println("NYI");                           break;
                 }
             }
         }
@@ -397,7 +406,7 @@ public class WorkspaceManager {
      */
     public ArrayList<NodeData> searchWorkspaces(final Criteria criteria) {
         ArrayList<NodeData> res = new ArrayList<>();
-        for(int i = 0; i <  currentWorkspace.getTasks().size(); i++) {
+        for (int i = 0; i <  currentWorkspace.getTasks().size(); i++) {
             this.stepIntoWorkspace(i);
             res.addAll(this.searchWorkspaces(criteria));
             this.stepUp();
@@ -408,7 +417,7 @@ public class WorkspaceManager {
         return res;
     }
     //#endregion [Workspace Management]
-    
+
     //#region [Setters]
     /**
      * Sets name of currentWorkspace.
@@ -456,15 +465,30 @@ public class WorkspaceManager {
             return false;
         }
     }
-
+    /**
+     * Setter for the completion status. Sets the completion status to what is
+     * passed in.
+     *
+     * @param complete  String containing true or false
+     */
     public void setComplete(final String complete) {
         currentWorkspace.setComplete(complete);
     }
-
+    /**
+     * Setter for due date. Sets the due date to the string that is passed in.
+     *
+     * @param dueDate   Date to set dueDate to
+     */
     public void setDueDate(final String dueDate) {
         currentWorkspace.setDueDate(dueDate + "T00:00:00.000000000");
     }
-
+    /**
+     * Sets the type of the current workspace. If it is not Action or Task then
+     * nothing happens. Otherwise it will try to convert the currentWorkspace into
+     * a Task/Action using the asAction or asTask methods.
+     *
+     * @param type  Either Action or Task
+     */
     public void setType(final String type) {
         if (type.equals("Action") && currentWorkspace.getTasks().size() == 0) {
             try {
