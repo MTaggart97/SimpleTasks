@@ -264,7 +264,7 @@ public final class Manager {
         obsList.setCellFactory(new Callback<ListView<NodeData>, ListCell<NodeData>>() {
             @Override
             public ListCell<NodeData> call(final ListView<NodeData> param) {
-                ListCell<NodeData> cell = new ListCell<>() {
+                ListCell<NodeData> cell = new ListCell<NodeData>() {
                     @Override
                     protected void updateItem(final NodeData item, final boolean empty) {
                         super.updateItem(item, empty);

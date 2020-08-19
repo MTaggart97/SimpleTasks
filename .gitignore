@@ -1,5 +1,8 @@
 # Binaries
 bin/*
+bin-8/*
+release/*
+lib/*
 
 # IDE folders
 .vscode/*
