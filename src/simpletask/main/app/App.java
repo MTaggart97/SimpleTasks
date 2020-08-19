@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Class from which application is started.
+ * Class from which the commandline application is started. This version of the application will
+ * have less features than the GUI. For example, it cannot create a workspace, it will just work
+ * with an existing one.
  *
  * @author Matthew Taggart
  */
@@ -24,17 +26,16 @@ public final class App {
     /**
      * Main execution function of application.
      *
-     * @param args  Array of strings from command line
+     * @param args  Array of strings from command line. Currently empty
      */
     public static void main(final String[] args) {
         Scanner sc = new Scanner(System.in);
         // Create your initial workspace
-        // System.out.print("Enter the name of your task: ");
-        // WorkspaceManager workspace = new WorkspaceManager(sc.nextLine());
         WorkspaceManager workspace = WorkspaceManager.loadWorkspace("SavedWorkspace/workspace.ser");
 
         Options option;
         String st;
+        // Main loop
         do {
             displayOptions();
             System.out.println("What would you like to do?");

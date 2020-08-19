@@ -14,7 +14,12 @@ import java.util.Map.Entry;
  */
 public class Config {
     /**
-     * Path to where the config file is stored (ususally top level dir).
+     * Path to where the config file is stored (ususally top level dir). The file at this
+     * location should be of the form:
+     * <p>
+     * k=v
+     * <p>
+     * where k is the Key of the config and v is the Value of that key.
      */
     private final String path;
     /**
@@ -24,8 +29,10 @@ public class Config {
     private Map<ConfigKeys, String> config;
 
     /**
-     * 
-     * @param path
+     * Constructs the Config given a path. Calls loadWorkspace() to setup the config map
+     * correctly.
+     *
+     * @param path  Location of the config file to be loaded
      */
     public Config(final String path) {
         this.path = path;
@@ -33,25 +40,32 @@ public class Config {
         loadWorkspace();
     }
     /**
-     * 
+     * Using the path, it will setup the config map. If a file exists in that location,
+     * it will parse it line by line, populating the config map.
+     * <p>
+     * If not, then it will create an empty config file in that location.
      */
     private void loadWorkspace() {
-        // Pass the path to the file as a parameter 
+        // Pass the path to the file as a parameter
         File file = new File(path);
         Scanner sc;
         try {
             sc = new Scanner(file);
-            while (sc.hasNextLine()) { 
+            while (sc.hasNextLine()) {
                 parseLine(sc.nextLine());
             }
-    
+
             sc.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not found, creating empty config now");
             createEmptyFile(file);
         }
     }
-
+    /**
+     * Creates a file in the given location.
+     *
+     * @param file  A File representing the location of the new config file
+     */
     private void createEmptyFile(final File file) {
         try {
             file.createNewFile();
@@ -60,38 +74,36 @@ public class Config {
         }
     }
     /**
-     * 
-     * @param line
+     * Given a string containing the "=" character, it will split the string based on "=".
+     * The first part will then be the key of config with the second being the value of that
+     * key.
+     *
+     * @param line  A line in the file located at path.
      */
     private void parseLine(final String line) {
         String key = line.substring(0, line.indexOf("="));
         config.put(ConfigKeys.valueOf(key.toUpperCase()), line.substring(line.indexOf("=") + 1));
     }
 
-    // public static void main(final String[] args) {
-    //     Config c = new Config(".config2");
-    //     c.setValue(ConfigKeys.DIR, "Random Valu1e");
-    //     c.saveCurrentSettings();
-    // }
     /**
      * Saves the current config map to the file on path.
      *
      * @return  True if file saved correctly, false otherwise.
      */
     public boolean saveCurrentSettings() {
-        // Pass the path to the file as a parameter 
+        // Pass the path to the file as a parameter
         FileWriter file;
         Scanner sc;
         try {
             file = new FileWriter(path);
             sc = new Scanner(new File(path));
-            while (sc.hasNextLine()) { 
+            while (sc.hasNextLine()) {
                 parseLine(sc.nextLine());
             }
             for (Entry<ConfigKeys, String> entry : config.entrySet()) {
                 file.write(entry.getKey() + "=" + entry.getValue() + "\n");
             }
-            
+
             sc.close();
             file.close();
             return true;
@@ -102,7 +114,7 @@ public class Config {
         }
     }
     /**
-     * Sets the value for a particular key
+     * Sets the value for a particular key.
      *
      * @param key   The ConfigKey to set the value of
      * @param value The value to set it to
@@ -110,7 +122,7 @@ public class Config {
     public void setValue(final ConfigKeys key, final String value) {
         config.put(key, value);
     }
-    
+
     /**
      * Retrieves the value for a ConfigKey.
      *

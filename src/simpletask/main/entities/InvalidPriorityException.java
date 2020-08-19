@@ -2,6 +2,8 @@ package simpletask.main.entities;
 
 /**
  * Exception thrown when an invalid priority is given to a Workspace.
+ *
+ * @author Matthew Taggart
  */
 public class InvalidPriorityException extends RuntimeException {
     /**
@@ -13,7 +15,7 @@ public class InvalidPriorityException extends RuntimeException {
      *
      * @param msg   Message passed into exception.
      */
-    public InvalidPriorityException(String msg) {
+    public InvalidPriorityException(final String msg) {
         super("Invalid Priority Value - " + msg);
     }
 

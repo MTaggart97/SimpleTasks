@@ -55,6 +55,11 @@ class Action extends WorkspaceNode {
     //#endregion [Getters]
 
     //#region [Setters]
+    /**
+     * Sets the parent for this task.
+     *
+     * @param parent    The new parent of the task
+     */
     private void setParent(final Task parent) {
         this.parent = parent;
     }
@@ -125,6 +130,15 @@ class Action extends WorkspaceNode {
         }
     }
     /**
+     * Override of the hashCode function. Currently just calls the WorkspaceNode's hashCode().
+     *
+     * @return  The hashcode for this object
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+    /**
      * Deletes current Action by removing itself from its parents list then setting its parent to null.
      *
      * @return  True if Action deletes successfully, false otherwise
@@ -153,12 +167,25 @@ class Action extends WorkspaceNode {
     protected boolean isFinished() {
         return this.getComplete();
     }
-
+    /**
+     * Override of asAction defined in WorkspaceNode. Used when converting between Tasks and
+     * Actions. The implementation of this method is trivial.
+     *
+     * @return  This action
+     */
     @Override
     protected Action asAction() {
         return this;
     }
 
+    /**
+     * Creates a Task (with no children) based off the info of this Action. It then deletes this
+     * Action.
+     * <p>
+     * This Action will not be removed from memory until the GC is run.
+     *
+     * @return This Action as a Task
+     */
     @Override
     protected Task asTask() {
         Task task = new Task(this.name);
@@ -168,7 +195,7 @@ class Action extends WorkspaceNode {
         task.parent.addToTask(task);
         task.setDueDate(this.dueDate);
         task.setPriority(this.priority);
-        
+
         // Delete this object
         this.delete();
 
